@@ -1,6 +1,7 @@
 import * as React from "react";
 import NiceModal, { useModal } from "@ebay/nice-modal-react";
-import { Trash2 } from "lucide-react";
+import { Pencil, PlusIcon, Trash2 } from "lucide-react";
+import { useForm } from "react-hook-form";
 import { Button } from "@/shared/components/ui/button";
 import {
   AlertDialog,
@@ -36,115 +37,138 @@ import {
   FieldLabel,
 } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
-import type { ProductionArea } from "@/shared/models/production-area.model";
 import { useNavigate } from "@tanstack/react-router";
 import { SetupStepper } from "../components/setup-stepper.component";
+import type { CreateProductionAreaDto } from "@/modules/production-areas/interfaces/dto/create-production-area.dto";
+import { useSetupStore } from "@/shared/store/setup.store";
 
-const productionAreas: ProductionArea[] = [
-  {
-    id: 1,
-    name: "Cocina",
-    description: "Preparacion principal de platos calientes.",
-    isActive: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+type ProductionAreaModalProps = {
+  title: string;
+  submitLabel: string;
+  initialValues?: CreateProductionAreaDto;
+  onSubmit: (values: CreateProductionAreaDto) => void;
+};
+
+const ProductionAreaModal = NiceModal.create(
+  ({
+    title,
+    submitLabel,
+    initialValues,
+    onSubmit,
+  }: ProductionAreaModalProps) => {
+    const modal = useModal();
+    const {
+      register,
+      handleSubmit,
+      reset,
+      formState: { errors },
+    } = useForm<CreateProductionAreaDto>({
+      defaultValues: {
+        name: "",
+        description: "",
+      },
+    });
+
+    React.useEffect(() => {
+      if (!modal.visible) {
+        return;
+      }
+      reset({
+        name: initialValues?.name ?? "",
+        description: initialValues?.description ?? "",
+      });
+    }, [initialValues?.description, initialValues?.name, modal.visible, reset]);
+
+    return (
+      <Dialog
+        open={modal.visible}
+        onOpenChange={(open) => {
+          if (!open) {
+            modal.hide();
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+            <DialogDescription>
+              Agrega un area para organizar la preparacion de productos.
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={handleSubmit((values) => {
+              onSubmit({
+                name: values.name.trim(),
+                description: values.description?.trim() || undefined,
+              });
+              modal.hide();
+            })}
+          >
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor="production-area-name">Nombre</FieldLabel>
+                <Input
+                  id="production-area-name"
+                  type="text"
+                  placeholder="Cocina"
+                  aria-invalid={Boolean(errors.name)}
+                  {...register("name", {
+                    required: "El nombre es obligatorio.",
+                  })}
+                />
+                {errors.name?.message && (
+                  <FieldDescription>{errors.name.message}</FieldDescription>
+                )}
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="production-area-description">
+                  Descripcion
+                </FieldLabel>
+                <Input
+                  id="production-area-description"
+                  type="text"
+                  placeholder="Platos calientes y preparaciones principales."
+                  aria-invalid={Boolean(errors.description)}
+                  {...register("description")}
+                />
+                <FieldDescription>
+                  Describe brevemente las tareas de esta area.
+                </FieldDescription>
+              </Field>
+            </FieldGroup>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button type="button" variant="outline">
+                  Cancelar
+                </Button>
+              </DialogClose>
+              <Button type="submit">{submitLabel}</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    );
   },
-  {
-    id: 2,
-    name: "Bar",
-    description: "Cocteles, bebidas frias y cafe.",
-    isActive: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 3,
-    name: "Postres",
-    description: "Pasteleria y emplatado de dulces.",
-    isActive: false,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
-
-const AddProductionAreaModal = NiceModal.create(() => {
-  const modal = useModal();
-  const [name, setName] = React.useState("");
-  const [description, setDescription] = React.useState("");
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    modal.hide();
-  };
-
-  return (
-    <Dialog
-      open={modal.visible}
-      onOpenChange={(open) => {
-        if (!open) {
-          modal.hide();
-        }
-      }}
-    >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Nueva area de produccion</DialogTitle>
-          <DialogDescription>
-            Agrega un area para organizar la preparacion de productos.
-          </DialogDescription>
-        </DialogHeader>
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor="production-area-name">Nombre</FieldLabel>
-              <Input
-                id="production-area-name"
-                type="text"
-                placeholder="Cocina"
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                required
-              />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="production-area-description">
-                Descripcion
-              </FieldLabel>
-              <Input
-                id="production-area-description"
-                type="text"
-                placeholder="Platos calientes y preparaciones principales."
-                value={description}
-                onChange={(event) => setDescription(event.target.value)}
-                required
-              />
-              <FieldDescription>
-                Describe brevemente las tareas de esta area.
-              </FieldDescription>
-            </Field>
-          </FieldGroup>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" variant="outline">
-                Cancelar
-              </Button>
-            </DialogClose>
-            <Button type="submit">Guardar</Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-});
+);
 
 export const ProductionAreasPage = () => {
   const navigate = useNavigate();
+  const productionAreas = useSetupStore((state) => state.productionAreas);
+  const addProductionArea = useSetupStore((state) => state.addProductionArea);
+  const updateProductionArea = useSetupStore(
+    (state) => state.updateProductionArea,
+  );
+  const removeProductionArea = useSetupStore(
+    (state) => state.removeProductionArea,
+  );
+
   return (
     <div className="flex min-h-svh flex-col p-6 md:p-10">
       <div className="w-full max-w-3xl mx-auto flex flex-col gap-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold">Areas de produccion</h1>
+            <h1 className="text-2xl font-bold">Areas de producción</h1>
             <p className="text-sm text-muted-foreground">
               Administra las areas donde se preparan los productos.
             </p>
@@ -152,19 +176,46 @@ export const ProductionAreasPage = () => {
           <Button
             type="button"
             variant="outline"
-            onClick={() => NiceModal.show(AddProductionAreaModal)}
+            onClick={() =>
+              NiceModal.show(ProductionAreaModal, {
+                title: "Nueva area de produccion",
+                submitLabel: "Guardar",
+                onSubmit: addProductionArea,
+              })
+            }
           >
+            <PlusIcon />
             Agregar area
           </Button>
         </div>
         <div className="grid gap-4 md:grid-cols-2 ">
-          {productionAreas.map((area) => (
-            <Card key={area.id} size="sm">
+          {productionAreas.map((area, index) => (
+            <Card key={`${area.name}-${index}`} size="sm">
               <CardHeader>
                 <CardTitle>{area.name}</CardTitle>
                 <CardDescription>{area.description}</CardDescription>
                 <CardAction>
                   <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      aria-label={`Editar ${area.name}`}
+                      onClick={() =>
+                        NiceModal.show(ProductionAreaModal, {
+                          title: "Editar area de produccion",
+                          submitLabel: "Guardar cambios",
+                          initialValues: {
+                            name: area.name,
+                            description: area.description,
+                          },
+                          onSubmit: (values) =>
+                            updateProductionArea(index, values),
+                        })
+                      }
+                    >
+                      <Pencil />
+                    </Button>
                     {/* <span */}
                     {/*   className={ */}
                     {/*     area.isActive */}
@@ -197,7 +248,10 @@ export const ProductionAreasPage = () => {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction variant="destructive">
+                          <AlertDialogAction
+                            variant="destructive"
+                            onClick={() => removeProductionArea(index)}
+                          >
                             Eliminar
                           </AlertDialogAction>
                         </AlertDialogFooter>
@@ -209,9 +263,11 @@ export const ProductionAreasPage = () => {
             </Card>
           ))}
         </div>
-        <Button onClick={() => navigate({ to: "/setup/menu" })}>
-          Guardar y continuar
-        </Button>
+        <div className="mt-6 flex justify-center">
+          <Button onClick={() => navigate({ to: "/setup/menu" })}>
+            Guardar y continuar
+          </Button>
+        </div>
       </div>
       <SetupStepper className="mt-auto pt-6" />
     </div>
