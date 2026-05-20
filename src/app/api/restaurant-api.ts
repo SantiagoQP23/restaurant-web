@@ -2,6 +2,7 @@ import axios from "axios";
 
 import { getEnvVariables } from "../../shared/lib/helpers";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
+import { toast } from "sonner";
 
 const { VITE_API_URL } = getEnvVariables();
 
@@ -47,6 +48,10 @@ restaurantApi.interceptors.request.use(async (config) => {
 restaurantApi.interceptors.response.use(
   (resp) => resp,
   (err) => {
+    // toast.error(
+    //   err.response?.data?.message ||
+    //     "An error occurred while processing your request.",
+    // );
     return Promise.reject(err.response);
   },
 );

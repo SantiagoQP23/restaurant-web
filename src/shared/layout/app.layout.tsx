@@ -23,6 +23,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/shared/components/ui/sidebar";
+import { useActiveOrders } from "@/modules/orders/hooks/useActiveOrders";
 
 const navigation = [
   { label: "Inicio", icon: Home, to: "/app" },
@@ -39,6 +40,8 @@ export const AppLayout = () => {
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   });
+
+  useActiveOrders();
 
   return (
     <SidebarProvider>

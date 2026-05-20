@@ -7,32 +7,66 @@ import {
 } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
+
 import { useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { useAuthStore } from "@/modules/auth/store/auth.store";
+import { toast } from "sonner";
+
+const loginSchema = z.object({
+  username: z.string().min(1, { message: "" }),
+  password: z.string().min(1, { message: "" }),
+  // password: z
+  //   .string()
+  //   .min(6, { message: "Password must be at least 6 characters" }),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
   const navigate = useNavigate();
+  const { login } = useAuthStore();
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<{ username: string; password: string }>({
+  } = useForm({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       username: "",
       password: "",
     },
   });
 
+  const onSubmit = async (data: LoginFormData) => {
+    console.log(data, errors);
+    const wasSuccessful = await login(
+      data.username.trim(),
+      data.password.trim(),
+    );
+
+    if (wasSuccessful) {
+      // router.replace("/(app)/(tabs)/(orders-module)/my-orders");
+      navigate({ to: "/app/orders", replace: true });
+
+      return;
+    }
+    console.log("Login failed");
+
+    toast.error("Credenciales inválidas. Por favor, inténtalo de nuevo.");
+  };
+
   return (
     <form
       className={cn("flex flex-col gap-6", className)}
       {...props}
-      onSubmit={handleSubmit(() => {
-        navigate({ to: "/app/orders" });
-      })}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">

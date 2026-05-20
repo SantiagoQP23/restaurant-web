@@ -1,5 +1,5 @@
 import { rootRoute } from "@/app/router/router.config";
-import { createRoute } from "@tanstack/react-router";
+import { createRoute, redirect } from "@tanstack/react-router";
 import { AccountsPage } from "../pages/accounts.page";
 import { CompletePage } from "../pages/complete.page";
 import { MenuPage } from "../pages/menu.page";
@@ -12,9 +12,17 @@ import { TablesPage } from "../pages/tables.page";
 import { WelcomePage } from "../pages/welcome.page";
 import { JoinRestaurantPage } from "../pages/join-restaurant.page";
 
+import { useAuthStore } from "@/modules/auth/store/auth.store";
+
 export const setupRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "setup",
+  beforeLoad: async (route) => {
+    const status = useAuthStore.getState().status;
+    if (status === "unauthenticated") {
+      throw redirect({ to: "/auth/login" });
+    }
+  },
 });
 
 const welcomeRoute = createRoute({
