@@ -1,10 +1,9 @@
 import * as React from "react";
 import NiceModal, { useModal } from "@ebay/nice-modal-react";
-import { ArrowRight, Minus, Plus, Sliders } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import {
   OrderDetailStatus,
   OrderStatus,
-  OrderStatusSpanish,
   OrderType,
   type Order,
 } from "@/shared/models/order.model";
@@ -14,14 +13,6 @@ import type { ProductOption } from "@/shared/models/product-option.model";
 import type { ProductionArea } from "@/shared/models/production-area.model";
 import type { Table } from "@/shared/models/table.model";
 import type { User } from "@/shared/models/user.model";
-import { Badge } from "@/shared/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
 import { Progress } from "@/shared/components/ui/progress";
 import {
@@ -40,6 +31,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/components/ui/select";
+import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
+import { ProductionOrdersBoardView } from "./production-orders-board.view";
+import { ProductionProductsBoardView } from "./production-products-board.view";
 
 const boardColumns = [
   {
@@ -380,53 +374,6 @@ const initialOrders: Order[] = [
   },
 ];
 
-const formatTime = (date: Date) =>
-  date.toLocaleTimeString("es-EC", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
-const formatDetailTime = (value: string) =>
-  new Date(value).toLocaleTimeString("es-EC", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
-const orderTableLabel = (order: Order) => order.table?.name ?? "Para llevar";
-
-const statusLabel = (status: OrderStatus) => {
-  switch (status) {
-    case OrderStatus.PENDING:
-      return OrderStatusSpanish.PENDING;
-    case OrderStatus.IN_PROGRESS:
-      return OrderStatusSpanish.IN_PROGRESS;
-    case OrderStatus.READY:
-      return OrderStatusSpanish.READY;
-    case OrderStatus.DELIVERED:
-      return OrderStatusSpanish.DELIVERED;
-    default:
-      return OrderStatusSpanish.CANCELLED;
-  }
-};
-
-const detailStatusDotClass = (status: OrderDetailStatus) => {
-  switch (status) {
-    case OrderDetailStatus.PENDING:
-      return "bg-amber-400";
-    case OrderDetailStatus.IN_PROGRESS:
-      return "bg-sky-400";
-    default:
-      return "bg-emerald-400";
-  }
-};
-
-const progressValue = (detail: OrderDetail) => {
-  if (detail.quantity <= 0) {
-    return 0;
-  }
-  const percent = (detail.readyQuantity / detail.quantity) * 100;
-  return Math.max(0, Math.min(100, percent));
-};
 
 const progressValueFrom = (readyQuantity: number, quantity: number) => {
   if (quantity <= 0) {
@@ -577,6 +524,9 @@ export const ProductionPage = () => {
   const [selectedAreaId, setSelectedAreaId] = React.useState(
     productionAreas[0]?.id.toString() ?? "",
   );
+  const [viewMode, setViewMode] = React.useState<"board" | "product">(
+    "board",
+  );
 
   const handleAdvanceDetail = (orderId: string, detailId: string) => {
     setOrders((current) =>
@@ -606,7 +556,7 @@ export const ProductionPage = () => {
 
   const handleAdvanceOrderDetails = (
     orderId: string,
-    status: OrderDetailStatus
+    status: OrderDetailStatus,
   ) => {
     const productionAreaId = Number.parseInt(selectedAreaId, 10);
     setOrders((current) =>
@@ -632,7 +582,7 @@ export const ProductionPage = () => {
             };
           }),
         };
-      })
+      }),
     );
   };
 
@@ -693,176 +643,116 @@ export const ProductionPage = () => {
           Number.parseInt(selectedAreaId, 10),
         ),
       })),
-    [selectedAreaId],
+    [orders, selectedAreaId],
   );
+
+  const productGroups = React.useMemo(() => {
+    const productionAreaId = Number.parseInt(selectedAreaId, 10);
+    return boardColumns.map((column) => {
+      const detailEntries = orders.flatMap((order) =>
+        order.details
+          .filter(
+            (detail) =>
+              detail.status === column.key &&
+              detail.product.productionArea.id === productionAreaId,
+          )
+          .map((detail) => ({ order, detail })),
+      );
+
+      const groupedByProduct = detailEntries.reduce(
+        (acc, entry) => {
+          const key = entry.detail.product.id;
+          if (!acc.has(key)) {
+            acc.set(key, {
+              product: entry.detail.product,
+              totalQuantity: 0,
+              totalReady: 0,
+              entries: [] as Array<{
+                order: Order;
+                detail: OrderDetail;
+              }>,
+            });
+          }
+          const current = acc.get(key);
+          if (!current) {
+            return acc;
+          }
+          current.totalQuantity += entry.detail.quantity;
+          current.totalReady += entry.detail.readyQuantity;
+          current.entries.push(entry);
+          return acc;
+        },
+        new Map<
+          string,
+          {
+            product: Product;
+            totalQuantity: number;
+            totalReady: number;
+            entries: Array<{ order: Order; detail: OrderDetail }>;
+          }
+        >(),
+      );
+
+      return {
+        ...column,
+        products: Array.from(groupedByProduct.values()),
+      };
+    });
+  }, [orders, selectedAreaId]);
 
   return (
     <div className="flex min-h-svh flex-col gap-6 p-6 md:p-10">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Produccion</h1>
+          <h1 className="text-2xl font-bold">Producción</h1>
           <p className="text-sm text-muted-foreground">
-            Organiza los pedidos por estado de preparacion.
+            Organiza los pedidos por estado de preparación.
           </p>
         </div>
-        <Select value={selectedAreaId} onValueChange={setSelectedAreaId}>
-          <SelectTrigger className="min-w-[200px]">
-            <SelectValue placeholder="Selecciona un area" />
-          </SelectTrigger>
-          <SelectContent>
-            {productionAreas.map((area) => (
-              <SelectItem key={area.id} value={area.id.toString()}>
-                {area.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="grid gap-4 lg:grid-cols-3">
-        {grouped.map((column) => (
-          <section
-            key={column.key}
-            className="flex flex-col gap-4 rounded-4xl border border-border/60 bg-muted/30 p-4"
+        <div className="flex flex-wrap items-center gap-2">
+          <Tabs
+            value={viewMode}
+            onValueChange={(value) =>
+              setViewMode(value as "board" | "product")
+            }
           >
-            <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold">{column.label}</div>
-              <span
-                className={`rounded-full px-2 py-1 text-xs font-medium ${column.accent}`}
-              >
-                {column.entries.reduce(
-                  (total, entry) => total + entry.details.length,
-                  0,
-                )}
-              </span>
-            </div>
-            <div className="flex flex-col gap-3">
-              {column.entries.map(({ order, details }) => (
-                <Card key={`${order.id}-${column.key}`} size="sm">
-                  <CardHeader>
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <CardTitle>#{order.num}</CardTitle>
-                        <Badge variant="outline">
-                          {statusLabel(order.status)}
-                        </Badge>
-                      </div>
-                      {column.key !== OrderDetailStatus.READY && (
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="outline"
-                          onClick={() =>
-                            handleAdvanceOrderDetails(order.id, column.key)
-                          }
-                        >
-                          {column.key === OrderDetailStatus.PENDING
-                            ? "Iniciar"
-                            : "Listo"}
-                        </Button>
-                      )}
-                    </div>
-                    <CardDescription>
-                      {orderTableLabel(order)} · {formatTime(order.createdAt)} ·
-                      {" "}
-                      {order.user.person.firstName} {order.user.person.lastName}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex flex-col gap-3">
-                    {details.map((detail) => (
-                      <div key={detail.id} className="flex flex-col gap-1">
-                        <div className="group flex items-start justify-between gap-3 text-sm">
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={`mt-1 size-2.5 shrink-0 rounded-full ${detailStatusDotClass(
-                                detail.status,
-                              )}`}
-                            />
-                            <div>
-                              <div className="font-medium">
-                                {detail.quantity}x {detail.product.name}
-                              </div>
-                            </div>
-                          </div>
-                          {detail.status !== OrderDetailStatus.READY && (
-                            <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-xs"
-                                aria-label="Sumar listo"
-                                onClick={() =>
-                                  handleIncrementReady(order.id, detail.id)
-                                }
-                              >
-                                <Plus />
-                              </Button>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-xs"
-                                aria-label="Ajustar listo"
-                                onClick={() =>
-                                  NiceModal.show(EditReadyQuantityModal, {
-                                    detail,
-                                    onIncrement: () =>
-                                      handleIncrementReady(order.id, detail.id),
-                                    onDecrement: () =>
-                                      handleDecrementReady(order.id, detail.id),
-                                  })
-                                }
-                              >
-                                <Sliders />
-                              </Button>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-xs"
-                                aria-label={
-                                  detail.status === OrderDetailStatus.PENDING
-                                    ? "Marcar como preparando"
-                                    : "Marcar como listo"
-                                }
-                                onClick={() =>
-                                  handleAdvanceDetail(order.id, detail.id)
-                                }
-                              >
-                                <ArrowRight />
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                        {detail.quantity > 1 && detail.readyQuantity > 0 && (
-                          <div className="flex flex-col gap-1">
-                            <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-                              <span>Listo</span>
-                              <span>
-                                {detail.readyQuantity}/{detail.quantity}
-                              </span>
-                            </div>
-                            <Progress
-                              value={progressValue(detail)}
-                              className="h-1"
-                            />
-                          </div>
-                        )}
-                        <div className="text-xs text-muted-foreground">
-                          Creado: {formatDetailTime(detail.createdAt)} ·{" "}
-                          Actualizado: {formatDetailTime(detail.updatedAt)}
-                        </div>
-                        {detail.description && (
-                          <span className="text-xs text-muted-foreground">
-                            Nota: {detail.description}
-                          </span>
-                        )}
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
+            <TabsList>
+              <TabsTrigger value="board">Pedidos</TabsTrigger>
+              <TabsTrigger value="product">Productos</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <Select value={selectedAreaId} onValueChange={setSelectedAreaId}>
+            <SelectTrigger className="min-w-[200px]">
+              <SelectValue placeholder="Selecciona un area" />
+            </SelectTrigger>
+            <SelectContent>
+              {productionAreas.map((area) => (
+                <SelectItem key={area.id} value={area.id.toString()}>
+                  {area.name}
+                </SelectItem>
               ))}
-            </div>
-          </section>
-        ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
+      {viewMode === "board" ? (
+        <ProductionOrdersBoardView
+          grouped={grouped}
+          onAdvanceOrderDetails={handleAdvanceOrderDetails}
+          onAdvanceDetail={handleAdvanceDetail}
+          onIncrementReady={handleIncrementReady}
+          onDecrementReady={handleDecrementReady}
+          editReadyQuantityModal={EditReadyQuantityModal}
+        />
+      ) : (
+        <ProductionProductsBoardView
+          productGroups={productGroups}
+          onAdvanceDetail={handleAdvanceDetail}
+          onIncrementReady={handleIncrementReady}
+          onDecrementReady={handleDecrementReady}
+          editReadyQuantityModal={EditReadyQuantityModal}
+        />
+      )}
     </div>
   );
 };
