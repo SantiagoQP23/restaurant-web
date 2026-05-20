@@ -4,28 +4,35 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldSeparator,
 } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
 import { useNavigate } from "@tanstack/react-router";
+import { useForm } from "react-hook-form";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
   const navigate = useNavigate();
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Handle form submission logic here
-    navigate({ to: "/app/orders" });
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<{ username: string; password: string }>({
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+  });
 
   return (
     <form
       className={cn("flex flex-col gap-6", className)}
       {...props}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit(() => {
+        navigate({ to: "/app/orders" });
+      })}
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
@@ -40,8 +47,14 @@ export function LoginForm({
             id="username"
             type="username"
             placeholder="m@example.com"
-            required
+            aria-invalid={Boolean(errors.username)}
+            {...register("username", {
+              required: "El nombre de usuario es obligatorio.",
+            })}
           />
+          {errors.username?.message && (
+            <FieldDescription>{errors.username.message}</FieldDescription>
+          )}
         </Field>
         <Field>
           <div className="flex items-center">
@@ -53,10 +66,26 @@ export function LoginForm({
               Olvidé mi contraseña
             </a>
           </div>
-          <Input id="password" type="password" required />
+          <Input
+            id="password"
+            type="password"
+            aria-invalid={Boolean(errors.password)}
+            {...register("password", {
+              required: "La contraseña es obligatoria.",
+              minLength: {
+                value: 8,
+                message: "La contraseña debe tener al menos 8 caracteres.",
+              },
+            })}
+          />
+          {errors.password?.message && (
+            <FieldDescription>{errors.password.message}</FieldDescription>
+          )}
         </Field>
         <Field>
-          <Button type="submit">Login</Button>
+          <Button type="submit" disabled={isSubmitting}>
+            Login
+          </Button>
         </Field>
         {/* <FieldSeparator>Or continue with</FieldSeparator> */}
         <Field>
@@ -71,7 +100,14 @@ export function LoginForm({
           {/* </Button> */}
           <FieldDescription className="text-center">
             No tienes una cuenta?{" "}
-            <a href="#" className="underline underline-offset-4">
+            <a
+              href="#"
+              className="underline underline-offset-4"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate({ to: "/auth/signup" });
+              }}
+            >
               Regístrate
             </a>
           </FieldDescription>
