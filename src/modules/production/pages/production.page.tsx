@@ -34,6 +34,8 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import { ProductionOrdersBoardView } from "./production-orders-board.view";
 import { ProductionProductsBoardView } from "./production-products-board.view";
+import { useActiveOrders } from "@/modules/orders/hooks/useActiveOrders";
+import { useOrdersStore } from "@/modules/orders/store/orders.store";
 
 const boardColumns = [
   {
@@ -54,7 +56,7 @@ const boardColumns = [
 ] as const;
 
 const mockProductionArea: ProductionArea = {
-  id: 1,
+  id: 10,
   name: "Cocina",
   description: "Preparacion principal",
   isActive: true,
@@ -65,7 +67,7 @@ const mockProductionArea: ProductionArea = {
 const productionAreas: ProductionArea[] = [
   mockProductionArea,
   {
-    id: 2,
+    id: 11,
     name: "Bar",
     description: "Bebidas y cocteles",
     isActive: true,
@@ -374,7 +376,6 @@ const initialOrders: Order[] = [
   },
 ];
 
-
 const progressValueFrom = (readyQuantity: number, quantity: number) => {
   if (quantity <= 0) {
     return 0;
@@ -520,117 +521,116 @@ const EditReadyQuantityModal = NiceModal.create(
 );
 
 export const ProductionPage = () => {
-  const [orders, setOrders] = React.useState<Order[]>(initialOrders);
+  // const [orders, setOrders] = React.useState<Order[]>(initialOrders);
+  const orders = useOrdersStore((state) => state.orders);
   const [selectedAreaId, setSelectedAreaId] = React.useState(
     productionAreas[0]?.id.toString() ?? "",
   );
-  const [viewMode, setViewMode] = React.useState<"board" | "product">(
-    "board",
-  );
+  const [viewMode, setViewMode] = React.useState<"board" | "product">("board");
 
   const handleAdvanceDetail = (orderId: string, detailId: string) => {
-    setOrders((current) =>
-      current.map((order) => {
-        if (order.id !== orderId) {
-          return order;
-        }
-        return {
-          ...order,
-          details: order.details.map((detail) =>
-            detail.id === detailId
-              ? {
-                  ...detail,
-                  status: nextDetailStatus(detail.status),
-                  readyQuantity: nextReadyQuantity(
-                    detail,
-                    nextDetailStatus(detail.status),
-                  ),
-                  updatedAt: new Date().toISOString(),
-                }
-              : detail,
-          ),
-        };
-      }),
-    );
+    // setOrders((current) =>
+    //   current.map((order) => {
+    //     if (order.id !== orderId) {
+    //       return order;
+    //     }
+    //     return {
+    //       ...order,
+    //       details: order.details.map((detail) =>
+    //         detail.id === detailId
+    //           ? {
+    //               ...detail,
+    //               status: nextDetailStatus(detail.status),
+    //               readyQuantity: nextReadyQuantity(
+    //                 detail,
+    //                 nextDetailStatus(detail.status),
+    //               ),
+    //               updatedAt: new Date().toISOString(),
+    //             }
+    //           : detail,
+    //       ),
+    //     };
+    //   }),
+    // );
   };
 
   const handleAdvanceOrderDetails = (
     orderId: string,
     status: OrderDetailStatus,
   ) => {
-    const productionAreaId = Number.parseInt(selectedAreaId, 10);
-    setOrders((current) =>
-      current.map((order) => {
-        if (order.id !== orderId) {
-          return order;
-        }
-        return {
-          ...order,
-          details: order.details.map((detail) => {
-            if (
-              detail.status !== status ||
-              detail.product.productionArea.id !== productionAreaId
-            ) {
-              return detail;
-            }
-            const nextStatus = nextDetailStatus(detail.status);
-            return {
-              ...detail,
-              status: nextStatus,
-              readyQuantity: nextReadyQuantity(detail, nextStatus),
-              updatedAt: new Date().toISOString(),
-            };
-          }),
-        };
-      }),
-    );
+    // const productionAreaId = Number.parseInt(selectedAreaId, 10);
+    // setOrders((current) =>
+    //   current.map((order) => {
+    //     if (order.id !== orderId) {
+    //       return order;
+    //     }
+    //     return {
+    //       ...order,
+    //       details: order.details.map((detail) => {
+    //         if (
+    //           detail.status !== status ||
+    //           detail.product.productionArea.id !== productionAreaId
+    //         ) {
+    //           return detail;
+    //         }
+    //         const nextStatus = nextDetailStatus(detail.status);
+    //         return {
+    //           ...detail,
+    //           status: nextStatus,
+    //           readyQuantity: nextReadyQuantity(detail, nextStatus),
+    //           updatedAt: new Date().toISOString(),
+    //         };
+    //       }),
+    //     };
+    //   }),
+    // );
   };
 
   const handleIncrementReady = (orderId: string, detailId: string) => {
-    setOrders((current) =>
-      current.map((order) => {
-        if (order.id !== orderId) {
-          return order;
-        }
-        return {
-          ...order,
-          details: order.details.map((detail) =>
-            detail.id === detailId
-              ? {
-                  ...detail,
-                  readyQuantity: Math.min(
-                    detail.quantity,
-                    detail.readyQuantity + 1,
-                  ),
-                  updatedAt: new Date().toISOString(),
-                }
-              : detail,
-          ),
-        };
-      }),
-    );
+    // setOrders((current) =>
+    //   current.map((order) => {
+    //     if (order.id !== orderId) {
+    //       return order;
+    //     }
+    //     return {
+    //       ...order,
+    //       details: order.details.map((detail) =>
+    //         detail.id === detailId
+    //           ? {
+    //               ...detail,
+    //               readyQuantity: Math.min(
+    //                 detail.quantity,
+    //                 detail.readyQuantity + 1,
+    //               ),
+    //               updatedAt: new Date().toISOString(),
+    //             }
+    //           : detail,
+    //       ),
+    //     };
+    //   }),
+    // );
   };
 
   const handleDecrementReady = (orderId: string, detailId: string) => {
-    setOrders((current) =>
-      current.map((order) => {
-        if (order.id !== orderId) {
-          return order;
-        }
-        return {
-          ...order,
-          details: order.details.map((detail) =>
-            detail.id === detailId
-              ? {
-                  ...detail,
-                  readyQuantity: Math.max(0, detail.readyQuantity - 1),
-                  updatedAt: new Date().toISOString(),
-                }
-              : detail,
-          ),
-        };
-      }),
-    );
+    // setOrders((current) =>
+    //   current.map((order) => {
+    //     if (order.id !== orderId) {
+    //       return order;
+    //     }
+    //     return {
+    //       ...order,
+    //       details: order.details.map((detail) =>
+    //         detail.id === detailId
+    //           ? {
+    //               ...detail,
+    //               readyQuantity: Math.max(0, detail.readyQuantity - 1),
+    //               updatedAt: new Date().toISOString(),
+    //             }
+    //           : detail,
+    //       ),
+    //     };
+    //   }),
+    // );
   };
 
   const grouped = React.useMemo(
@@ -712,9 +712,7 @@ export const ProductionPage = () => {
         <div className="flex flex-wrap items-center gap-2">
           <Tabs
             value={viewMode}
-            onValueChange={(value) =>
-              setViewMode(value as "board" | "product")
-            }
+            onValueChange={(value) => setViewMode(value as "board" | "product")}
           >
             <TabsList>
               <TabsTrigger value="board">Pedidos</TabsTrigger>

@@ -488,7 +488,7 @@ export const OrdersPage = () => {
                       </span>
                     </div>
                     <div className="mt-2 text-xs text-muted-foreground">
-                      {formatTime(order.createdAt)}
+                      {/* {formatTime(order.createdAt)} */}
                     </div>
                   </CardContent>
                 </button>
@@ -508,7 +508,7 @@ export const OrdersPage = () => {
                 </div>
                 <CardDescription>
                   {orderTableLabel(selectedOrder)} ·{" "}
-                  {formatTime(selectedOrder.createdAt)}
+                  {/* {formatTime(selectedOrder.createdAt)} */}
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col gap-4">

@@ -50,8 +50,8 @@ export enum OrderStatusSpanish {
  */
 export interface Order {
   notes: string;
-  deliveryTime: Date;
-  createdAt: Date;
+  deliveryTime: string;
+  createdAt: string;
   details: OrderDetail[];
   id: string;
   isPaid: boolean;
@@ -61,7 +61,7 @@ export interface Order {
   table?: Table;
   total: number;
   type: OrderType;
-  updatedAt: Date;
+  updatedAt: string;
   user: User;
   isClosed: boolean;
   // bills: Bill[];

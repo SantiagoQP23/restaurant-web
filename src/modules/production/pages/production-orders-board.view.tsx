@@ -16,10 +16,11 @@ import { Progress } from "@/shared/components/ui/progress";
 import {
   detailStatusDotClass,
   formatTime,
-  orderTableLabel,
   progressValue,
   statusLabel,
 } from "./production.views.helpers";
+import { orderTableLabel } from "@/modules/orders/helpers/orders.helper";
+import { formatStringDate } from "@/shared/lib/utils";
 
 type BoardColumn = {
   key: OrderDetailStatus;
@@ -76,7 +77,9 @@ export const ProductionOrdersBoardView = ({
                       type="button"
                       size="sm"
                       variant="outline"
-                      onClick={() => onAdvanceOrderDetails(order.id, column.key)}
+                      onClick={() =>
+                        onAdvanceOrderDetails(order.id, column.key)
+                      }
                     >
                       {column.key === OrderDetailStatus.PENDING
                         ? "Iniciar"
@@ -85,7 +88,7 @@ export const ProductionOrdersBoardView = ({
                   )}
                 </div>
                 <CardDescription>
-                  #{order.num} · {formatTime(order.createdAt)} ·{" "}
+                  #{order.num} · {formatStringDate(order.createdAt, "HH:mm")} ·{" "}
                   {order.user.person.firstName} {order.user.person.lastName}
                 </CardDescription>
               </CardHeader>
@@ -112,7 +115,9 @@ export const ProductionOrdersBoardView = ({
                             variant="ghost"
                             size="icon-xs"
                             aria-label="Sumar listo"
-                            onClick={() => onIncrementReady(order.id, detail.id)}
+                            onClick={() =>
+                              onIncrementReady(order.id, detail.id)
+                            }
                           >
                             <Plus />
                           </Button>
@@ -157,7 +162,10 @@ export const ProductionOrdersBoardView = ({
                             {detail.readyQuantity}/{detail.quantity}
                           </span>
                         </div>
-                        <Progress value={progressValue(detail)} className="h-1" />
+                        <Progress
+                          value={progressValue(detail)}
+                          className="h-1"
+                        />
                       </div>
                     )}
                     {detail.description && (

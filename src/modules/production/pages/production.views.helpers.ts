@@ -12,9 +12,6 @@ export const formatTime = (date: Date) =>
     minute: "2-digit",
   });
 
-export const orderTableLabel = (order: Order) =>
-  order.table?.name ?? "Para llevar";
-
 export const statusLabel = (status: OrderStatus) => {
   switch (status) {
     case OrderStatus.PENDING:

@@ -17,9 +17,10 @@ import { Progress } from "@/shared/components/ui/progress";
 import {
   detailStatusDotClass,
   formatTime,
-  orderTableLabel,
   progressValue,
 } from "./production.views.helpers";
+import { orderTableLabel } from "@/modules/orders/helpers/orders.helper";
+import { formatStringDate } from "@/shared/lib/utils";
 
 type ProductColumn = {
   key: OrderDetailStatus;
@@ -73,7 +74,7 @@ export const ProductionProductsBoardView = ({
                   <div>
                     <CardTitle>{productEntry.product.name}</CardTitle>
                     <CardDescription>
-                      Total: {productEntry.totalQuantity} · Listo: {" "}
+                      Total: {productEntry.totalQuantity} · Listo:{" "}
                       {productEntry.totalReady}
                     </CardDescription>
                   </div>
@@ -99,8 +100,10 @@ export const ProductionProductsBoardView = ({
                             {detail.quantity}x · {orderTableLabel(order)}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            #{order.num} · {formatTime(order.createdAt)} ·{" "}
-                            {order.user.person.firstName} {order.user.person.lastName}
+                            #{order.num} ·{" "}
+                            {formatStringDate(order.createdAt, "HH:mm")} ·{" "}
+                            {order.user.person.firstName}{" "}
+                            {order.user.person.lastName}
                           </div>
                         </div>
                       </div>
@@ -111,7 +114,9 @@ export const ProductionProductsBoardView = ({
                             variant="ghost"
                             size="icon-xs"
                             aria-label="Sumar listo"
-                            onClick={() => onIncrementReady(order.id, detail.id)}
+                            onClick={() =>
+                              onIncrementReady(order.id, detail.id)
+                            }
                           >
                             <Plus />
                           </Button>
@@ -156,7 +161,10 @@ export const ProductionProductsBoardView = ({
                             {detail.readyQuantity}/{detail.quantity}
                           </span>
                         </div>
-                        <Progress value={progressValue(detail)} className="h-1" />
+                        <Progress
+                          value={progressValue(detail)}
+                          className="h-1"
+                        />
                       </div>
                     )}
                     {detail.description && (
