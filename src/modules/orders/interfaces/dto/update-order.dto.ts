@@ -26,6 +26,7 @@ export interface UpdateOrderDetailDto {
   typeOrderDetail?: OrderType;
   tagIds?: string[];
   status?: OrderDetailStatus;
+  readyQuantity?: number;
 }
 
 export interface AddOrderDetailToOrderDto {

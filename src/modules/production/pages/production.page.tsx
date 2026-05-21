@@ -32,8 +32,8 @@ import {
   SelectValue,
 } from "@/shared/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
-import { ProductionOrdersBoardView } from "./production-orders-board.view";
-import { ProductionProductsBoardView } from "./production-products-board.view";
+import { ProductionOrdersBoardView } from "../views/production-orders-board.view";
+import { ProductionProductsBoardView } from "../views/production-products-board.view";
 import { useActiveOrders } from "@/modules/orders/hooks/useActiveOrders";
 import { useOrdersStore } from "@/modules/orders/store/orders.store";
 
@@ -238,152 +238,6 @@ const buildDetail = (
   };
 };
 
-const initialOrders: Order[] = [
-  {
-    id: "ord-201",
-    num: 201,
-    notes: "Sin hielo en la bebida",
-    deliveryTime: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    details: [
-      buildDetail(
-        "det-21",
-        mockProducts.ceviche,
-        2,
-        OrderDetailStatus.PENDING,
-        "",
-        1,
-      ),
-      buildDetail(
-        "det-22",
-        mockProducts.sopa,
-        2,
-        OrderDetailStatus.IN_PROGRESS,
-        "",
-        1,
-      ),
-      buildDetail(
-        "det-23",
-        mockProducts.limonada,
-        1,
-        OrderDetailStatus.READY,
-        "Sin hielo",
-      ),
-    ],
-    isPaid: false,
-    people: 2,
-    status: OrderStatus.IN_PROGRESS,
-    table: tables[0],
-    total: 24.5,
-    type: OrderType.IN_PLACE,
-    user: mockUser,
-    isClosed: false,
-  },
-  {
-    id: "ord-202",
-    num: 202,
-    notes: "",
-    deliveryTime: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    details: [
-      buildDetail(
-        "det-24",
-        mockProducts.lomo,
-        3,
-        OrderDetailStatus.IN_PROGRESS,
-        "",
-        2,
-      ),
-      buildDetail(
-        "det-25",
-        mockProducts.limonada,
-        2,
-        OrderDetailStatus.PENDING,
-        "",
-        1,
-      ),
-    ],
-    isPaid: false,
-    people: 3,
-    status: OrderStatus.IN_PROGRESS,
-    table: tables[1],
-    total: 18,
-    type: OrderType.IN_PLACE,
-    user: mockUser,
-    isClosed: false,
-  },
-  {
-    id: "ord-203",
-    num: 203,
-    notes: "",
-    deliveryTime: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    details: [
-      buildDetail(
-        "det-26",
-        mockProducts.sopa,
-        2,
-        OrderDetailStatus.READY,
-        "",
-        2,
-      ),
-      buildDetail("det-27", mockProducts.te, 2, OrderDetailStatus.READY, "", 1),
-    ],
-    isPaid: true,
-    people: 1,
-    status: OrderStatus.READY,
-    total: 10.5,
-    type: OrderType.TAKE_AWAY,
-    user: mockUser,
-    isClosed: false,
-  },
-  {
-    id: "ord-204",
-    num: 204,
-    notes: "",
-    deliveryTime: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    details: [
-      buildDetail(
-        "det-28",
-        mockProducts.ensalada,
-        3,
-        OrderDetailStatus.PENDING,
-        "",
-        1,
-      ),
-      buildDetail(
-        "det-29",
-        mockProducts.te,
-        2,
-        OrderDetailStatus.IN_PROGRESS,
-        "",
-        1,
-      ),
-    ],
-    isPaid: false,
-    people: 4,
-    status: OrderStatus.PENDING,
-    table: tables[2],
-    total: 14,
-    type: OrderType.IN_PLACE,
-    user: mockUser,
-    isClosed: false,
-  },
-];
-
-const progressValueFrom = (readyQuantity: number, quantity: number) => {
-  if (quantity <= 0) {
-    return 0;
-  }
-  const percent = (readyQuantity / quantity) * 100;
-  return Math.max(0, Math.min(100, percent));
-};
-
 const nextDetailStatus = (status: OrderDetailStatus) => {
   switch (status) {
     case OrderDetailStatus.PENDING:
@@ -423,102 +277,6 @@ const detailsByStatus = (
       ),
     }))
     .filter((entry) => entry.details.length > 0);
-
-const EditReadyQuantityModal = NiceModal.create(
-  ({
-    detail,
-    onIncrement,
-    onDecrement,
-  }: {
-    detail: OrderDetail;
-    onIncrement: () => void;
-    onDecrement: () => void;
-  }) => {
-    const modal = useModal();
-    const [readyQuantity, setReadyQuantity] = React.useState(
-      detail.readyQuantity,
-    );
-
-    const handleIncrement = () => {
-      if (readyQuantity >= detail.quantity) {
-        return;
-      }
-      setReadyQuantity((current) => current + 1);
-      onIncrement();
-    };
-
-    const handleDecrement = () => {
-      if (readyQuantity <= 0) {
-        return;
-      }
-      setReadyQuantity((current) => current - 1);
-      onDecrement();
-    };
-
-    return (
-      <Dialog
-        open={modal.visible}
-        onOpenChange={(open) => {
-          if (!open) {
-            modal.hide();
-          }
-        }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{detail.product.name}</DialogTitle>
-            <DialogDescription>
-              Ajusta la cantidad lista para este producto.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>Listo</span>
-              <span>
-                {readyQuantity}/{detail.quantity}
-              </span>
-            </div>
-            <Progress
-              value={progressValueFrom(readyQuantity, detail.quantity)}
-            />
-            <div className="flex items-center justify-between gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={handleDecrement}
-                disabled={readyQuantity <= 0}
-                aria-label="Restar listo"
-              >
-                <Minus />
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={handleIncrement}
-                disabled={readyQuantity >= detail.quantity}
-                aria-label="Sumar listo"
-              >
-                <Plus />
-              </Button>
-            </div>
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" variant="outline">
-                Cancelar
-              </Button>
-            </DialogClose>
-            <Button type="button" onClick={() => modal.hide()}>
-              Guardar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    );
-  },
-);
 
 export const ProductionPage = () => {
   // const [orders, setOrders] = React.useState<Order[]>(initialOrders);
@@ -740,7 +498,6 @@ export const ProductionPage = () => {
           onAdvanceDetail={handleAdvanceDetail}
           onIncrementReady={handleIncrementReady}
           onDecrementReady={handleDecrementReady}
-          editReadyQuantityModal={EditReadyQuantityModal}
         />
       ) : (
         <ProductionProductsBoardView
@@ -748,7 +505,6 @@ export const ProductionPage = () => {
           onAdvanceDetail={handleAdvanceDetail}
           onIncrementReady={handleIncrementReady}
           onDecrementReady={handleDecrementReady}
-          editReadyQuantityModal={EditReadyQuantityModal}
         />
       )}
     </div>
