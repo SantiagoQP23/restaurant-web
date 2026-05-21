@@ -24,6 +24,11 @@ import {
   SidebarTrigger,
 } from "@/shared/components/ui/sidebar";
 import { useActiveOrders } from "@/modules/orders/hooks/useActiveOrders";
+import {
+  useOrderCreatedListener,
+  useOrderDeletedListener,
+  useOrderUpdatedListener,
+} from "@/modules/orders/hooks/useOrders";
 
 const navigation = [
   { label: "Inicio", icon: Home, to: "/app" },
@@ -42,6 +47,10 @@ export const AppLayout = () => {
   });
 
   useActiveOrders();
+
+  useOrderCreatedListener();
+  useOrderUpdatedListener();
+  useOrderDeletedListener();
 
   return (
     <SidebarProvider>

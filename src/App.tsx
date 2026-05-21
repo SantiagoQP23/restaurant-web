@@ -8,9 +8,10 @@ import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { Toaster } from "sonner";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./app/api/query-client";
+import { SocketProvider } from "./shared/context/SocketContext";
 
 export function App() {
-  const { status, checkStatus, user } = useAuthStore();
+  const { status, checkStatus } = useAuthStore();
 
   useEffect(() => {
     checkStatus();
@@ -26,13 +27,15 @@ export function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <NiceModal.Provider>
-          <Outlet />
-          <TanStackRouterDevtools />
-        </NiceModal.Provider>
-        <Toaster position="top-center" />
-      </TooltipProvider>
+      <SocketProvider>
+        <TooltipProvider>
+          <NiceModal.Provider>
+            <Outlet />
+            <TanStackRouterDevtools />
+          </NiceModal.Provider>
+          <Toaster position="top-center" />
+        </TooltipProvider>
+      </SocketProvider>
     </QueryClientProvider>
   );
 }

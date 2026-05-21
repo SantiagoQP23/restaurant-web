@@ -1,37 +1,34 @@
-import { CreateOrderDto } from "@/core/orders/dto/create-order.dto";
-import { OrderSocketEvent } from "@/core/orders/enums/socket-events.enum";
-import { Order } from "@/core/orders/models/order.model";
-import { useWebsocketEventEmitter } from "@/presentation/shared/hooks/useWebsocketEventEmitter";
-import { router } from "expo-router";
-import { Alert } from "react-native";
-import { mapStoreToCreateOrderDto } from "../mappers/createOrder.mapper";
-import { useNewOrderStore } from "../store/newOrderStore";
-import { useOrdersStore } from "../store/useOrdersStore";
-import {
-  AddOrderDetailToOrderDto,
-  DeleteOrderDetailDto,
-  UpdateMultipleOrderDetailsStatusDto,
+// import { CreateOrderDto } from "@/core/orders/dto/create-order.dto";
+
+import { useOrdersStore } from "../store/orders.store";
+import type { Order } from "@/shared/models/order.model";
+import { toast } from "sonner";
+import { useWebsocketEventEmitter } from "@/shared/hooks/useWebsocketEventEmmitter";
+import type { SocketEvent } from "@/shared/interfaces/dto/socket.dto";
+
+import type {
   UpdateOrderDetailDto,
   UpdateOrderDto,
-} from "@/core/orders/dto/update-order.dto";
-import { SocketEvent } from "@/core/common/dto/socket.dto";
-import { useWebsocketEventListener } from "@/presentation/shared/hooks/useWebsocketEventListener";
+  UpdateMultipleOrderDetailsStatusDto,
+  DeleteOrderDetailDto,
+  AddOrderDetailToOrderDto,
+} from "../interfaces/dto/update-order.dto";
+import { OrderSocketEvent } from "../enums/order-socket-event.enum";
+import { useWebsocketEventListener } from "@/shared/hooks/useWebsocketEventListener";
 
 export const useOrders = () => {
   console.log("[useOrders] Hook called");
   const setActiveOrder = useOrdersStore((state) => state.setActiveOrder);
-  const createOrderEmitter = useWebsocketEventEmitter<Order, CreateOrderDto>(
-    OrderSocketEvent.createOrder,
-    {
-      onSuccess: (resp) => {
-        // Alert.alert("Success", "Order created successfully");
-        // router.replace("/(new-order)/order-confirmation", { withAnchor: true, params: { orderId: resp.id } });
-      },
-      onError: (resp) => {
-        Alert.alert("Error", resp.msg);
-      },
-    },
-  );
+  // const createOrderEmitter = useWebsocketEventEmitter<Order, CreateOrderDto>(
+  //   OrderSocketEvent.createOrder,
+  //   {
+  //     onSuccess: (resp) => {
+  //     },
+  //     onError: (resp) => {
+  //       toast.error(resp.msg);
+  //     },
+  //   },
+  // );
 
   const updateOrderEmitter = useWebsocketEventEmitter<Order, UpdateOrderDto>(
     OrderSocketEvent.updateOrder,
@@ -52,7 +49,7 @@ export const useOrders = () => {
       // Alert.alert("Success", "Order detail updated successfully");
     },
     onError: (resp) => {
-      Alert.alert("Error", resp.msg);
+      toast.error(resp.msg);
     },
   });
 
@@ -64,7 +61,7 @@ export const useOrders = () => {
       if (resp.data) setActiveOrder(resp.data!);
     },
     onError: (resp) => {
-      Alert.alert("Error", resp.msg);
+      toast.error(resp.msg);
     },
   });
 
@@ -76,7 +73,7 @@ export const useOrders = () => {
       if (resp.data) setActiveOrder(resp.data!);
     },
     onError: (resp) => {
-      Alert.alert("Error", resp.msg);
+      toast.error(resp.msg);
     },
   });
 
@@ -85,7 +82,7 @@ export const useOrders = () => {
     {
       onSuccess: (resp) => {},
       onError: (resp) => {
-        Alert.alert("Error", resp.msg);
+        toast.error(resp.msg);
       },
     },
   );
@@ -96,12 +93,12 @@ export const useOrders = () => {
   >(OrderSocketEvent.deleteOrderDetail, {
     onSuccess: (resp) => {},
     onError: (resp) => {
-      Alert.alert("Error", resp.msg);
+      toast.error(resp.msg);
     },
   });
 
   return {
-    createOrder: createOrderEmitter,
+    // createOrder: createOrderEmitter,
     updateOrderDetail: updateOrderDetailEmitter,
     addOrderDetailToOrder: useOrderDetailToOrderEmitter,
     updateOrder: updateOrderEmitter,
