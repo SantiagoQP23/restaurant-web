@@ -49,6 +49,9 @@ export const ProductionEditOrderDetailDialog = NiceModal.create(
       setReadyQuantity(detail.readyQuantity);
     }, [detail, setReadyQuantity]);
 
+    const showProductOptionName =
+      detail.product.options.length > 1 && detail.productOption;
+
     return (
       <Dialog
         open={modal.visible}
@@ -60,7 +63,11 @@ export const ProductionEditOrderDetailDialog = NiceModal.create(
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{detail.product.name}</DialogTitle>
+            <DialogTitle>
+              {detail.product.name}
+
+              {showProductOptionName && ` ${detail.productOption!.name}`}
+            </DialogTitle>
             <DialogDescription>
               Ajusta la cantidad lista para este producto.
             </DialogDescription>
