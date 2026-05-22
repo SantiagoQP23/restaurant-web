@@ -31,3 +31,14 @@ export const progressValueFrom = (readyQuantity: number, quantity: number) => {
   const percent = (readyQuantity / quantity) * 100;
   return Math.max(0, Math.min(100, percent));
 };
+
+export const nextDetailStatus = (status: OrderDetailStatus) => {
+  switch (status) {
+    case OrderDetailStatus.PENDING:
+      return OrderDetailStatus.IN_PROGRESS;
+    case OrderDetailStatus.IN_PROGRESS:
+      return OrderDetailStatus.READY;
+    default:
+      return status;
+  }
+};

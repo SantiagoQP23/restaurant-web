@@ -18,6 +18,14 @@ export const rootRoute = createRootRoute({
   component: App,
 });
 
+const indexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/",
+  beforeLoad: async (route) => {
+    throw redirect({ to: "/app/orders" });
+  },
+});
+
 export const appRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "app",
@@ -31,6 +39,7 @@ export const appRoute = createRoute({
 });
 
 appRoute.addChildren([
+  indexRoute,
   ordersRoute,
   productionRoute,
   settingsRoute,

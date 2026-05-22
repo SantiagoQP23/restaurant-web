@@ -36,16 +36,10 @@ type ProductColumn = {
 
 type ProductionProductsBoardViewProps = {
   productGroups: ProductColumn[];
-  onAdvanceDetail: (orderId: string, detailId: string) => void;
-  onIncrementReady: (orderId: string, detailId: string) => void;
-  onDecrementReady: (orderId: string, detailId: string) => void;
 };
 
 export const ProductionProductsBoardView = ({
   productGroups,
-  onAdvanceDetail,
-  onIncrementReady,
-  onDecrementReady,
 }: ProductionProductsBoardViewProps) => (
   <div className="grid gap-4 lg:grid-cols-3">
     {productGroups.map((column) => (
@@ -112,8 +106,9 @@ export const ProductionProductsBoardView = ({
                             variant="ghost"
                             size="icon-xs"
                             aria-label="Sumar listo"
-                            onClick={() =>
-                              onIncrementReady(order.id, detail.id)
+                            onClick={
+                              () => {}
+                              // onIncrementReady(order.id, detail.id)
                             }
                           >
                             <Plus />
@@ -145,7 +140,6 @@ export const ProductionProductsBoardView = ({
                                 ? "Marcar como preparando"
                                 : "Marcar como listo"
                             }
-                            onClick={() => onAdvanceDetail(order.id, detail.id)}
                           >
                             <ArrowRight />
                           </Button>

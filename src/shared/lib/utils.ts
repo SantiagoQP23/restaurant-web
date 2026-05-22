@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -24,4 +24,19 @@ export function formatStringDate(
   if (!date.isValid()) return "Invalid date";
 
   return date.format(format);
+}
+
+export function formatMinutesFromNow(date: string | Date, currentTime: number) {
+  const now = dayjs(currentTime);
+  const target = dayjs(date);
+
+  const diffMinutes = target.diff(now, "minute");
+
+  if (diffMinutes > 0) {
+    return `en ${diffMinutes} minuto${diffMinutes === 1 ? "" : "s"}`;
+  }
+
+  const pastMinutes = Math.abs(diffMinutes);
+
+  return `hace ${pastMinutes} minuto${pastMinutes === 1 ? "" : "s"}`;
 }
