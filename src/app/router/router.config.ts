@@ -5,9 +5,25 @@ import {
   redirect,
 } from "@tanstack/react-router";
 import App from "../../App";
-import { authRoute } from "@/modules/auth/router/auth.router";
+import {
+  authRoute,
+  loginRoute,
+  signupRoute,
+} from "@/modules/auth/router/auth.router";
 import { productionRoute } from "@/modules/production/router/production.router";
-import { setupRoute } from "@/modules/setup/router/setup.router";
+import {
+  accountsRoute,
+  completeRoute,
+  joinRestaurantRoute,
+  menuRoute,
+  paymentMethodsRoute,
+  productionAreasRoute,
+  productsRoute,
+  restaurantRoute,
+  setupRoute,
+  staffRoute,
+  welcomeRoute,
+} from "@/modules/setup/router/setup.router";
 import { ordersRoute } from "@/modules/orders/router/orders.router";
 import { settingsRoute } from "@/modules/settings/router/settings.router";
 import { tablesRoute } from "@/modules/tables/router/tables.router";
@@ -21,7 +37,7 @@ export const rootRoute = createRootRoute({
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
-  beforeLoad: async (route) => {
+  beforeLoad: async () => {
     throw redirect({ to: "/app/orders" });
   },
 });
@@ -30,7 +46,7 @@ export const appRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "app",
   component: AppLayout,
-  beforeLoad: async (route) => {
+  beforeLoad: async () => {
     const status = useAuthStore.getState().status;
     if (status === "unauthenticated") {
       throw redirect({ to: "/auth/login" });
@@ -38,20 +54,35 @@ export const appRoute = createRoute({
   },
 });
 
-appRoute.addChildren([
+const routeTree = rootRoute.addChildren([
   indexRoute,
-  ordersRoute,
-  productionRoute,
-  settingsRoute,
-  tablesRoute,
+  authRoute.addChildren([loginRoute, signupRoute]),
+  setupRoute.addChildren([
+    welcomeRoute,
+    restaurantRoute,
+    joinRestaurantRoute,
+    productionAreasRoute,
+    menuRoute,
+    productsRoute,
+    tablesRoute,
+    accountsRoute,
+    paymentMethodsRoute,
+    staffRoute,
+    completeRoute,
+  ]),
+  setupRoute,
+  appRoute.addChildren([
+    ordersRoute,
+    productionRoute,
+    settingsRoute,
+    tablesRoute,
+  ]),
 ]);
-
-const routeTree = rootRoute.addChildren([authRoute, setupRoute, appRoute]);
 
 export const router = createRouter({ routeTree });
 
-declare module "@tanstack/react-router" {
-  interface Register {
-    router: typeof router;
-  }
-}
+// declare module "@tanstack/react-router" {
+//   interface Register {
+//     router: typeof router;
+//   }
+// }

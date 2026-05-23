@@ -17,12 +17,6 @@ import {
   AlertDialogTrigger,
 } from "@/shared/components/ui/alert-dialog";
 import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/shared/components/ui/card";
-import {
   Dialog,
   DialogClose,
   DialogContent,

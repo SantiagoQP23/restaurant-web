@@ -324,10 +324,7 @@ export const TablesPage = () => {
   const [quantity, setQuantity] = React.useState("10");
   const [tables, setTables] = React.useState<Table[]>([]);
 
-  const handleSubmit = (
-    event: React.FormEvent<HTMLFormElement>,
-    options?: { closeDialog?: boolean },
-  ) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const parsedQuantity = Number.parseInt(quantity, 10);
     if (!Number.isFinite(parsedQuantity) || parsedQuantity <= 0) {

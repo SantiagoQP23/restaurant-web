@@ -1,4 +1,3 @@
-import { NotebookIcon } from "lucide-react";
 import { LoginForm } from "../components/login-form.component";
 
 export const LoginPage = () => {

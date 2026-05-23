@@ -1,4 +1,4 @@
-import type { Role } from "./role.model";
+import type { RestaurantRole, Role } from "./role.model";
 
 export enum TypeIdentification {
   CEDULA = "CEDULA",

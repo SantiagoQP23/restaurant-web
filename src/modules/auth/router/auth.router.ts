@@ -7,7 +7,7 @@ import { useAuthStore } from "@/modules/auth/store/auth.store";
 export const authRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "auth",
-  beforeLoad: async (route) => {
+  beforeLoad: async () => {
     const status = useAuthStore.getState().status;
     if (status === "authenticated") {
       throw redirect({ to: "/app/orders" });
@@ -15,16 +15,14 @@ export const authRoute = createRoute({
   },
 });
 
-const loginRoute = createRoute({
+export const loginRoute = createRoute({
   getParentRoute: () => authRoute,
   path: "login",
   component: LoginPage,
 });
 
-const signupRoute = createRoute({
+export const signupRoute = createRoute({
   getParentRoute: () => authRoute,
   path: "signup",
   component: SignupPage,
 });
-
-authRoute.addChildren([loginRoute, signupRoute]);

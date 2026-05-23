@@ -1,4 +1,4 @@
-import { appRoute, rootRoute } from "@/app/router/router.config";
+import { appRoute } from "@/app/router/router.config";
 import { createRoute } from "@tanstack/react-router";
 import { ProductionPage } from "../pages/production.page";
 

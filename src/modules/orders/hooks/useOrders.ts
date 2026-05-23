@@ -36,7 +36,6 @@ export const useOrders = () => {
       onSuccess: (resp) => {
         if (resp.data) setActiveOrder(resp.data!);
       },
-      onError: (resp) => {},
     },
   );
 
@@ -80,7 +79,6 @@ export const useOrders = () => {
   const deleteOrderEmitter = useWebsocketEventEmitter<Order, string>(
     OrderSocketEvent.deleteOrder,
     {
-      onSuccess: (resp) => {},
       onError: (resp) => {
         toast.error(resp.msg);
       },
@@ -91,7 +89,6 @@ export const useOrders = () => {
     Order,
     DeleteOrderDetailDto
   >(OrderSocketEvent.deleteOrderDetail, {
-    onSuccess: (resp) => {},
     onError: (resp) => {
       toast.error(resp.msg);
     },
@@ -113,7 +110,7 @@ export const useOrderCreatedListener = () => {
   useWebsocketEventListener(
     OrderSocketEvent.newOrder,
     ({ data, msg }: SocketEvent<Order>) => {
-      // Alert.alert("info", msg);
+      toast.info(msg);
       addOrder(data);
       // dispatch(addOrder(data));
 

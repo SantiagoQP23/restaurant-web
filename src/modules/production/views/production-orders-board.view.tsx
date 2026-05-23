@@ -1,6 +1,3 @@
-import * as React from "react";
-import NiceModal from "@ebay/nice-modal-react";
-import { ArrowRight, Plus, Sliders } from "lucide-react";
 import { OrderDetailStatus, type Order } from "@/shared/models/order.model";
 import type { OrderDetail } from "@/shared/models/order-detail.model";
 import { Badge } from "@/shared/components/ui/badge";
@@ -12,19 +9,13 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
-import { Progress } from "@/shared/components/ui/progress";
-import {
-  detailStatusDotClass,
-  progressValue,
-  statusLabel,
-} from "../pages/production.views.helpers";
+import { statusLabel } from "../pages/production.views.helpers";
 import {
   nextDetailStatus,
   orderTableLabel,
 } from "@/modules/orders/helpers/orders.helper";
 import { formatMinutesFromNow, formatStringDate } from "@/shared/lib/utils";
 import { ProductionOrderDetail } from "../components/production-order-detail.component";
-import dayjs from "dayjs";
 import { useNow } from "@/shared/hooks/useNow";
 import { useOrders } from "@/modules/orders/hooks/useOrders";
 import type { UpdateMultipleOrderDetailsStatusDto } from "@/modules/orders/interfaces/dto/update-order.dto";

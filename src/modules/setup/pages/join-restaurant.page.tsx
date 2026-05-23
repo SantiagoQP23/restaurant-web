@@ -1,5 +1,4 @@
 import { Button } from "@/shared/components/ui/button";
-import { Link } from "@tanstack/react-router";
 import { RotateCcw } from "lucide-react";
 export const JoinRestaurantPage = () => {
   return (

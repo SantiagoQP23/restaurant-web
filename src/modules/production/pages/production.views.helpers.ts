@@ -2,7 +2,6 @@ import {
   OrderDetailStatus,
   OrderStatus,
   OrderStatusSpanish,
-  type Order,
 } from "@/shared/models/order.model";
 import type { OrderDetail } from "@/shared/models/order-detail.model";
 

@@ -3,7 +3,7 @@ import { useSetupStore } from "@/shared/store/setup.store";
 
 export const RestaurantSettingsPage = () => {
   const restaurant = useSetupStore((state) => state.restaurant);
-  const setRestaurant = useSetupStore((state) => state.setRestaurant);
+  // const setRestaurant = useSetupStore((state) => state.setRestaurant);
 
   return (
     <div className="flex w-full justify-center">
@@ -11,7 +11,6 @@ export const RestaurantSettingsPage = () => {
         <RestaurantForm
           mode="settings"
           defaultValues={restaurant ?? undefined}
-          onSubmit={(values) => setRestaurant(values)}
         />
       </div>
     </div>

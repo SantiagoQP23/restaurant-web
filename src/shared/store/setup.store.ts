@@ -12,7 +12,7 @@ type SetupState = {
   menu: CreateMenuDto;
   productionAreas: CreateProductionAreaDto[];
   setRestaurant: (values: CreateRestaurantDto) => void;
-  updateRestaurant: (values: Partial<CreateRestaurantDto>) => void;
+  updateRestaurant: (values: CreateRestaurantDto) => void;
   setMenu: (menu: CreateMenuDto) => void;
   addMenuSection: (name: string) => void;
   updateMenuSection: (index: number, name: string) => void;
@@ -30,7 +30,10 @@ type SetupState = {
     product: CreateCategoryProductDto,
   ) => void;
   addProductionArea: (values: CreateProductionAreaDto) => void;
-  updateProductionArea: (index: number, values: CreateProductionAreaDto) => void;
+  updateProductionArea: (
+    index: number,
+    values: CreateProductionAreaDto,
+  ) => void;
   removeProductionArea: (index: number) => void;
   resetSetup: () => void;
 };
@@ -76,7 +79,10 @@ const initialState = {
           {
             name: "Carnes",
             products: [
-              { name: "Lomo a la parrilla", description: "Carne a la parrilla" },
+              {
+                name: "Lomo a la parrilla",
+                description: "Carne a la parrilla",
+              },
               { name: "Bife de chorizo", description: "Corte premium" },
             ],
           },
@@ -130,10 +136,7 @@ export const useSetupStore = create<SetupState>()(
       addMenuSection: (name) =>
         set((state) => ({
           menu: {
-            sections: [
-              ...state.menu.sections,
-              { name, categories: [] },
-            ],
+            sections: [...state.menu.sections, { name, categories: [] }],
           },
         })),
       updateMenuSection: (index, name) =>
@@ -159,10 +162,7 @@ export const useSetupStore = create<SetupState>()(
               currentIndex === sectionIndex
                 ? {
                     ...section,
-                    categories: [
-                      ...section.categories,
-                      { name, products: [] },
-                    ],
+                    categories: [...section.categories, { name, products: [] }],
                   }
                 : section,
             ),
@@ -176,7 +176,9 @@ export const useSetupStore = create<SetupState>()(
                 ? {
                     ...section,
                     categories: section.categories.map((category, index) =>
-                      index === categoryIndex ? { ...category, name } : category,
+                      index === categoryIndex
+                        ? { ...category, name }
+                        : category,
                     ),
                   }
                 : section,

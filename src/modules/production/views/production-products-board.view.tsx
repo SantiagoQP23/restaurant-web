@@ -1,5 +1,3 @@
-import * as React from "react";
-import NiceModal from "@ebay/nice-modal-react";
 import { ArrowRight, Plus, Sliders } from "lucide-react";
 import { OrderDetailStatus, type Order } from "@/shared/models/order.model";
 import type { OrderDetail } from "@/shared/models/order-detail.model";
@@ -16,7 +14,6 @@ import { Button } from "@/shared/components/ui/button";
 import { Progress } from "@/shared/components/ui/progress";
 import {
   detailStatusDotClass,
-  formatTime,
   progressValue,
 } from "../pages/production.views.helpers";
 import { orderTableLabel } from "@/modules/orders/helpers/orders.helper";

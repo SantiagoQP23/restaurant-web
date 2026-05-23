@@ -53,6 +53,25 @@ export const ProductionOrderDetail = ({ detail, orderId }: Props) => {
     [detail.updatedAt],
   );
 
+  const recentUpdateLabel = useMemo(() => {
+    if (!detail.updatedAt) {
+      return null;
+    }
+    const updatedAtTime = new Date(detail.updatedAt).getTime();
+    if (Number.isNaN(updatedAtTime)) {
+      return null;
+    }
+    const diffMs = Date.now() - updatedAtTime;
+    if (diffMs < 0 || diffMs > 2 * 60 * 1000) {
+      return null;
+    }
+    const minutes = Math.max(0, Math.round(diffMs / 60000));
+    if (minutes <= 0) {
+      return "Actualizado hace menos de 1 min";
+    }
+    return `Actualizado hace ${minutes} min`;
+  }, [detail.updatedAt]);
+
   const onAdvanceDetail = useCallback(() => {
     const data: UpdateOrderDetailDto = {
       orderId,
@@ -249,6 +268,11 @@ export const ProductionOrderDetail = ({ detail, orderId }: Props) => {
           </div>
           <Progress value={progressValue(detail)} className="h-1" />
         </div>
+      )}
+      {recentUpdateLabel && (
+        <span className="text-xs text-muted-foreground">
+          {recentUpdateLabel}
+        </span>
       )}
     </div>
   );

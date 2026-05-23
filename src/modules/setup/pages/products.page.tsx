@@ -1,4 +1,3 @@
-import * as React from "react";
 import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
@@ -130,7 +129,10 @@ const AddProductOptionsModal = NiceModal.create(
               Configura las opciones para "{productName || "Nuevo producto"}".
             </DialogDescription>
           </DialogHeader>
-          <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <FieldGroup>
               {fields.map((field, index) => (
                 <div
@@ -343,7 +345,10 @@ const AddProductModal = NiceModal.create(
               Registra un producto para la categoria "{category.name}".
             </DialogDescription>
           </DialogHeader>
-          <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="product-name">Nombre</FieldLabel>
@@ -403,9 +408,7 @@ const AddProductModal = NiceModal.create(
                 </FieldLabel>
                 <Select
                   value={productionAreaId}
-                  onValueChange={(value) =>
-                    setValue("productionAreaId", value)
-                  }
+                  onValueChange={(value) => setValue("productionAreaId", value)}
                 >
                   <SelectTrigger
                     id="product-production-area"
@@ -526,7 +529,10 @@ export const ProductsPage = () => {
               ) : (
                 <div className="flex flex-col divide-y divide-border/60">
                   {menu.sections.map((section, sectionIndex) => (
-                    <div key={`${section.name}-${sectionIndex}`} className="px-4 py-3">
+                    <div
+                      key={`${section.name}-${sectionIndex}`}
+                      className="px-4 py-3"
+                    >
                       <div className="text-sm font-medium">{section.name}</div>
                       <div className="mt-2 flex flex-col gap-2">
                         {section.categories.length === 0 ? (

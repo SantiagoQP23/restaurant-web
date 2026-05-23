@@ -17,7 +17,7 @@ import { useAuthStore } from "@/modules/auth/store/auth.store";
 export const setupRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "setup",
-  beforeLoad: async (route) => {
+  beforeLoad: async () => {
     const status = useAuthStore.getState().status;
     if (status === "unauthenticated") {
       throw redirect({ to: "/auth/login" });
@@ -25,82 +25,68 @@ export const setupRoute = createRoute({
   },
 });
 
-const welcomeRoute = createRoute({
+export const welcomeRoute = createRoute({
   getParentRoute: () => setupRoute,
   path: "welcome",
   component: WelcomePage,
 });
 
-const restaurantRoute = createRoute({
+export const restaurantRoute = createRoute({
   getParentRoute: () => setupRoute,
   path: "restaurant",
   component: RestaurantPage,
 });
 
-const joinRestaurantRoute = createRoute({
+export const joinRestaurantRoute = createRoute({
   getParentRoute: () => setupRoute,
   path: "join-restaurant",
   component: JoinRestaurantPage,
 });
 
-const productionAreasRoute = createRoute({
+export const productionAreasRoute = createRoute({
   getParentRoute: () => setupRoute,
   path: "production-areas",
   component: ProductionAreasPage,
 });
 
-const menuRoute = createRoute({
+export const menuRoute = createRoute({
   getParentRoute: () => setupRoute,
   path: "menu",
   component: MenuPage,
 });
 
-const productsRoute = createRoute({
+export const productsRoute = createRoute({
   getParentRoute: () => setupRoute,
   path: "products",
   component: ProductsPage,
 });
 
-const tablesRoute = createRoute({
+export const tablesRoute = createRoute({
   getParentRoute: () => setupRoute,
   path: "tables",
   component: TablesPage,
 });
 
-const accountsRoute = createRoute({
+export const accountsRoute = createRoute({
   getParentRoute: () => setupRoute,
   path: "accounts",
   component: AccountsPage,
 });
 
-const paymentMethodsRoute = createRoute({
+export const paymentMethodsRoute = createRoute({
   getParentRoute: () => setupRoute,
   path: "payment-methods",
   component: PaymentMethodsPage,
 });
 
-const staffRoute = createRoute({
+export const staffRoute = createRoute({
   getParentRoute: () => setupRoute,
   path: "staff",
   component: StaffPage,
 });
 
-const completeRoute = createRoute({
+export const completeRoute = createRoute({
   getParentRoute: () => setupRoute,
   path: "complete",
   component: CompletePage,
 });
-
-setupRoute.addChildren([
-  welcomeRoute,
-  restaurantRoute,
-  joinRestaurantRoute,
-  productionAreasRoute,
-  menuRoute,
-  productsRoute,
-  tablesRoute,
-  accountsRoute,
-  paymentMethodsRoute,
-  staffRoute,
-  completeRoute,
-]);

@@ -5,7 +5,6 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldSeparator,
 } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 import { useForm } from "react-hook-form";
@@ -139,8 +138,8 @@ export function SignupForm({
             })}
           />
           <FieldDescription>
-            Usaremos este correo para contactarte. No compartiremos tu email
-            con nadie mas.
+            Usaremos este correo para contactarte. No compartiremos tu email con
+            nadie mas.
           </FieldDescription>
           {errors.email?.message && (
             <FieldDescription>{errors.email.message}</FieldDescription>
@@ -180,13 +179,14 @@ export function SignupForm({
               {...register("confirmPassword", {
                 required: "Confirma tu contraseña.",
                 validate: (value) =>
-                  value === passwordValue ||
-                  "Las contraseñas no coinciden.",
+                  value === passwordValue || "Las contraseñas no coinciden.",
               })}
             />
             <FieldDescription>Confirma tu contraseña.</FieldDescription>
             {errors.confirmPassword?.message && (
-              <FieldDescription>{errors.confirmPassword.message}</FieldDescription>
+              <FieldDescription>
+                {errors.confirmPassword.message}
+              </FieldDescription>
             )}
           </Field>
         </div>
