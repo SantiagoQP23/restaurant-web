@@ -70,7 +70,6 @@ const routeTree = rootRoute.addChildren([
     staffRoute,
     completeRoute,
   ]),
-  setupRoute,
   appRoute.addChildren([
     ordersRoute,
     productionRoute,
