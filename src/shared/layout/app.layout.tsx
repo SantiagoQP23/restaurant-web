@@ -12,6 +12,7 @@ import {
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
@@ -28,11 +29,13 @@ import {
   useOrderDeletedListener,
   useOrderUpdatedListener,
 } from "@/modules/orders/hooks/useOrders";
+import { useAuthStore } from "@/modules/auth/store/auth.store";
+import { NavUser } from "./nav-user";
 
 const navigation = [
   { label: "Inicio", icon: Home, to: "/app" },
   { label: "Pedidos", icon: ShoppingBag, to: "/app/orders" },
-  { label: "Produccion", icon: Soup, to: "/app/production" },
+  { label: "Producción", icon: Soup, to: "/app/production" },
   { label: "Mesas", icon: Table2, to: "/app/tables" },
   { label: "Menu", icon: UtensilsCrossed, to: "/app/menu" },
   { label: "Usuarios", icon: Users, to: "/app/users" },
@@ -44,6 +47,7 @@ export const AppLayout = () => {
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   });
+  const user = useAuthStore((state) => state.user);
 
   useActiveOrders();
 
@@ -87,6 +91,14 @@ export const AppLayout = () => {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
+        <SidebarFooter>
+          <NavUser
+            user={{
+              name: user?.username || "",
+              email: user?.person.email || "",
+            }}
+          />
+        </SidebarFooter>
       </Sidebar>
       <SidebarInset>
         <header className="flex h-14 items-center gap-2 border-b px-4">

@@ -31,7 +31,7 @@ export function App() {
         <TooltipProvider>
           <NiceModal.Provider>
             <Outlet />
-            <TanStackRouterDevtools />
+            <TanStackRouterDevtools position="top-right" />
           </NiceModal.Provider>
           <Toaster position="top-center" />
         </TooltipProvider>

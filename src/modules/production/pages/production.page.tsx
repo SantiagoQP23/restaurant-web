@@ -1,4 +1,3 @@
-import * as React from "react";
 import { OrderDetailStatus, type Order } from "@/shared/models/order.model";
 import type { OrderDetail } from "@/shared/models/order-detail.model";
 import type { Product } from "@/shared/models/product.model";
@@ -27,6 +26,8 @@ import { ProductionProductsBoardView } from "../views/production-products-board.
 import { useOrdersStore } from "@/modules/orders/store/orders.store";
 import { orderTableLabel } from "@/modules/orders/helpers/orders.helper";
 import { formatStringDate } from "@/shared/lib/utils";
+import { useProductionAreas } from "@/modules/production-areas/hooks/useProductionAreas";
+import { useEffect, useMemo, useState } from "react";
 
 const boardColumns = [
   {
@@ -46,27 +47,6 @@ const boardColumns = [
   },
 ] as const;
 
-const mockProductionArea: ProductionArea = {
-  id: 10,
-  name: "Cocina",
-  description: "Preparacion principal",
-  isActive: true,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
-
-const productionAreas: ProductionArea[] = [
-  mockProductionArea,
-  {
-    id: 11,
-    name: "Bar",
-    description: "Bebidas y cocteles",
-    isActive: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
-
 const detailsByStatus = (
   ordersList: Order[],
   status: OrderDetailStatus,
@@ -85,27 +65,24 @@ const detailsByStatus = (
 
 export const ProductionPage = () => {
   const orders = useOrdersStore((state) => state.orders);
-  const [selectedAreaId, setSelectedAreaId] = React.useState(
-    productionAreas[0]?.id.toString() ?? "",
-  );
-  const [viewMode, setViewMode] = React.useState<"board" | "product">("board");
-  const [isCancelledOpen, setIsCancelledOpen] = React.useState(false);
+  const { getAllQuery: productionAreasQuery } = useProductionAreas();
+  const [productionAreas, setProductionAreas] = useState<ProductionArea[]>([]);
 
-  const grouped = React.useMemo(
+  const [selectedAreaId, setSelectedAreaId] = useState<number>(0);
+  const [viewMode, setViewMode] = useState<"board" | "product">("board");
+  const [isCancelledOpen, setIsCancelledOpen] = useState(false);
+
+  const grouped = useMemo(
     () =>
       boardColumns.map((column) => ({
         ...column,
-        entries: detailsByStatus(
-          orders,
-          column.key,
-          Number.parseInt(selectedAreaId, 10),
-        ),
+        entries: detailsByStatus(orders, column.key, selectedAreaId),
       })),
     [orders, selectedAreaId],
   );
 
-  const productGroups = React.useMemo(() => {
-    const productionAreaId = Number.parseInt(selectedAreaId, 10);
+  const productGroups = useMemo(() => {
+    const productionAreaId = selectedAreaId;
     return boardColumns.map((column) => {
       const detailEntries = orders.flatMap((order) =>
         order.details
@@ -158,8 +135,8 @@ export const ProductionPage = () => {
     });
   }, [orders, selectedAreaId]);
 
-  const cancelledDetails = React.useMemo(() => {
-    const productionAreaId = Number.parseInt(selectedAreaId, 10);
+  const cancelledDetails = useMemo(() => {
+    const productionAreaId = selectedAreaId;
     return orders.flatMap((order) =>
       order.details
         .filter(
@@ -170,6 +147,20 @@ export const ProductionPage = () => {
         .map((detail) => ({ order, detail })),
     );
   }, [orders, selectedAreaId]);
+
+  useEffect(() => {
+    if (productionAreasQuery.isSuccess && productionAreasQuery.data) {
+      setProductionAreas(productionAreasQuery.data);
+      if (productionAreasQuery.data.length > 0) {
+        setSelectedAreaId(productionAreasQuery.data[0].id);
+      }
+    }
+  }, [
+    productionAreasQuery.data,
+    productionAreasQuery.isSuccess,
+    setSelectedAreaId,
+    setProductionAreas,
+  ]);
 
   return (
     <div className="flex min-h-svh flex-col gap-6 p-6 md:p-10">
@@ -200,7 +191,10 @@ export const ProductionPage = () => {
               <TabsTrigger value="product">Productos</TabsTrigger>
             </TabsList>
           </Tabs>
-          <Select value={selectedAreaId} onValueChange={setSelectedAreaId}>
+          <Select
+            value={selectedAreaId.toString()}
+            onValueChange={(value) => setSelectedAreaId(+value)}
+          >
             <SelectTrigger className="min-w-[200px]">
               <SelectValue placeholder="Selecciona un area" />
             </SelectTrigger>
@@ -243,14 +237,16 @@ export const ProductionPage = () => {
                     </div>
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    Creado: {formatStringDate(detail.createdAt, "DD/MM/YYYY HH:mm")}
+                    Creado:{" "}
+                    {formatStringDate(detail.createdAt, "DD/MM/YYYY HH:mm")}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    Actualizado: {formatStringDate(detail.updatedAt, "DD/MM/YYYY HH:mm")}
+                    Actualizado:{" "}
+                    {formatStringDate(detail.updatedAt, "DD/MM/YYYY HH:mm")}
                   </div>
                   {detail.updatedBy && (
                     <div className="text-xs text-muted-foreground">
-                      Actualizado por: {detail.updatedBy.person.firstName} {" "}
+                      Actualizado por: {detail.updatedBy.person.firstName}{" "}
                       {detail.updatedBy.person.lastName}
                     </div>
                   )}
