@@ -1,17 +1,11 @@
 import * as React from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/shared/components/ui/card";
-import { formatCurrency, formatStringDate } from "@/shared/lib/utils";
-import { OrderStatus, OrderStatusSpanish } from "@/shared/models/order.model";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Badge } from "@/shared/components/ui/badge";
+import { OrderStatusSpanish } from "@/shared/models/order.model";
 import { useOrdersStore } from "../store/orders.store";
+import { OrderCard, statusBadgeClass, statusLabel } from "../components/order-card.component";
+import { formatCurrency, formatStringDate } from "@/shared/lib/utils";
 import { orderTableLabel } from "../helpers/orders.helper";
-import { Users } from "lucide-react";
 
 const statusFilters = [
   "Todos",
@@ -20,34 +14,6 @@ const statusFilters = [
   OrderStatusSpanish.READY,
   OrderStatusSpanish.DELIVERED,
 ] as const;
-
-const statusBadgeClass = (status: OrderStatus) => {
-  switch (status) {
-    case OrderStatus.PENDING:
-      return "rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700";
-    case OrderStatus.IN_PROGRESS:
-      return "rounded-full bg-sky-100 px-2 py-1 text-xs font-medium text-sky-700";
-    case OrderStatus.READY:
-      return "rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700";
-    default:
-      return "rounded-full bg-muted px-2 py-1 text-xs font-medium text-muted-foreground";
-  }
-};
-
-const statusLabel = (status: OrderStatus) => {
-  switch (status) {
-    case OrderStatus.PENDING:
-      return OrderStatusSpanish.PENDING;
-    case OrderStatus.IN_PROGRESS:
-      return OrderStatusSpanish.IN_PROGRESS;
-    case OrderStatus.READY:
-      return OrderStatusSpanish.READY;
-    case OrderStatus.DELIVERED:
-      return OrderStatusSpanish.DELIVERED;
-    default:
-      return OrderStatusSpanish.CANCELLED;
-  }
-};
 
 export const OrdersPage = () => {
   const orders = useOrdersStore((state) => state.orders);
@@ -106,56 +72,16 @@ export const OrdersPage = () => {
         <div className={selectedOrder ? "lg:col-span-8" : "lg:col-span-12"}>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {visibleOrders.map((order) => (
-              <Card
+              <OrderCard
                 key={order.id}
-                size="sm"
-                className={
-                  order.id === selectedOrderId
-                    ? "ring-2 ring-primary/40"
-                    : undefined
-                }
+                order={order}
+                isSelected={order.id === selectedOrderId}
                 onClick={() =>
                   order.id !== selectedOrderId
                     ? setSelectedOrderId(order.id)
                     : setSelectedOrderId(null)
                 }
-              >
-                <CardHeader>
-                  <div className="flex items-center justify-between gap-2">
-                    <CardTitle>{orderTableLabel(order)}</CardTitle>
-                    <Badge className={statusBadgeClass(order.status)}>
-                      {statusLabel(order.status)}
-                    </Badge>
-                  </div>
-                  <CardDescription>
-                    #{order.num} ·{" "}
-                    {formatStringDate(order.deliveryTime, "HH:mm")} ·{" "}
-                    {order.user.person.firstName} {order.user.person.lastName}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="inline-flex items-center gap-1">
-                      <span className="text-muted-foreground">
-                        {order.details.reduce(
-                          (total, detail) => total + detail.quantity,
-                          0,
-                        )}{" "}
-                        items ·{" "}
-                      </span>
-                      <div className="inline-flex items-center gap-1">
-                        <Users size={16} /> {order.people}
-                      </div>
-                    </div>
-                    <span className="font-medium">
-                      {formatCurrency(order.total)}
-                    </span>
-                  </div>
-                  <div className="mt-2 text-xs text-muted-foreground">
-                    {formatStringDate(order.createdAt)}
-                  </div>
-                </CardContent>
-              </Card>
+              />
             ))}
           </div>
         </div>
