@@ -19,9 +19,6 @@ import { TableCard } from "../components/table-card.component";
 export const TablesPage = () => {
   const [tables, setTables] = React.useState<Table[]>([]);
   const getAllTablesQuery = useTables().getAllTablesQuery;
-  const [selectedTableId, setSelectedTableId] = React.useState<string | null>(
-    null,
-  );
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [tableForOrder, setTableForOrder] = React.useState<Table | null>(null);
   const [customerName, setCustomerName] = React.useState("");
