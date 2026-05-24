@@ -118,7 +118,7 @@ export function LoginForm({
         </Field>
         <Field>
           <Button type="submit" disabled={isSubmitting}>
-            Login
+            Iniciar sesión
           </Button>
         </Field>
         {/* <FieldSeparator>Or continue with</FieldSeparator> */}

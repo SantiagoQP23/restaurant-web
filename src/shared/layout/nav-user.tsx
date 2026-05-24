@@ -17,23 +17,32 @@ import {
 } from "@/shared/components/ui/sidebar";
 import {
   Bell,
+  Check,
   CreditCard,
   EllipsisVerticalIcon,
   LogOut,
   User2,
 } from "lucide-react";
+import type { User } from "../models/user.model";
+import { useAuth } from "@/modules/auth/hooks/useAuth";
+import type { Restaurant } from "../models/restaurant.model";
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string;
-    email: string;
-    avatar?: string;
-  };
-}) {
+interface Props {
+  user: User;
+}
+
+export function NavUser({ user }: Props) {
   const { isMobile } = useSidebar();
   const { logout } = useAuthStore();
+  const restaurant = useAuthStore((state) => state.restaurant);
+
+  const switchRestaurant = useAuth().switchRestaurant;
+
+  const changeRestaurant = (newRestaurant: Restaurant) => {
+    if (restaurant?.id !== newRestaurant.id) {
+      switchRestaurant.mutate(newRestaurant.id);
+    }
+  };
 
   return (
     <SidebarMenu>
@@ -48,11 +57,11 @@ export function NavUser({
               {/* //   <AvatarImage src={user.avatar} alt={user.name} /> */}
               {/* //   <AvatarFallback className="rounded-lg">CN</AvatarFallback> */}
               {/* // </Avatar> */}
-              <User2 />
+              <User2 size={22} />
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate font-medium">{user.username}</span>
                 <span className="truncate text-xs text-muted-foreground">
-                  {user.email}
+                  {user.person.email}
                 </span>
               </div>
               <EllipsisVerticalIcon className="ml-auto size-4" />
@@ -71,15 +80,28 @@ export function NavUser({
                 {/*   <AvatarFallback className="rounded-lg">CN</AvatarFallback> */}
                 {/* </Avatar> */}
 
-                <User2 />
+                <div className="flex justify-center">
+                  <User2 />
+                </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
+                  <span className="truncate font-medium">{user.username}</span>
                   <span className="truncate text-xs text-muted-foreground">
-                    {user.email}
+                    {user.person.email}
                   </span>
                 </div>
               </div>
             </DropdownMenuLabel>
+
+            {user?.restaurantRoles.map((role) => (
+              <DropdownMenuItem
+                onClick={() => changeRestaurant(role.restaurant)}
+                key={role.id}
+              >
+                <User2 />
+                {role.restaurant.name}
+                {restaurant?.id === role.restaurant.id && <Check />}
+              </DropdownMenuItem>
+            ))}
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>

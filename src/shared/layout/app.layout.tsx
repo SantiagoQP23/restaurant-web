@@ -96,14 +96,7 @@ export const AppLayout = () => {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
-        <SidebarFooter>
-          <NavUser
-            user={{
-              name: user?.username || "",
-              email: user?.person.email || "",
-            }}
-          />
-        </SidebarFooter>
+        <SidebarFooter>{user && <NavUser user={user} />}</SidebarFooter>
       </Sidebar>
       <SidebarInset>
         <header className="flex h-14 items-center gap-2 border-b px-4">
