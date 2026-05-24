@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { Badge } from "@/shared/components/ui/badge";
-import { formatCurrency, formatStringDate } from "@/shared/lib/utils";
+import { cn, formatCurrency, formatStringDate } from "@/shared/lib/utils";
 import {
   OrderPaymentStatus,
   OrderStatus,
@@ -73,46 +73,56 @@ const paymentLabel = (paymentStatus: OrderPaymentStatus) => {
 };
 
 export const OrderCard = ({ order, isSelected, onClick }: Props) => {
+  const totalItems = order.details.reduce(
+    (total, detail) => total + detail.quantity,
+    0,
+  );
+
   return (
     <Card
       size="sm"
-      className={isSelected ? "ring-2 ring-primary/40" : undefined}
+      className={cn(
+        "transition-shadow",
+        isSelected && "ring-2 ring-primary/40",
+      )}
       onClick={onClick}
     >
-      <CardHeader>
-        <div className="flex items-center justify-between gap-2">
-          <CardTitle>{orderTableLabel(order)}</CardTitle>
-          <div className="flex items-center gap-2">
-            <Badge className={paymentBadgeClass(order.paymentStatus)}>
-              {paymentLabel(order.paymentStatus)}
-            </Badge>
+      <CardHeader className="gap-2">
+        <div className="flex items-start justify-between gap-2">
+          <CardTitle className="text-base font-semibold tracking-tight">
+            {orderTableLabel(order)}
+          </CardTitle>
+          <div className="flex flex-wrap items-center justify-end gap-1">
             <Badge className={statusBadgeClass(order.status)}>
               {statusLabel(order.status)}
             </Badge>
+            <Badge className={paymentBadgeClass(order.paymentStatus)}>
+              {paymentLabel(order.paymentStatus)}
+            </Badge>
           </div>
         </div>
-        <CardDescription>
-          #{order.num} · {formatStringDate(order.deliveryTime, "HH:mm")} ·{" "}
-          {order.user.person.firstName} {order.user.person.lastName}
+        <CardDescription className="flex flex-col gap-1">
+          <span>
+            #{order.num} · {formatStringDate(order.deliveryTime, "HH:mm")}
+          </span>
+          <span>
+            {order.user.person.firstName} {order.user.person.lastName}
+          </span>
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-between text-sm">
           <div className="inline-flex items-center gap-1">
-            <span className="text-muted-foreground">
-              {order.details.reduce(
-                (total, detail) => total + detail.quantity,
-                0,
-              )}{" "}
-              items ·{" "}
-            </span>
+            <span className="text-muted-foreground">{totalItems} items · </span>
             <div className="inline-flex items-center gap-1">
               <Users size={16} /> {order.people}
             </div>
           </div>
-          <span className="font-medium">{formatCurrency(order.total)}</span>
+          <span className="text-base font-semibold">
+            {formatCurrency(order.total)}
+          </span>
         </div>
-        <div className="mt-2 text-xs text-muted-foreground">
+        <div className="mt-3 border-t border-border/60 pt-2 text-xs text-muted-foreground">
           {formatStringDate(order.createdAt)}
         </div>
       </CardContent>
