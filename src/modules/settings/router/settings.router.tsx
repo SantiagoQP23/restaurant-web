@@ -5,7 +5,6 @@ import { RestaurantSettingsPage } from "../pages/restaurant-settings.page";
 import { ProductionAreasPage } from "@/modules/setup/pages/production-areas.page";
 import { MenuPage } from "@/modules/setup/pages/menu.page";
 import { ProductsPage } from "@/modules/setup/pages/products.page";
-import { TablesPage } from "@/modules/setup/pages/tables.page";
 import { AccountsPage } from "@/modules/setup/pages/accounts.page";
 import { PaymentMethodsPage } from "@/modules/setup/pages/payment-methods.page";
 import { StaffPage } from "@/modules/setup/pages/staff.page";

@@ -74,7 +74,7 @@ export const TablesSettings = () => {
       </div>
       {/* <div className={selectedTable ? "lg:col-span-8" : "lg:col-span-12"}> */}
       <div>
-        <div className="grid gap-4 grid-cols-4">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {tables.map((table) => (
             <EditableTableCard
               key={table.id}

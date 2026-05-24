@@ -6,7 +6,6 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardContent,
 } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -33,7 +32,7 @@ type Props = {
   onUpdate: (
     tableId: string,
     payload: { name: string; description: string; chairs: number },
-  ) => void;
+  ) => Promise<boolean>;
   onDelete: (tableId: string) => void;
 };
 
