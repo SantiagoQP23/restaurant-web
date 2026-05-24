@@ -7,7 +7,11 @@ import {
 } from "@/shared/components/ui/card";
 import { Badge } from "@/shared/components/ui/badge";
 import { formatCurrency, formatStringDate } from "@/shared/lib/utils";
-import { OrderStatus, OrderStatusSpanish } from "@/shared/models/order.model";
+import {
+  OrderPaymentStatus,
+  OrderStatus,
+  OrderStatusSpanish,
+} from "@/shared/models/order.model";
 import type { Order } from "@/shared/models/order.model";
 import { orderTableLabel } from "../helpers/orders.helper";
 import { Users } from "lucide-react";
@@ -46,6 +50,28 @@ export const statusLabel = (status: OrderStatus) => {
   }
 };
 
+const paymentBadgeClass = (paymentStatus: OrderPaymentStatus) => {
+  switch (paymentStatus) {
+    case OrderPaymentStatus.PAID:
+      return "rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700";
+    case OrderPaymentStatus.PARTIALLY_PAID:
+      return "rounded-full bg-sky-100 px-2 py-1 text-xs font-medium text-sky-700";
+    default:
+      return "rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700";
+  }
+};
+
+const paymentLabel = (paymentStatus: OrderPaymentStatus) => {
+  switch (paymentStatus) {
+    case OrderPaymentStatus.PAID:
+      return "Pagado";
+    case OrderPaymentStatus.PARTIALLY_PAID:
+      return "Pago parcial";
+    default:
+      return "Pago pendiente";
+  }
+};
+
 export const OrderCard = ({ order, isSelected, onClick }: Props) => {
   return (
     <Card
@@ -56,13 +82,17 @@ export const OrderCard = ({ order, isSelected, onClick }: Props) => {
       <CardHeader>
         <div className="flex items-center justify-between gap-2">
           <CardTitle>{orderTableLabel(order)}</CardTitle>
-          <Badge className={statusBadgeClass(order.status)}>
-            {statusLabel(order.status)}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge className={paymentBadgeClass(order.paymentStatus)}>
+              {paymentLabel(order.paymentStatus)}
+            </Badge>
+            <Badge className={statusBadgeClass(order.status)}>
+              {statusLabel(order.status)}
+            </Badge>
+          </div>
         </div>
         <CardDescription>
-          #{order.num} · {formatStringDate(order.deliveryTime, "HH:mm")} ·
-          {" "}
+          #{order.num} · {formatStringDate(order.deliveryTime, "HH:mm")} ·{" "}
           {order.user.person.firstName} {order.user.person.lastName}
         </CardDescription>
       </CardHeader>

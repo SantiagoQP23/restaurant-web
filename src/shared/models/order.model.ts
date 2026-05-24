@@ -18,12 +18,6 @@ export enum OrderDetailStatus {
   CANCELLED = "CANCELLED",
 }
 
-export enum OrderStatusPay {
-  NO_PAY = "NO_PAY",
-  PAY = "PAY",
-  PARTIAL_PAY = "PARTIAL_PAY",
-}
-
 export enum OrderType {
   TAKE_AWAY = "TAKE_AWAY",
   IN_PLACE = "IN_PLACE",
@@ -42,6 +36,12 @@ export enum OrderStatusSpanish {
   READY = "Listo",
   DELIVERED = "Entregado",
   CANCELLED = "Cancelado",
+}
+
+export enum OrderPaymentStatus {
+  UNPAID = "unpaid",
+  PARTIALLY_PAID = "partially_paid",
+  PAID = "paid",
 }
 
 /**
@@ -64,5 +64,6 @@ export interface Order {
   updatedAt: string;
   user: User;
   isClosed: boolean;
+  paymentStatus: OrderPaymentStatus;
   // bills: Bill[];
 }
