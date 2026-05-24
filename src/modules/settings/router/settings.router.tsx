@@ -9,6 +9,7 @@ import { TablesPage } from "@/modules/setup/pages/tables.page";
 import { AccountsPage } from "@/modules/setup/pages/accounts.page";
 import { PaymentMethodsPage } from "@/modules/setup/pages/payment-methods.page";
 import { StaffPage } from "@/modules/setup/pages/staff.page";
+import { TablesSettings } from "../views/tables-settings.view";
 
 export const settingsRoute = createRoute({
   getParentRoute: () => appRoute,
@@ -49,7 +50,7 @@ const productsRoute = createRoute({
 const tablesRoute = createRoute({
   getParentRoute: () => settingsRoute,
   path: "tables",
-  component: TablesPage,
+  component: TablesSettings,
 });
 
 const accountsRoute = createRoute({
