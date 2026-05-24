@@ -64,6 +64,7 @@ export const EditableTableCard = ({ table, onUpdate, onDelete }: Props) => {
                     submitLabel: "Guardar cambios",
                     description:
                       "Actualiza el nombre, descripcion y sillas de la mesa.",
+                    isEdit: true,
                     initialValues: {
                       name: table.name,
                       description: table.description,

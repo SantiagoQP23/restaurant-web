@@ -9,7 +9,7 @@ import { Plus } from "lucide-react";
 
 export const TablesSettings = () => {
   const [tables, setTables] = useState<Table[]>([]);
-  const getAllTablesQuery = useTables().getAllTablesQuery;
+  const { getAllTablesQuery, createTable, updateTable } = useTables();
 
   useEffect(() => {
     if (getAllTablesQuery.isSuccess && getAllTablesQuery.data) {
@@ -22,14 +22,20 @@ export const TablesSettings = () => {
     description: string;
     chairs: number;
   }) => {
-    console.log("Create table", payload);
+    return createTable.mutateAsync(payload).then(
+      () => true,
+      () => false,
+    );
   };
 
   const handleUpdateTable = (
     tableId: string,
     payload: { name: string; description: string; chairs: number },
   ) => {
-    console.log("Update table", tableId, payload);
+    return updateTable.mutateAsync({ id: tableId, ...payload }).then(
+      () => true,
+      () => false,
+    );
   };
 
   const handleDeleteTable = (tableId: string) => {
@@ -52,6 +58,7 @@ export const TablesSettings = () => {
               title: "Crear mesa",
               submitLabel: "Crear mesa",
               description: "Agrega una mesa nueva al restaurante.",
+              isEdit: false,
               initialValues: {
                 name: "",
                 description: "",

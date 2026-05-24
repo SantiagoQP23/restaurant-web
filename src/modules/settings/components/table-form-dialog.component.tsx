@@ -30,24 +30,50 @@ type Props = {
   submitLabel: string;
   description?: string;
   initialValues: TableFormValues;
+  isEdit?: boolean;
   onSubmit?: (values: {
     name: string;
     description: string;
     chairs: number;
-  }) => void;
+  }) => Promise<boolean> | boolean;
 };
 
 export const TableFormDialog = NiceModal.create(
-  ({ title, submitLabel, description, initialValues, onSubmit }: Props) => {
+  ({
+    title,
+    submitLabel,
+    description,
+    initialValues,
+    isEdit,
+    onSubmit,
+  }: Props) => {
     const modal = useModal();
     const {
       register,
       handleSubmit,
+      watch,
       reset,
       formState: { errors, isSubmitting },
     } = useForm<TableFormValues>({
       defaultValues: initialValues,
     });
+
+    const watchedValues = watch();
+    const normalizedInitial = {
+      name: initialValues.name.trim(),
+      description: initialValues.description.trim(),
+      chairs: Number.parseInt(initialValues.chairs, 10),
+    };
+    const normalizedCurrent = {
+      name: watchedValues.name?.trim() ?? "",
+      description: watchedValues.description?.trim() ?? "",
+      chairs: Number.parseInt(watchedValues.chairs ?? "", 10),
+    };
+    const hasChanges =
+      normalizedInitial.name !== normalizedCurrent.name ||
+      normalizedInitial.description !== normalizedCurrent.description ||
+      normalizedInitial.chairs !== normalizedCurrent.chairs;
+    const isSubmitDisabled = isSubmitting || (isEdit && !hasChanges);
 
     useEffect(() => {
       if (!modal.visible) {
@@ -56,17 +82,23 @@ export const TableFormDialog = NiceModal.create(
       reset(initialValues);
     }, [initialValues, modal.visible, reset]);
 
-    const handleSave = (values: TableFormValues) => {
+    const handleSave = async (values: TableFormValues) => {
       const parsedChairs = Number.parseInt(values.chairs, 10);
       if (!Number.isFinite(parsedChairs) || parsedChairs <= 0) {
         return;
       }
-      onSubmit?.({
-        name: values.name.trim(),
-        description: values.description.trim(),
-        chairs: parsedChairs,
-      });
-      modal.hide();
+      try {
+        const result = await onSubmit?.({
+          name: values.name.trim(),
+          description: values.description.trim(),
+          chairs: parsedChairs,
+        });
+        if (result !== false) {
+          modal.hide();
+        }
+      } catch (error) {
+        return;
+      }
     };
 
     return (
@@ -143,7 +175,7 @@ export const TableFormDialog = NiceModal.create(
                   Cancelar
                 </Button>
               </DialogClose>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitDisabled}>
                 {submitLabel}
               </Button>
             </DialogFooter>
