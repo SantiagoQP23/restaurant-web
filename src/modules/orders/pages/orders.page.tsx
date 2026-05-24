@@ -6,13 +6,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
-import { formatCurrency } from "@/shared/lib/utils";
-import {
-  OrderStatus,
-  OrderStatusSpanish,
-  type Order,
-} from "@/shared/models/order.model";
+import { formatCurrency, formatStringDate } from "@/shared/lib/utils";
+import { OrderStatus, OrderStatusSpanish } from "@/shared/models/order.model";
 import { Badge } from "@/shared/components/ui/badge";
+import { useOrdersStore } from "../store/orders.store";
+import { orderTableLabel } from "../helpers/orders.helper";
+import { Users } from "lucide-react";
 
 const statusFilters = [
   "Todos",
@@ -50,10 +49,8 @@ const statusLabel = (status: OrderStatus) => {
   }
 };
 
-const orderTableLabel = (order: Order) => order.table?.name ?? "Para llevar";
-
 export const OrdersPage = () => {
-  const orders: Order[] = [];
+  const orders = useOrdersStore((state) => state.orders);
   const [selectedFilter, setSelectedFilter] = React.useState<
     (typeof statusFilters)[number]
   >(statusFilters[0]);
@@ -123,34 +120,41 @@ export const OrdersPage = () => {
                     : setSelectedOrderId(null)
                 }
               >
-                <button type="button" className="text-left">
-                  <CardHeader>
-                    <div className="flex items-center justify-between gap-2">
-                      <CardTitle>#{order.num}</CardTitle>
-                      <span className={statusBadgeClass(order.status)}>
-                        {statusLabel(order.status)}
-                      </span>
-                    </div>
-                    <CardDescription>{orderTableLabel(order)}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between text-sm">
+                <CardHeader>
+                  <div className="flex items-center justify-between gap-2">
+                    <CardTitle>{orderTableLabel(order)}</CardTitle>
+                    <span className={statusBadgeClass(order.status)}>
+                      {statusLabel(order.status)}
+                    </span>
+                  </div>
+                  <CardDescription>
+                    #{order.num} ·{" "}
+                    {formatStringDate(order.deliveryTime, "HH:mm")} ·{" "}
+                    {order.user.person.firstName} {order.user.person.lastName}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="inline-flex items-center gap-1">
                       <span className="text-muted-foreground">
                         {order.details.reduce(
                           (total, detail) => total + detail.quantity,
                           0,
                         )}{" "}
-                        items
+                        items ·{" "}
                       </span>
-                      <span className="font-medium">
-                        {formatCurrency(order.total)}
-                      </span>
+                      <div className="inline-flex items-center gap-1">
+                        <Users size={16} /> {order.people}
+                      </div>
                     </div>
-                    <div className="mt-2 text-xs text-muted-foreground">
-                      {/* {formatTime(order.createdAt)} */}
-                    </div>
-                  </CardContent>
-                </button>
+                    <span className="font-medium">
+                      {formatCurrency(order.total)}
+                    </span>
+                  </div>
+                  <div className="mt-2 text-xs text-muted-foreground">
+                    {formatStringDate(order.createdAt)}
+                  </div>
+                </CardContent>
               </Card>
             ))}
           </div>
@@ -160,14 +164,14 @@ export const OrdersPage = () => {
             <Card className="sticky top-6">
               <CardHeader>
                 <div className="flex items-center justify-between gap-2">
-                  <CardTitle>#{selectedOrder.num}</CardTitle>
+                  <CardTitle>{orderTableLabel(selectedOrder)}</CardTitle>
                   <span className={statusBadgeClass(selectedOrder.status)}>
                     {statusLabel(selectedOrder.status)}
                   </span>
                 </div>
                 <CardDescription>
-                  {orderTableLabel(selectedOrder)} ·{" "}
-                  {/* {formatTime(selectedOrder.createdAt)} */}
+                  #{selectedOrder.num} ·{" "}
+                  {formatStringDate(selectedOrder.createdAt)}
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col gap-4">

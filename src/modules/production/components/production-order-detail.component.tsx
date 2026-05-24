@@ -207,7 +207,7 @@ export const ProductionOrderDetail = ({ detail, orderId }: Props) => {
       >
         <div className="flex items-center gap-2">
           <span
-            className={`mt-1 size-2.5 shrink-0 rounded-full ${detailStatusDotClass(
+            className={` size-3 shrink-0 rounded-full ${detailStatusDotClass(
               detail.status,
             )}`}
           />
@@ -306,7 +306,7 @@ export const ProductionOrderDetail = ({ detail, orderId }: Props) => {
               </TooltipTrigger>
               <TooltipContent side="top" align="center">
                 {detail.status === OrderDetailStatus.PENDING
-                  ? "Marcar como preparando"
+                  ? "Empezar preparación"
                   : "Marcar como listo"}
               </TooltipContent>
             </Tooltip>

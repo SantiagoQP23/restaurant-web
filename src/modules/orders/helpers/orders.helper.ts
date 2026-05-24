@@ -8,7 +8,7 @@ export const orderTableLabel = (order: Order) =>
 export const detailStatusDotClass = (status: OrderDetailStatus) => {
   switch (status) {
     case OrderDetailStatus.PENDING:
-      return "bg-amber-400";
+      return "bg-amber-400 border";
     case OrderDetailStatus.IN_PROGRESS:
       return "bg-sky-400";
     default:
