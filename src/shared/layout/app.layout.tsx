@@ -1,4 +1,4 @@
-import { Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { Link, Navigate, Outlet, useRouterState } from "@tanstack/react-router";
 import {
   CreditCard,
   Home,
@@ -48,12 +48,17 @@ export const AppLayout = () => {
     select: (state) => state.location.pathname,
   });
   const user = useAuthStore((state) => state.user);
+  const status = useAuthStore((state) => state.status);
 
   useActiveOrders();
 
   useOrderCreatedListener();
   useOrderUpdatedListener();
   useOrderDeletedListener();
+
+  if (status === "unauthenticated") {
+    return <Navigate to="/auth/login" />;
+  }
 
   return (
     <SidebarProvider>
