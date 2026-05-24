@@ -18,9 +18,14 @@ import { Progress } from "@/shared/components/ui/progress";
 import type { OrderDetail } from "@/shared/models/order-detail.model";
 import { OrderDetailStatus } from "@/shared/models/order.model";
 import NiceModal from "@ebay/nice-modal-react";
-import { ArrowRight, Edit, Plus } from "lucide-react";
+import { ArrowRight, Edit, Pause, Plus } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { ProductionEditOrderDetailDialog } from "./production-edit-order-detail-dialog.component";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 
 interface Props {
   detail: OrderDetail;
@@ -80,6 +85,16 @@ export const ProductionOrderDetail = ({ detail, orderId }: Props) => {
         detail.status === OrderDetailStatus.PENDING
           ? OrderDetailStatus.IN_PROGRESS
           : OrderDetailStatus.READY,
+    };
+
+    update(data);
+  }, [detail.id, orderId, update]);
+
+  const onStopPreparation = useCallback(() => {
+    const data: UpdateOrderDetailDto = {
+      orderId,
+      id: detail.id,
+      status: OrderDetailStatus.PENDING,
     };
 
     update(data);
@@ -208,49 +223,93 @@ export const ProductionOrderDetail = ({ detail, orderId }: Props) => {
         </div>
         {detail.status !== OrderDetailStatus.READY && (
           <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-xs"
-              aria-label="Sumar listo"
-              onClick={(event) => {
-                event.stopPropagation();
-                onUpdateReady(detail.readyQuantity + 1);
-              }}
-            >
-              <Plus />
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-xs"
-              aria-label="Ajustar listo"
-              onClick={(event) => {
-                event.stopPropagation();
-                NiceModal.show(ProductionEditOrderDetailDialog, {
-                  detail,
-                  onUpdateQuantity: onUpdateReady,
-                });
-              }}
-            >
-              <Edit />
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-xs"
-              aria-label={
-                detail.status === OrderDetailStatus.PENDING
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  aria-label="Sumar listo"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onUpdateReady(detail.readyQuantity + 1);
+                  }}
+                >
+                  <Plus />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top" align="center">
+                Sumar listo
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  aria-label="Ajustar listo"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    NiceModal.show(ProductionEditOrderDetailDialog, {
+                      detail,
+                      onUpdateQuantity: onUpdateReady,
+                    });
+                  }}
+                >
+                  <Edit />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top" align="center">
+                Ajustar listo
+              </TooltipContent>
+            </Tooltip>
+            {detail.status === OrderDetailStatus.IN_PROGRESS && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-xs"
+                    aria-label="Detener preparación"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onStopPreparation();
+                    }}
+                  >
+                    <Pause />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top" align="center">
+                  Detener preparación
+                </TooltipContent>
+              </Tooltip>
+            )}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  aria-label={
+                    detail.status === OrderDetailStatus.PENDING
+                      ? "Marcar como preparando"
+                      : "Marcar como listo"
+                  }
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onAdvanceDetail();
+                  }}
+                >
+                  <ArrowRight />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top" align="center">
+                {detail.status === OrderDetailStatus.PENDING
                   ? "Marcar como preparando"
-                  : "Marcar como listo"
-              }
-              onClick={(event) => {
-                event.stopPropagation();
-                onAdvanceDetail();
-              }}
-            >
-              <ArrowRight />
-            </Button>
+                  : "Marcar como listo"}
+              </TooltipContent>
+            </Tooltip>
           </div>
         )}
       </div>

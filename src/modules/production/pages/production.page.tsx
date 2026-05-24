@@ -28,6 +28,8 @@ import { orderTableLabel } from "@/modules/orders/helpers/orders.helper";
 import { formatStringDate } from "@/shared/lib/utils";
 import { useProductionAreas } from "@/modules/production-areas/hooks/useProductionAreas";
 import { useEffect, useMemo, useState } from "react";
+import { useActiveOrders } from "@/modules/orders/hooks/useActiveOrders";
+import { RefreshCcw } from "lucide-react";
 
 const boardColumns = [
   {
@@ -65,6 +67,7 @@ const detailsByStatus = (
 
 export const ProductionPage = () => {
   const orders = useOrdersStore((state) => state.orders);
+  const refectchOrders = useActiveOrders().refetchOrders;
   const { getAllQuery: productionAreasQuery } = useProductionAreas();
   const [productionAreas, setProductionAreas] = useState<ProductionArea[]>([]);
 
@@ -181,6 +184,9 @@ export const ProductionPage = () => {
             <Badge className="ml-2" variant="secondary">
               {cancelledDetails.length}
             </Badge>
+          </Button>
+          <Button variant="outline" onClick={() => refectchOrders()}>
+            <RefreshCcw />
           </Button>
           <Tabs
             value={viewMode}
