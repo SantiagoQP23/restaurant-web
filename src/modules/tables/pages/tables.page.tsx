@@ -19,6 +19,8 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 import type { Table } from "@/shared/models/table.model";
+import { useTables } from "../hooks/useTables";
+import { useTableOrders } from "../hooks/useTableOrders";
 
 type TableOrder = {
   id: string;
@@ -27,45 +29,6 @@ type TableOrder = {
   createdAt: Date;
   status: "PENDIENTE" | "EN_PROGRESO" | "LISTO";
 };
-
-const tables: Table[] = [
-  {
-    id: "table-1",
-    name: "Mesa 1",
-    description: "Ventana",
-    chairs: 2,
-    isAvailable: true,
-    order: 1,
-    isActive: true,
-  },
-  {
-    id: "table-2",
-    name: "Mesa 2",
-    description: "Salon principal",
-    chairs: 4,
-    isAvailable: false,
-    order: 2,
-    isActive: true,
-  },
-  {
-    id: "table-3",
-    name: "Mesa 3",
-    description: "Terraza",
-    chairs: 6,
-    isAvailable: false,
-    order: 3,
-    isActive: true,
-  },
-  {
-    id: "table-4",
-    name: "Mesa 4",
-    description: "Bar",
-    chairs: 4,
-    isAvailable: true,
-    order: 4,
-    isActive: true,
-  },
-];
 
 const ordersByTable: Record<string, TableOrder[]> = {
   "table-2": [
@@ -111,7 +74,68 @@ const availabilityBadgeClass = (isAvailable: boolean) =>
     ? "rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700"
     : "rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700";
 
+type TableCardProps = {
+  table: Table;
+  selectedTableId: string | null;
+  onSelect: (tableId: string | null) => void;
+  onOpenDialog: (table: Table) => void;
+};
+
+const TableCard = ({
+  table,
+  selectedTableId,
+  onSelect,
+  onOpenDialog,
+}: TableCardProps) => {
+  const { hasOrders } = useTableOrders(table.id);
+
+  return (
+    <Card
+      size="sm"
+      className={selectedTableId === table.id ? "ring-2 ring-primary/40" : undefined}
+      onClick={() => (hasOrders ? onSelect(table.id) : onSelect(null))}
+    >
+      <CardHeader>
+        <div className="flex items-center justify-between gap-2">
+          <CardTitle>Mesa {table.name}</CardTitle>
+          <span className={availabilityBadgeClass(hasOrders)}>
+            {hasOrders ? "Disponible" : "Ocupada"}
+          </span>
+        </div>
+        <CardDescription>{table.chairs} sillas</CardDescription>
+      </CardHeader>
+      <CardContent className="flex justify-end">
+        {hasOrders ? (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={(event) => {
+              event.stopPropagation();
+              onOpenDialog(table);
+            }}
+          >
+            Crear pedido
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={(event) => {
+              event.stopPropagation();
+              onSelect(table.id);
+            }}
+          >
+            Ver pedidos
+          </Button>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
 export const TablesPage = () => {
+  const [tables, setTables] = React.useState<Table[]>([]);
+  const getAllTablesQuery = useTables().getAllTablesQuery;
   const [selectedTableId, setSelectedTableId] = React.useState<string | null>(
     null,
   );
@@ -123,7 +147,7 @@ export const TablesPage = () => {
 
   const selectedTable = tables.find((table) => table.id === selectedTableId);
   const selectedOrders = selectedTable
-    ? ordersByTable[selectedTable.id] ?? []
+    ? (ordersByTable[selectedTable.id] ?? [])
     : [];
 
   const handleOpenDialog = (table: Table) => {
@@ -138,6 +162,12 @@ export const TablesPage = () => {
     event.preventDefault();
     setDialogOpen(false);
   };
+
+  React.useEffect(() => {
+    if (getAllTablesQuery.isSuccess && getAllTablesQuery.data) {
+      setTables(getAllTablesQuery.data);
+    }
+  }, [getAllTablesQuery.data, getAllTablesQuery.isSuccess]);
 
   return (
     <div className="flex min-h-svh flex-col gap-6 p-6 md:p-10">
@@ -157,57 +187,13 @@ export const TablesPage = () => {
         >
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {tables.map((table) => (
-              <Card
+              <TableCard
                 key={table.id}
-                size="sm"
-                className={
-                  selectedTableId === table.id
-                    ? "ring-2 ring-primary/40"
-                    : undefined
-                }
-                onClick={() =>
-                  !table.isAvailable
-                    ? setSelectedTableId(table.id)
-                    : setSelectedTableId(null)
-                }
-              >
-                <CardHeader>
-                  <div className="flex items-center justify-between gap-2">
-                    <CardTitle>{table.name}</CardTitle>
-                    <span className={availabilityBadgeClass(table.isAvailable)}>
-                      {table.isAvailable ? "Disponible" : "Ocupada"}
-                    </span>
-                  </div>
-                  <CardDescription>
-                    {table.description} · {table.chairs} sillas
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex justify-end">
-                  {table.isAvailable ? (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        handleOpenDialog(table);
-                      }}
-                    >
-                      Crear pedido
-                    </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        setSelectedTableId(table.id);
-                      }}
-                    >
-                      Ver pedidos
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
+                table={table}
+                selectedTableId={selectedTableId}
+                onSelect={setSelectedTableId}
+                onOpenDialog={handleOpenDialog}
+              />
             ))}
           </div>
         </div>
@@ -232,7 +218,9 @@ export const TablesPage = () => {
                       className="rounded-2xl border border-border/60 px-4 py-3"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="text-sm font-medium">#{order.num}</span>
+                        <span className="text-sm font-medium">
+                          #{order.num}
+                        </span>
                         <span className={statusBadgeClass(order.status)}>
                           {order.status === "EN_PROGRESO"
                             ? "En progreso"

@@ -123,9 +123,9 @@ export const OrdersPage = () => {
                 <CardHeader>
                   <div className="flex items-center justify-between gap-2">
                     <CardTitle>{orderTableLabel(order)}</CardTitle>
-                    <span className={statusBadgeClass(order.status)}>
+                    <Badge className={statusBadgeClass(order.status)}>
                       {statusLabel(order.status)}
-                    </span>
+                    </Badge>
                   </div>
                   <CardDescription>
                     #{order.num} ·{" "}
