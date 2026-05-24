@@ -25,7 +25,7 @@ export const TablesPage = () => {
   const [people, setPeople] = React.useState("2");
   const [notes, setNotes] = React.useState("");
 
-  const [selectedTable, setSelectedTable] = React.useState<Table>();
+  const [selectedTable, setSelectedTable] = React.useState<Table | null>(null);
 
   const handleOpenDialog = (table: Table) => {
     setTableForOrder(table);
@@ -56,13 +56,17 @@ export const TablesPage = () => {
       </div>
       <div className="grid gap-6 lg:grid-cols-12">
         <div className={selectedTable ? "lg:col-span-8" : "lg:col-span-12"}>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-4 xl:grid-cols-6">
             {tables.map((table) => (
               <TableCard
                 key={table.id}
                 table={table}
                 active={table.id === selectedTable?.id}
-                onSelect={(table) => setSelectedTable(table)}
+                onSelect={(table) =>
+                  setSelectedTable(
+                    table.id === selectedTable?.id ? null : table,
+                  )
+                }
                 onOpenDialog={handleOpenDialog}
               />
             ))}

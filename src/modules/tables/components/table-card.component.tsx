@@ -1,4 +1,3 @@
-import { Button } from "@/shared/components/ui/button";
 import {
   Card,
   CardHeader,
@@ -8,6 +7,7 @@ import {
 } from "@/shared/components/ui/card";
 import type { Table } from "@/shared/models/table.model";
 import { useTableOrders } from "../hooks/useTableOrders";
+import { Badge } from "@/shared/components/ui/badge";
 
 type TableCardProps = {
   table: Table;
@@ -33,41 +33,18 @@ export const TableCard = ({
     <Card
       size="sm"
       className={active ? "ring-2 ring-primary/40" : undefined}
-      onClick={() => hasOrders && onSelect(table)}
+      onClick={() => (hasOrders ? onSelect(table) : onOpenDialog(table))}
     >
       <CardHeader>
         <div className="flex items-center justify-between gap-2">
           <CardTitle>Mesa {table.name}</CardTitle>
-          <span className={availabilityBadgeClass(!hasOrders)}>
-            {!hasOrders ? "Disponible" : "Ocupada"}
-          </span>
         </div>
         <CardDescription>{table.chairs} sillas</CardDescription>
       </CardHeader>
       <CardContent className="flex justify-end">
-        {!hasOrders ? (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={(event) => {
-              event.stopPropagation();
-              onOpenDialog(table);
-            }}
-          >
-            Crear pedido
-          </Button>
-        ) : (
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={(event) => {
-              event.stopPropagation();
-              onSelect(table);
-            }}
-          >
-            Ver pedidos
-          </Button>
-        )}
+        <Badge className={availabilityBadgeClass(!hasOrders)}>
+          {!hasOrders ? "Disponible" : "Ocupada"}
+        </Badge>
       </CardContent>
     </Card>
   );
