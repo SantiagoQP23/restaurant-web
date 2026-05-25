@@ -11,6 +11,7 @@ import {
 } from "@/shared/components/ui/select";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
+import { Input } from "@/shared/components/ui/input";
 import {
   Dialog,
   DialogClose,
@@ -74,15 +75,30 @@ export const ProductionPage = () => {
   const [selectedAreaId, setSelectedAreaId] = useState<number>(0);
   const [viewMode, setViewMode] = useState<"board" | "product">("board");
   const [isCancelledOpen, setIsCancelledOpen] = useState(false);
+  const [productQuery, setProductQuery] = useState("");
 
-  const grouped = useMemo(
-    () =>
-      boardColumns.map((column) => ({
-        ...column,
-        entries: detailsByStatus(orders, column.key, selectedAreaId),
-      })),
-    [orders, selectedAreaId],
+  const normalizedQuery = useMemo(
+    () => productQuery.trim().toLowerCase(),
+    [productQuery],
   );
+
+  const matchesQuery = (detail: OrderDetail) =>
+    normalizedQuery.length === 0 ||
+    detail.product.name.toLowerCase().includes(normalizedQuery);
+
+  const grouped = useMemo(() => {
+    const filteredOrders = orders
+      .map((order) => ({
+        ...order,
+        details: order.details.filter(matchesQuery),
+      }))
+      .filter((order) => order.details.length > 0);
+
+    return boardColumns.map((column) => ({
+      ...column,
+      entries: detailsByStatus(filteredOrders, column.key, selectedAreaId),
+    }));
+  }, [orders, selectedAreaId, normalizedQuery]);
 
   const productGroups = useMemo(() => {
     const productionAreaId = selectedAreaId;
@@ -92,7 +108,8 @@ export const ProductionPage = () => {
           .filter(
             (detail) =>
               detail.status === column.key &&
-              detail.product.productionArea.id === productionAreaId,
+              detail.product.productionArea.id === productionAreaId &&
+              matchesQuery(detail),
           )
           .map((detail) => ({ order, detail })),
       );
@@ -136,7 +153,7 @@ export const ProductionPage = () => {
         products: Array.from(groupedByProduct.values()),
       };
     });
-  }, [orders, selectedAreaId]);
+  }, [orders, selectedAreaId, normalizedQuery]);
 
   const cancelledDetails = useMemo(() => {
     const productionAreaId = selectedAreaId;
@@ -145,11 +162,12 @@ export const ProductionPage = () => {
         .filter(
           (detail) =>
             detail.status === OrderDetailStatus.CANCELLED &&
-            detail.product.productionArea.id === productionAreaId,
+            detail.product.productionArea.id === productionAreaId &&
+            matchesQuery(detail),
         )
         .map((detail) => ({ order, detail })),
     );
-  }, [orders, selectedAreaId]);
+  }, [orders, selectedAreaId, normalizedQuery]);
 
   useEffect(() => {
     if (productionAreasQuery.isSuccess && productionAreasQuery.data) {
@@ -188,6 +206,12 @@ export const ProductionPage = () => {
           <Button variant="outline" onClick={() => refectchOrders()}>
             <RefreshCcw />
           </Button>
+          <Input
+            value={productQuery}
+            onChange={(event) => setProductQuery(event.target.value)}
+            placeholder="Buscar producto"
+            className="w-[200px]"
+          />
           <Tabs
             value={viewMode}
             onValueChange={(value) => setViewMode(value as "board" | "product")}
