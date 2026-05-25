@@ -39,10 +39,9 @@ import { Button } from "@/shared/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
-import { Icon, MoreVertical, ShoppingBag } from "lucide-react";
+import { MoreVertical, ShoppingBag } from "lucide-react";
 import { useOrders } from "../hooks/useOrders";
 import {
   Empty,
