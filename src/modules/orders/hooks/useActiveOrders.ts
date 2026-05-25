@@ -7,7 +7,7 @@ import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { OrdersService } from "../services/orders.service";
 
 export const useActiveOrders = () => {
-  console.log("[useActiveOrders] Hook called");
+  // console.log("[useActiveOrders] Hook called");
   const setOrders = useOrdersStore((state) => state.setOrders);
   const { restaurant } = useAuthStore((state) => state);
 
@@ -27,7 +27,7 @@ export const useActiveOrders = () => {
 
   useEffect(() => {
     // Always sync the query data with the store, even if it's empty
-    if (activeOrdersQuery.data !== undefined) {
+    if (activeOrdersQuery.data) {
       console.log(
         `[useActiveOrders] Setting active orders for restaurant ${restaurant?.id}:`,
         activeOrdersQuery.data.length,

@@ -17,7 +17,7 @@ import { OrderSocketEvent } from "../enums/order-socket-event.enum";
 import { useWebsocketEventListener } from "@/shared/hooks/useWebsocketEventListener";
 
 export const useOrders = () => {
-  console.log("[useOrders] Hook called");
+  // console.log("[useOrders] Hook called");
   const setActiveOrder = useOrdersStore((state) => state.setActiveOrder);
   // const createOrderEmitter = useWebsocketEventEmitter<Order, CreateOrderDto>(
   //   OrderSocketEvent.createOrder,

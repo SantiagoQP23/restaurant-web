@@ -1,9 +1,19 @@
 import * as React from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/ui/card";
 import { Badge } from "@/shared/components/ui/badge";
 import { OrderStatusSpanish } from "@/shared/models/order.model";
 import { useOrdersStore } from "../store/orders.store";
-import { OrderCard, statusBadgeClass, statusLabel } from "../components/order-card.component";
+import {
+  OrderCard,
+  statusBadgeClass,
+  statusLabel,
+} from "../components/order-card.component";
 import { formatCurrency, formatStringDate } from "@/shared/lib/utils";
 import { orderTableLabel } from "../helpers/orders.helper";
 
@@ -31,7 +41,7 @@ export const OrdersPage = () => {
     return orders.filter(
       (order) => statusLabel(order.status) === selectedFilter,
     );
-  }, [selectedFilter]);
+  }, [selectedFilter, orders]);
 
   React.useEffect(() => {
     if (!selectedOrderId) {
