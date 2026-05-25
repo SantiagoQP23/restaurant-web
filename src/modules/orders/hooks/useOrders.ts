@@ -15,6 +15,7 @@ import type {
 } from "../interfaces/dto/update-order.dto";
 import { OrderSocketEvent } from "../enums/order-socket-event.enum";
 import { useWebsocketEventListener } from "@/shared/hooks/useWebsocketEventListener";
+import { useNotificationSound } from "@/shared/hooks/useNotificationSound";
 
 export const useOrders = () => {
   // console.log("[useOrders] Hook called");
@@ -110,12 +111,14 @@ export const useOrderCreatedListener = () => {
   const sortOrdersByDeliveryTime = useOrdersStore(
     (state) => state.sortOrdersByDeliveryTime,
   );
+  const { play: playNotificationSound } = useNotificationSound(0.5);
   useWebsocketEventListener(
     OrderSocketEvent.newOrder,
     ({ data, msg }: SocketEvent<Order>) => {
       toast.info(msg);
       addOrder(data);
       sortOrdersByDeliveryTime();
+      playNotificationSound();
     },
   );
 };
