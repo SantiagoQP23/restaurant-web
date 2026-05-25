@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { Badge } from "@/shared/components/ui/badge";
-import { OrderStatusSpanish } from "@/shared/models/order.model";
+import { OrderStatus, OrderStatusSpanish } from "@/shared/models/order.model";
 import { useOrdersStore } from "../store/orders.store";
 import {
   OrderCard,
@@ -19,6 +19,31 @@ import {
   getPaymentStatusLabel,
   orderTableLabel,
 } from "../helpers/orders.helper";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shared/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/shared/components/ui/alert-dialog";
+import { Button } from "@/shared/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
+import { MoreVertical } from "lucide-react";
+import { useOrders } from "../hooks/useOrders";
 
 const statusFilters = [
   "Todos",
@@ -36,6 +61,9 @@ export const OrdersPage = () => {
   const [selectedOrderId, setSelectedOrderId] = React.useState<string | null>(
     null,
   );
+  const [isCloseDialogOpen, setIsCloseDialogOpen] = React.useState(false);
+
+  const { mutate: updateOrder } = useOrders().updateOrder;
 
   const visibleOrders = React.useMemo(() => {
     if (selectedFilter === "Todos") {
@@ -61,6 +89,24 @@ export const OrdersPage = () => {
   const selectedOrder = visibleOrders.find(
     (order) => order.id === selectedOrderId,
   );
+
+  const isOrderClosable = Boolean(
+    selectedOrder &&
+      selectedOrder.paymentStatus === "paid" &&
+      selectedOrder.status === OrderStatus.DELIVERED,
+  );
+
+  const onCloseOrder = (orderId: string) => {
+    updateOrder(
+      { id: orderId, isClosed: true },
+      {
+        onSuccess: () => {
+          setIsCloseDialogOpen(false);
+          setSelectedOrderId(null);
+        },
+      },
+    );
+  };
 
   return (
     <div className="flex min-h-svh flex-col gap-6 p-6 md:p-10">
@@ -116,6 +162,49 @@ export const OrdersPage = () => {
                     <Badge className={statusBadgeClass(selectedOrder.status)}>
                       {statusLabel(selectedOrder.status)}
                     </Badge>
+
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Acciones del pedido"
+                        >
+                          <MoreVertical />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        {isOrderClosable ? (
+                          <DropdownMenuItem
+                            variant="destructive"
+                            onSelect={(event) => {
+                              event.preventDefault();
+                              setIsCloseDialogOpen(true);
+                            }}
+                          >
+                            Cerrar pedido
+                          </DropdownMenuItem>
+                        ) : (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="flex">
+                                <DropdownMenuItem
+                                  variant="destructive"
+                                  disabled
+                                >
+                                  Cerrar pedido
+                                </DropdownMenuItem>
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="left" sideOffset={8}>
+                              Disponible solo si el pedido esta pagado y
+                              entregado.
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
                 <CardDescription>
@@ -153,6 +242,30 @@ export const OrdersPage = () => {
                 </div>
               </CardContent>
             </Card>
+            <AlertDialog
+              open={isCloseDialogOpen}
+              onOpenChange={setIsCloseDialogOpen}
+            >
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Cerrar pedido</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Este pedido esta pagado y entregado. Estas seguro de
+                    cerrarlo?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      onCloseOrder(selectedOrder.id);
+                    }}
+                  >
+                    Confirmar
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         )}
       </div>
