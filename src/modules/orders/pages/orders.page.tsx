@@ -42,8 +42,16 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
-import { MoreVertical } from "lucide-react";
+import { Icon, MoreVertical, ShoppingBag } from "lucide-react";
 import { useOrders } from "../hooks/useOrders";
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+  EmptyContent,
+} from "@/shared/components/ui/empty";
 
 const statusFilters = [
   "Todos",
@@ -128,22 +136,39 @@ export const OrdersPage = () => {
         ))}
       </div>
       <div className="grid gap-6 lg:grid-cols-12">
-        <div className={selectedOrder ? "lg:col-span-8" : "lg:col-span-12"}>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {visibleOrders.map((order) => (
-              <OrderCard
-                key={order.id}
-                order={order}
-                isSelected={order.id === selectedOrderId}
-                onClick={() =>
-                  order.id !== selectedOrderId
-                    ? setSelectedOrderId(order.id)
-                    : setSelectedOrderId(null)
-                }
-              />
-            ))}
+        {orders.length === 0 ? (
+          <div className="lg:col-span-12">
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <ShoppingBag />
+                </EmptyMedia>
+                <EmptyTitle>Sin pedidos</EmptyTitle>
+                <EmptyDescription>No se han creado pedidos</EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <Button>Crear pedido</Button>
+              </EmptyContent>
+            </Empty>
           </div>
-        </div>
+        ) : (
+          <div className={selectedOrder ? "lg:col-span-8" : "lg:col-span-12"}>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {visibleOrders.map((order) => (
+                <OrderCard
+                  key={order.id}
+                  order={order}
+                  isSelected={order.id === selectedOrderId}
+                  onClick={() =>
+                    order.id !== selectedOrderId
+                      ? setSelectedOrderId(order.id)
+                      : setSelectedOrderId(null)
+                  }
+                />
+              ))}
+            </div>
+          </div>
+        )}
         {selectedOrder && (
           <div className="lg:col-span-4">
             <Card className="sticky top-6">
