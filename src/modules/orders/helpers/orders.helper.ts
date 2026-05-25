@@ -1,5 +1,5 @@
 import type { OrderDetail } from "@/shared/models/order-detail.model";
-import type { Order } from "@/shared/models/order.model";
+import { type Order, OrderPaymentStatus } from "@/shared/models/order.model";
 import { OrderDetailStatus } from "@/shared/models/order.model";
 
 export const orderTableLabel = (order: Order) =>
@@ -40,5 +40,29 @@ export const nextDetailStatus = (status: OrderDetailStatus) => {
       return OrderDetailStatus.READY;
     default:
       return status;
+  }
+};
+
+export const getPaymentStatusLabel = (
+  paymentStatus: OrderPaymentStatus,
+): string => {
+  switch (paymentStatus) {
+    case OrderPaymentStatus.PAID:
+      return "Pagado";
+    case OrderPaymentStatus.PARTIALLY_PAID:
+      return "Pago parcial";
+    default:
+      return "Pago pendiente";
+  }
+};
+
+export const getPaymentBadgeClass = (paymentStatus: OrderPaymentStatus) => {
+  switch (paymentStatus) {
+    case OrderPaymentStatus.PAID:
+      return "rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700";
+    case OrderPaymentStatus.PARTIALLY_PAID:
+      return "rounded-full bg-sky-100 px-2 py-1 text-xs font-medium text-sky-700";
+    default:
+      return "rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700";
   }
 };

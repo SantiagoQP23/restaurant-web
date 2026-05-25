@@ -15,7 +15,10 @@ import {
   statusLabel,
 } from "../components/order-card.component";
 import { formatCurrency, formatStringDate } from "@/shared/lib/utils";
-import { orderTableLabel } from "../helpers/orders.helper";
+import {
+  getPaymentStatusLabel,
+  orderTableLabel,
+} from "../helpers/orders.helper";
 
 const statusFilters = [
   "Todos",
@@ -101,9 +104,19 @@ export const OrdersPage = () => {
               <CardHeader>
                 <div className="flex items-center justify-between gap-2">
                   <CardTitle>{orderTableLabel(selectedOrder)}</CardTitle>
-                  <span className={statusBadgeClass(selectedOrder.status)}>
-                    {statusLabel(selectedOrder.status)}
-                  </span>
+
+                  <div className="flex flex-wrap items-center justify-end gap-1">
+                    <Badge
+                      className={getPaymentStatusLabel(
+                        selectedOrder.paymentStatus,
+                      )}
+                    >
+                      {getPaymentStatusLabel(selectedOrder.paymentStatus)}
+                    </Badge>
+                    <Badge className={statusBadgeClass(selectedOrder.status)}>
+                      {statusLabel(selectedOrder.status)}
+                    </Badge>
+                  </div>
                 </div>
                 <CardDescription>
                   #{selectedOrder.num} ·{" "}
