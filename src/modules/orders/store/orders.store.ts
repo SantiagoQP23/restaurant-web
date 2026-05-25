@@ -21,6 +21,7 @@ interface OrdersState {
   setBillAmount: (amount: string) => void;
   setBillReceivedAmount: (amount: string) => void;
   setBillTransferNote: (note: string) => void;
+  sortOrdersByDeliveryTime: () => void;
   // setSelectedPaymentMethod: (method: PaymentMethod | null) => void;
   // setSelectedAccount: (account: Account | null) => void;
   addOrder: (order: Order) => void;
@@ -71,6 +72,12 @@ export const useOrdersStore = create<OrdersState>((set) => ({
   deleteOrder: (orderId: string) =>
     set((state) => ({
       orders: state.orders.filter((o) => o.id !== orderId),
+    })),
+  sortOrdersByDeliveryTime: () =>
+    set((state) => ({
+      orders: [...state.orders].sort((a, b) =>
+        a.deliveryTime.localeCompare(b.deliveryTime),
+      ),
     })),
   reset: () => set(initialState),
 }));

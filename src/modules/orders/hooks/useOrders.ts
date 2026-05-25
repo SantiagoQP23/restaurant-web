@@ -107,16 +107,15 @@ export const useOrders = () => {
 
 export const useOrderCreatedListener = () => {
   const addOrder = useOrdersStore((state) => state.addOrder);
+  const sortOrdersByDeliveryTime = useOrdersStore(
+    (state) => state.sortOrdersByDeliveryTime,
+  );
   useWebsocketEventListener(
     OrderSocketEvent.newOrder,
     ({ data, msg }: SocketEvent<Order>) => {
       toast.info(msg);
       addOrder(data);
-      // dispatch(addOrder(data));
-
-      // dispatch(setLastUpdatedOrders(new Date().toISOString()));
-      //
-      // dispatch(sortOrdersByDeliveryTime());
+      sortOrdersByDeliveryTime();
     },
   );
 };
@@ -125,23 +124,22 @@ export const useOrderUpdatedListener = () => {
   const updateOrder = useOrdersStore((state) => state.updateOrder);
   const deleteOrder = useOrdersStore((state) => state.deleteOrder);
   const setActiveOrder = useOrdersStore((state) => state.setActiveOrder);
+  const sortOrdersByDeliveryTime = useOrdersStore(
+    (state) => state.sortOrdersByDeliveryTime,
+  );
 
   useWebsocketEventListener<Order>(
     OrderSocketEvent.updateOrder,
     ({ data: order }: SocketEvent<Order>) => {
-      console.log("Received order update for order:", order?.id);
-
       if (order!.isClosed) deleteOrder(order!.id);
-      else
-        // Update the order in the list
-        updateOrder(order!);
+      else updateOrder(order!);
+
+      sortOrdersByDeliveryTime();
 
       // Get current active order state at the time of the event
       const currentActiveOrder = useOrdersStore.getState().activeOrder;
-      console.log("activeOrder:", currentActiveOrder?.id);
 
       if (currentActiveOrder?.id === order?.id) {
-        console.log("Updating active order:", order.id);
         setActiveOrder(order!);
       }
     },
@@ -150,10 +148,16 @@ export const useOrderUpdatedListener = () => {
 
 export const useOrderDeletedListener = () => {
   const deleteOrder = useOrdersStore((state) => state.deleteOrder);
+  const sortOrdersByDeliveryTime = useOrdersStore(
+    (state) => state.sortOrdersByDeliveryTime,
+  );
   useWebsocketEventListener(
     OrderSocketEvent.deleteOrder,
     ({ data }: SocketEvent<Order>) => {
-      if (data) deleteOrder(data.id);
+      if (data) {
+        deleteOrder(data.id);
+        sortOrdersByDeliveryTime();
+      }
     },
   );
 };
