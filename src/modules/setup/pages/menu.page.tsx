@@ -1,8 +1,7 @@
 import * as React from "react";
-import NiceModal, { useModal } from "@ebay/nice-modal-react";
+import NiceModal from "@ebay/nice-modal-react";
 import { Link } from "@tanstack/react-router";
 import { MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
-import { useForm } from "react-hook-form";
 import { Button } from "@/shared/components/ui/button";
 import { SetupStepper } from "../components/setup-stepper.component";
 import {
@@ -17,208 +16,13 @@ import {
   AlertDialogTrigger,
 } from "@/shared/components/ui/alert-dialog";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/shared/components/ui/dialog";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/shared/components/ui/field";
-import { Input } from "@/shared/components/ui/input";
-import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/shared/components/ui/popover";
-import type {
-  CreateMenuSectionDto,
-  CreateSectionCategoryDto,
-} from "@/modules/menu/interface/dto/create-menu.dto";
 import { useSetupStore } from "@/shared/store/setup.store";
-
-type CategoryModalProps = {
-  title: string;
-  submitLabel: string;
-  sectionName: string;
-  initialValues?: Pick<CreateSectionCategoryDto, "name">;
-  onSubmit: (name: string) => void;
-};
-
-const CategoryModal = NiceModal.create(
-  ({
-    title,
-    submitLabel,
-    sectionName,
-    initialValues,
-    onSubmit,
-  }: CategoryModalProps) => {
-    const modal = useModal();
-    const {
-      register,
-      handleSubmit,
-      reset,
-      formState: { errors },
-    } = useForm<{ name: string }>({
-      defaultValues: {
-        name: "",
-      },
-    });
-
-    React.useEffect(() => {
-      if (!modal.visible) {
-        return;
-      }
-      reset({
-        name: initialValues?.name ?? "",
-      });
-    }, [initialValues?.name, modal.visible, reset]);
-
-    return (
-      <Dialog
-        open={modal.visible}
-        onOpenChange={(open) => {
-          if (!open) {
-            modal.hide();
-          }
-        }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
-            <DialogDescription>
-              Agrega una categoria para la seccion "{sectionName}".
-            </DialogDescription>
-          </DialogHeader>
-          <form
-            className="flex flex-col gap-4"
-            onSubmit={handleSubmit((values) => {
-              onSubmit(values.name.trim());
-              modal.hide();
-            })}
-          >
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="category-name">Nombre</FieldLabel>
-                <Input
-                  id="category-name"
-                  type="text"
-                  placeholder="Platos especiales"
-                  aria-invalid={Boolean(errors.name)}
-                  {...register("name", {
-                    required: "El nombre es obligatorio.",
-                  })}
-                />
-                {errors.name?.message && (
-                  <FieldDescription>{errors.name.message}</FieldDescription>
-                )}
-              </Field>
-            </FieldGroup>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button type="button" variant="outline">
-                  Cancelar
-                </Button>
-              </DialogClose>
-              <Button type="submit">{submitLabel}</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-    );
-  },
-);
-
-type SectionModalProps = {
-  title: string;
-  submitLabel: string;
-  initialValues?: Pick<CreateMenuSectionDto, "name">;
-  onSubmit: (name: string) => void;
-};
-
-const SectionModal = NiceModal.create(
-  ({ title, submitLabel, initialValues, onSubmit }: SectionModalProps) => {
-    const modal = useModal();
-    const {
-      register,
-      handleSubmit,
-      reset,
-      formState: { errors },
-    } = useForm<{ name: string }>({
-      defaultValues: {
-        name: "",
-      },
-    });
-
-    React.useEffect(() => {
-      if (!modal.visible) {
-        return;
-      }
-      reset({
-        name: initialValues?.name ?? "",
-      });
-    }, [initialValues?.name, modal.visible, reset]);
-
-    return (
-      <Dialog
-        open={modal.visible}
-        onOpenChange={(open) => {
-          if (!open) {
-            modal.hide();
-          }
-        }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
-            <DialogDescription>
-              Crea una seccion para agrupar las categorias del menu.
-            </DialogDescription>
-          </DialogHeader>
-          <form
-            className="flex flex-col gap-4"
-            onSubmit={handleSubmit((values) => {
-              onSubmit(values.name.trim());
-              modal.hide();
-            })}
-          >
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="section-name">Nombre</FieldLabel>
-                <Input
-                  id="section-name"
-                  type="text"
-                  placeholder="Especialidades"
-                  aria-invalid={Boolean(errors.name)}
-                  {...register("name", {
-                    required: "El nombre es obligatorio.",
-                  })}
-                />
-                {errors.name?.message && (
-                  <FieldDescription>{errors.name.message}</FieldDescription>
-                )}
-              </Field>
-            </FieldGroup>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button type="button" variant="outline">
-                  Cancelar
-                </Button>
-              </DialogClose>
-              <Button type="submit">{submitLabel}</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-    );
-  },
-);
+import { MenuCategoryDialog } from "@/modules/menu/components/menu-category-dialog.component";
+import { MenuSectionDialog } from "@/modules/menu/components/menu-section-dialog.component";
 
 export const MenuPage = () => {
   const menu = useSetupStore((state) => state.menu);
@@ -243,7 +47,7 @@ export const MenuPage = () => {
             <Button
               type="button"
               onClick={() =>
-                NiceModal.show(SectionModal, {
+                NiceModal.show(MenuSectionDialog, {
                   title: "Nueva seccion",
                   submitLabel: "Guardar",
                   onSubmit: addMenuSection,
@@ -275,7 +79,7 @@ export const MenuPage = () => {
                     size="icon"
                     aria-label={`Editar seccion ${section.name}`}
                     onClick={() =>
-                      NiceModal.show(SectionModal, {
+                      NiceModal.show(MenuSectionDialog, {
                         title: "Editar seccion",
                         submitLabel: "Guardar cambios",
                         initialValues: { name: section.name },
@@ -362,7 +166,7 @@ export const MenuPage = () => {
                                 variant="ghost"
                                 className="justify-start"
                                 onClick={() =>
-                                  NiceModal.show(CategoryModal, {
+                                  NiceModal.show(MenuCategoryDialog, {
                                     title: "Editar categoria",
                                     submitLabel: "Guardar cambios",
                                     sectionName: section.name,
@@ -432,7 +236,7 @@ export const MenuPage = () => {
                   type="button"
                   variant="outline"
                   onClick={() =>
-                    NiceModal.show(CategoryModal, {
+                    NiceModal.show(MenuCategoryDialog, {
                       title: "Nueva categoria",
                       submitLabel: "Guardar",
                       sectionName: section.name,

@@ -15,7 +15,7 @@ import {
   accountsRoute,
   completeRoute,
   joinRestaurantRoute,
-  menuRoute,
+  menuRoute as setupMenuRoute,
   paymentMethodsRoute,
   productionAreasRoute,
   productsRoute,
@@ -27,6 +27,7 @@ import {
 import { ordersRoute } from "@/modules/orders/router/orders.router";
 import { settingsRoute } from "@/modules/settings/router/settings.router";
 import { tablesRoute } from "@/modules/tables/router/tables.router";
+import { menuRoute } from "@/modules/menu/router/menu.router";
 import { AppLayout } from "@/shared/layout/app.layout";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
 
@@ -62,7 +63,7 @@ const routeTree = rootRoute.addChildren([
     restaurantRoute,
     joinRestaurantRoute,
     productionAreasRoute,
-    menuRoute,
+    setupMenuRoute,
     productsRoute,
     tablesRoute,
     accountsRoute,
@@ -73,6 +74,7 @@ const routeTree = rootRoute.addChildren([
   appRoute.addChildren([
     ordersRoute,
     productionRoute,
+    menuRoute,
     settingsRoute,
     tablesRoute,
   ]),

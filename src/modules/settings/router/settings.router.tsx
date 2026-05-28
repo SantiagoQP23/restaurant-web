@@ -3,7 +3,6 @@ import { createRoute } from "@tanstack/react-router";
 import { SettingsLayout } from "../pages/settings.page";
 import { RestaurantSettingsPage } from "../pages/restaurant-settings.page";
 import { ProductionAreasPage } from "@/modules/setup/pages/production-areas.page";
-import { MenuPage } from "@/modules/setup/pages/menu.page";
 import { ProductsPage } from "@/modules/setup/pages/products.page";
 import { AccountsPage } from "@/modules/setup/pages/accounts.page";
 import { PaymentMethodsPage } from "@/modules/setup/pages/payment-methods.page";
@@ -34,11 +33,6 @@ const productionAreasRoute = createRoute({
   component: ProductionAreasPage,
 });
 
-const menuRoute = createRoute({
-  getParentRoute: () => settingsRoute,
-  path: "menu",
-  component: MenuPage,
-});
 
 const productsRoute = createRoute({
   getParentRoute: () => settingsRoute,
@@ -74,7 +68,6 @@ settingsRoute.addChildren([
   settingsIndexRoute,
   restaurantRoute,
   productionAreasRoute,
-  menuRoute,
   productsRoute,
   tablesRoute,
   accountsRoute,

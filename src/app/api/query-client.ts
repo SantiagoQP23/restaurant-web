@@ -19,4 +19,8 @@ export const queryKeys = {
     // list: (filters?: TableFilters) => ['tables', 'list', filters] as const,
     // detail: (id: string) => ['table', id] as const
   },
+  menu: {
+    all: ["menu"] as const,
+    detail: (restaurantId: string) => ["menu", restaurantId] as const,
+  },
 } as const;

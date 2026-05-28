@@ -13,11 +13,6 @@ const settingsOptions = [
     to: "/app/settings/production-areas",
   },
   {
-    title: "Menu",
-    description: "Organiza las secciones y categorias del menu.",
-    to: "/app/settings/menu",
-  },
-  {
     title: "Productos",
     description: "Configura productos y asigna areas de preparacion.",
     to: "/app/settings/products",
