@@ -9,6 +9,10 @@ import type { UpdateSectionDto } from "../interface/dto/update-section.dto";
 import { SectionsService } from "../services/sections.service";
 import { toast } from "sonner";
 import type { CreateSectionDto } from "../interface/dto/create-section.dto";
+import type { Category } from "@/shared/models/category.model";
+import type { CreateCategoryDto } from "../interface/dto/create-category.dto";
+import type { UpdateCategoryDto } from "../interface/dto/update-category.dto";
+import { CategoriesService } from "../services/categories.service";
 
 export const useMenu = () => {
   const { restaurant } = useAuthStore();
@@ -54,6 +58,43 @@ export const useMenu = () => {
     },
   });
 
+  const createCategory = useMutation<Category, unknown, CreateCategoryDto>({
+    mutationFn: (data: CreateCategoryDto) => CategoriesService.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.menu.detail(restaurant!.id), "sections"],
+      });
+    },
+    onError: () => {
+      toast.error("No se pudo crear la categoria");
+    },
+  });
+
+  const updateCategory = useMutation<Category, unknown, UpdateCategoryDto>({
+    mutationFn: (data: UpdateCategoryDto) =>
+      CategoriesService.update(data.id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.menu.detail(restaurant!.id), "sections"],
+      });
+    },
+    onError: () => {
+      toast.error("No se pudo actualizar la categoria");
+    },
+  });
+
+  const deleteCategory = useMutation<void, unknown, string>({
+    mutationFn: (id: string) => CategoriesService.remove(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.menu.detail(restaurant!.id), "sections"],
+      });
+    },
+    onError: () => {
+      toast.error("No se pudo eliminar la categoria");
+    },
+  });
+
   useEffect(() => {
     if (sectionsQuery.isSuccess && sectionsQuery.data) {
       setSections(sectionsQuery.data);
@@ -64,5 +105,8 @@ export const useMenu = () => {
     sections,
     updateSection,
     createSection,
+    createCategory,
+    updateCategory,
+    deleteCategory,
   };
 };

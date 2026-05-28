@@ -2,6 +2,7 @@ import * as React from "react";
 import NiceModal from "@ebay/nice-modal-react";
 import { Link } from "@tanstack/react-router";
 import { MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/shared/components/ui/button";
 import { SetupStepper } from "../components/setup-stepper.component";
 import {
@@ -21,17 +22,51 @@ import {
   PopoverTrigger,
 } from "@/shared/components/ui/popover";
 import { useSetupStore } from "@/shared/store/setup.store";
+import { useAuthStore } from "@/modules/auth/store/auth.store";
+import { ProductsService } from "@/modules/menu/services/products.service";
+import { queryKeys } from "@/app/api/query-client";
+import type { Product } from "@/shared/models/product.model";
+
+type MenuProduct = Product & {
+  categoryId?: string;
+  category?: { id: string; name: string };
+};
 import { MenuCategoryDialog } from "@/modules/menu/components/menu-category-dialog.component";
 import { MenuSectionDialog } from "@/modules/menu/components/menu-section-dialog.component";
 
 export const MenuPage = () => {
   const menu = useSetupStore((state) => state.menu);
+  const { restaurant } = useAuthStore();
   const addMenuSection = useSetupStore((state) => state.addMenuSection);
   const updateMenuSection = useSetupStore((state) => state.updateMenuSection);
   const removeMenuSection = useSetupStore((state) => state.removeMenuSection);
   const addMenuCategory = useSetupStore((state) => state.addMenuCategory);
   const updateMenuCategory = useSetupStore((state) => state.updateMenuCategory);
   const removeMenuCategory = useSetupStore((state) => state.removeMenuCategory);
+
+  const productsQuery = useQuery<MenuProduct[]>({
+    queryKey: [queryKeys.menu.detail(restaurant!.id), "products"],
+    queryFn: () => ProductsService.getAll(restaurant!.id),
+    enabled: Boolean(restaurant?.id),
+  });
+
+  const productsByCategory = React.useMemo(() => {
+    const byId = new Map<string, MenuProduct[]>();
+    const byName = new Map<string, MenuProduct[]>();
+    (productsQuery.data ?? []).forEach((product) => {
+      if (product.categoryId) {
+        const current = byId.get(product.categoryId) ?? [];
+        byId.set(product.categoryId, [...current, product]);
+      }
+      const categoryName = product.category?.name?.trim();
+      if (categoryName) {
+        const key = categoryName.toLowerCase();
+        const current = byName.get(key) ?? [];
+        byName.set(key, [...current, product]);
+      }
+    });
+    return { byId, byName };
+  }, [productsQuery.data]);
 
   return (
     <div className="flex min-h-svh flex-col p-6 md:p-10">
@@ -138,17 +173,31 @@ export const MenuPage = () => {
                   </div>
                 ) : (
                   <ul className="divide-y divide-border/60">
-                    {section.categories.map((category, categoryIndex) => (
-                      <li
-                        key={`${category.name}-${categoryIndex}`}
-                        className="flex items-center justify-between gap-4 px-4 py-2"
-                      >
-                        <div>
-                          <div className="text-sm font-medium">
-                            {category.name}
-                          </div>
-                        </div>
-                        <Popover>
+                     {section.categories.map((category, categoryIndex) => {
+                       const categoryId = (category as { id?: string }).id;
+                       const products = categoryId
+                         ? productsByCategory.byId.get(categoryId) ?? []
+                         : productsByCategory.byName.get(
+                             category.name.toLowerCase(),
+                           ) ?? [];
+                       return (
+                       <li
+                         key={`${category.name}-${categoryIndex}`}
+                         className="flex items-center justify-between gap-4 px-4 py-2"
+                       >
+                         <div>
+                           <div className="text-sm font-medium">
+                             {category.name}
+                           </div>
+                           <div className="mt-1 text-xs text-muted-foreground">
+                             {productsQuery.isLoading
+                               ? "Cargando productos..."
+                               : products.length === 0
+                                 ? "Sin productos"
+                                 : products.map((product) => product.name).join(" · ")}
+                           </div>
+                         </div>
+                         <Popover>
                           <PopoverTrigger asChild>
                             <Button
                               type="button"
@@ -225,9 +274,10 @@ export const MenuPage = () => {
                               </AlertDialog>
                             </div>
                           </PopoverContent>
-                        </Popover>
-                      </li>
-                    ))}
+                         </Popover>
+                       </li>
+                     );
+                     })}
                   </ul>
                 )}
               </div>
