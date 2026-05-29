@@ -13,6 +13,9 @@ import type { Category } from "@/shared/models/category.model";
 import type { CreateCategoryDto } from "../interface/dto/create-category.dto";
 import type { UpdateCategoryDto } from "../interface/dto/update-category.dto";
 import { CategoriesService } from "../services/categories.service";
+import type { Product } from "@/shared/models/product.model";
+import type { UpdateProductDto } from "../interface/dto/update-product.dto";
+import { ProductsService } from "../services/products.service";
 
 export const useMenu = () => {
   const { restaurant } = useAuthStore();
@@ -95,6 +98,19 @@ export const useMenu = () => {
     },
   });
 
+  const updateProduct = useMutation<Product, unknown, UpdateProductDto>({
+    mutationFn: (data: UpdateProductDto) =>
+      ProductsService.update(data.id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.menu.detail(restaurant!.id), "products"],
+      });
+    },
+    onError: () => {
+      toast.error("No se pudo actualizar el producto");
+    },
+  });
+
   useEffect(() => {
     if (sectionsQuery.isSuccess && sectionsQuery.data) {
       setSections(sectionsQuery.data);
@@ -108,5 +124,6 @@ export const useMenu = () => {
     createCategory,
     updateCategory,
     deleteCategory,
+    updateProduct,
   };
 };

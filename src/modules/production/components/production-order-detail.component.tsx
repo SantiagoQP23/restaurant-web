@@ -26,6 +26,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
+import { useNow } from "@/shared/hooks/useNow";
 
 interface Props {
   detail: OrderDetail;
@@ -35,6 +36,7 @@ interface Props {
 export const ProductionOrderDetail = ({ detail, orderId }: Props) => {
   const { mutate: update } = useOrders().updateOrderDetail;
   const [isOpen, setIsOpen] = useState(false);
+  const now = useNow();
 
   const formattedCreatedAt = useMemo(
     () =>
@@ -66,7 +68,7 @@ export const ProductionOrderDetail = ({ detail, orderId }: Props) => {
     if (Number.isNaN(updatedAtTime)) {
       return null;
     }
-    const diffMs = Date.now() - updatedAtTime;
+    const diffMs = now - updatedAtTime;
     if (diffMs < 0 || diffMs > 2 * 60 * 1000) {
       return null;
     }

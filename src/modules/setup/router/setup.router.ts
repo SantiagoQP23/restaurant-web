@@ -2,7 +2,7 @@ import { rootRoute } from "@/app/router/router.config";
 import { createRoute, redirect } from "@tanstack/react-router";
 import { AccountsPage } from "../pages/accounts.page";
 import { CompletePage } from "../pages/complete.page";
-import { MenuPage } from "../pages/menu.page";
+import { MenuSetupPage } from "../pages/menu-setup.page";
 import { PaymentMethodsPage } from "../pages/payment-methods.page";
 import { ProductionAreasPage } from "../pages/production-areas.page";
 import { ProductsPage } from "../pages/products.page";
@@ -52,7 +52,7 @@ export const productionAreasRoute = createRoute({
 export const menuRoute = createRoute({
   getParentRoute: () => setupRoute,
   path: "menu",
-  component: MenuPage,
+  component: MenuSetupPage,
 });
 
 export const productsRoute = createRoute({

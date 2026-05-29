@@ -34,7 +34,7 @@ type MenuProduct = Product & {
 import { MenuCategoryDialog } from "@/modules/menu/components/menu-category-dialog.component";
 import { MenuSectionDialog } from "@/modules/menu/components/menu-section-dialog.component";
 
-export const MenuPage = () => {
+export const MenuSetupPage = () => {
   const menu = useSetupStore((state) => state.menu);
   const { restaurant } = useAuthStore();
   const addMenuSection = useSetupStore((state) => state.addMenuSection);
@@ -173,111 +173,113 @@ export const MenuPage = () => {
                   </div>
                 ) : (
                   <ul className="divide-y divide-border/60">
-                     {section.categories.map((category, categoryIndex) => {
-                       const categoryId = (category as { id?: string }).id;
-                       const products = categoryId
-                         ? productsByCategory.byId.get(categoryId) ?? []
-                         : productsByCategory.byName.get(
-                             category.name.toLowerCase(),
-                           ) ?? [];
-                       return (
-                       <li
-                         key={`${category.name}-${categoryIndex}`}
-                         className="flex items-center justify-between gap-4 px-4 py-2"
-                       >
-                         <div>
-                           <div className="text-sm font-medium">
-                             {category.name}
-                           </div>
-                           <div className="mt-1 text-xs text-muted-foreground">
-                             {productsQuery.isLoading
-                               ? "Cargando productos..."
-                               : products.length === 0
-                                 ? "Sin productos"
-                                 : products.map((product) => product.name).join(" · ")}
-                           </div>
-                         </div>
-                         <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              aria-label={`Acciones para ${category.name}`}
-                            >
-                              <MoreHorizontal />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-48 p-2">
-                            <div className="flex flex-col gap-1">
+                    {section.categories.map((category, categoryIndex) => {
+                      const categoryId = (category as { id?: string }).id;
+                      const products = categoryId
+                        ? (productsByCategory.byId.get(categoryId) ?? [])
+                        : (productsByCategory.byName.get(
+                            category.name.toLowerCase(),
+                          ) ?? []);
+                      return (
+                        <li
+                          key={`${category.name}-${categoryIndex}`}
+                          className="flex items-center justify-between gap-4 px-4 py-2"
+                        >
+                          <div>
+                            <div className="text-sm font-medium">
+                              {category.name}
+                            </div>
+                            <div className="mt-1 text-xs text-muted-foreground">
+                              {productsQuery.isLoading
+                                ? "Cargando productos..."
+                                : products.length === 0
+                                  ? "Sin productos"
+                                  : products
+                                      .map((product) => product.name)
+                                      .join(" · ")}
+                            </div>
+                          </div>
+                          <Popover>
+                            <PopoverTrigger asChild>
                               <Button
                                 type="button"
                                 variant="ghost"
-                                className="justify-start"
-                                onClick={() =>
-                                  NiceModal.show(MenuCategoryDialog, {
-                                    title: "Editar categoria",
-                                    submitLabel: "Guardar cambios",
-                                    sectionName: section.name,
-                                    initialValues: { name: category.name },
-                                    onSubmit: (name) =>
-                                      updateMenuCategory(
-                                        sectionIndex,
-                                        categoryIndex,
-                                        name,
-                                      ),
-                                  })
-                                }
+                                size="icon"
+                                aria-label={`Acciones para ${category.name}`}
                               >
-                                <Pencil />
-                                Editar
+                                <MoreHorizontal />
                               </Button>
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    className="justify-start text-destructive"
-                                  >
-                                    <Trash2 />
-                                    Eliminar
-                                  </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                      Eliminar categoria
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Estas a punto de eliminar la categoria "
-                                      {category.name}". Esta accion no se puede
-                                      deshacer.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                      Cancelar
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                      variant="destructive"
-                                      onClick={() =>
-                                        removeMenuCategory(
+                            </PopoverTrigger>
+                            <PopoverContent className="w-48 p-2">
+                              <div className="flex flex-col gap-1">
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  className="justify-start"
+                                  onClick={() =>
+                                    NiceModal.show(MenuCategoryDialog, {
+                                      title: "Editar categoria",
+                                      submitLabel: "Guardar cambios",
+                                      sectionName: section.name,
+                                      initialValues: { name: category.name },
+                                      onSubmit: (name) =>
+                                        updateMenuCategory(
                                           sectionIndex,
                                           categoryIndex,
-                                        )
-                                      }
+                                          name,
+                                        ),
+                                    })
+                                  }
+                                >
+                                  <Pencil />
+                                  Editar
+                                </Button>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      className="justify-start text-destructive"
                                     >
+                                      <Trash2 />
                                       Eliminar
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-                            </div>
-                          </PopoverContent>
-                         </Popover>
-                       </li>
-                     );
-                     })}
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>
+                                        Eliminar categoria
+                                      </AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Estas a punto de eliminar la categoria "
+                                        {category.name}". Esta accion no se
+                                        puede deshacer.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>
+                                        Cancelar
+                                      </AlertDialogCancel>
+                                      <AlertDialogAction
+                                        variant="destructive"
+                                        onClick={() =>
+                                          removeMenuCategory(
+                                            sectionIndex,
+                                            categoryIndex,
+                                          )
+                                        }
+                                      >
+                                        Eliminar
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </div>
+                            </PopoverContent>
+                          </Popover>
+                        </li>
+                      );
+                    })}
                   </ul>
                 )}
               </div>

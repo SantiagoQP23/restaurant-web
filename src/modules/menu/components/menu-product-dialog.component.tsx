@@ -12,7 +12,12 @@ import {
   DialogTitle,
 } from "@/shared/components/ui/dialog";
 import { Button } from "@/shared/components/ui/button";
-import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/shared/components/ui/field";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 import {
   Select,
@@ -21,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/components/ui/select";
+import { useProductionAreas } from "@/modules/production-areas/hooks/useProductionAreas";
 
 export type MenuCategoryWithIndex = {
   name: string;
@@ -40,7 +46,6 @@ type Props = {
   submitLabel: string;
   category: MenuCategoryWithIndex;
   categories: MenuCategoryWithIndex[];
-  productionAreas: ProductionArea[];
   initialValues?: Partial<FormValues>;
   onSubmit: (values: FormValues) => void;
 };
@@ -51,11 +56,11 @@ export const MenuProductDialog = NiceModal.create(
     submitLabel,
     category,
     categories,
-    productionAreas,
     initialValues,
     onSubmit,
   }: Props) => {
     const modal = useModal();
+    const { productionAreas } = useProductionAreas();
     const {
       register,
       handleSubmit,
@@ -88,7 +93,8 @@ export const MenuProductDialog = NiceModal.create(
           `${category.sectionIndex}-${category.categoryIndex}`,
         productionAreaId:
           initialValues?.productionAreaId ??
-          productionAreas[0]?.id.toString() ?? "",
+          productionAreas[0]?.id.toString() ??
+          "",
       });
     }, [
       category.categoryIndex,
@@ -146,7 +152,9 @@ export const MenuProductDialog = NiceModal.create(
                 )}
               </Field>
               <Field>
-                <FieldLabel htmlFor="product-description">Descripcion</FieldLabel>
+                <FieldLabel htmlFor="product-description">
+                  Descripcion
+                </FieldLabel>
                 <Input
                   id="product-description"
                   type="text"
@@ -159,7 +167,10 @@ export const MenuProductDialog = NiceModal.create(
               </Field>
               <Field>
                 <FieldLabel htmlFor="product-category">Categoria</FieldLabel>
-                <Select value={categoryId} onValueChange={(value) => setValue("categoryId", value)}>
+                <Select
+                  value={categoryId}
+                  onValueChange={(value) => setValue("categoryId", value)}
+                >
                   <SelectTrigger id="product-category" className="w-full">
                     <SelectValue placeholder="Selecciona una categoria" />
                   </SelectTrigger>
@@ -183,7 +194,10 @@ export const MenuProductDialog = NiceModal.create(
                   value={productionAreaId}
                   onValueChange={(value) => setValue("productionAreaId", value)}
                 >
-                  <SelectTrigger id="product-production-area" className="w-full">
+                  <SelectTrigger
+                    id="product-production-area"
+                    className="w-full"
+                  >
                     <SelectValue placeholder="Selecciona un area" />
                   </SelectTrigger>
                   <SelectContent>
