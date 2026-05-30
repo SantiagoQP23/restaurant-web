@@ -6,10 +6,10 @@ export const queryKeys = {
   // Users module
   users: {
     all: ["users"] as const,
-    // lists: () => ['users', 'list'] as const,
-    // list: (filters: UserFilters) => ['users', 'list', filters] as const,
-    // suggestions: (search: string) => ['users-suggestions', search] as const,
-    // detail: (id: string) => ['user', id] as const
+    lists: () => ["users", "list"] as const,
+    list: (filters: UserFilters) => ["users", "list", filters] as const,
+    suggestions: (search: string) => ["users-suggestions", search] as const,
+    detail: (id: string) => ["user", id] as const,
   },
 
   // Tables module

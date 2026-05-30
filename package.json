@@ -13,12 +13,13 @@
   "dependencies": {
     "@ebay/nice-modal-react": "^1.2.13",
     "@fontsource-variable/inter": "^5.2.8",
+    "@hookform/resolvers": "^5.2.2",
     "@tailwindcss/vite": "^4.3.0",
     "@tanstack/react-query": "^5.100.11",
     "@tanstack/react-router": "^1.169.2",
     "@tanstack/react-router-devtools": "^1.166.13",
+    "@tanstack/react-table": "^8.21.3",
     "axios": "^1.16.1",
-    "@hookform/resolvers": "^5.2.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.20",
@@ -53,9 +54,9 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
+    "react-doctor": "^0.2.6",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
-    "vite": "^8.0.10",
-    "react-doctor": "^0.2.6"
+    "vite": "^8.0.10"
   }
 }

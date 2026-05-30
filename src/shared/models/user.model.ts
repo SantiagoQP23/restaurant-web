@@ -11,7 +11,7 @@ export interface Identification {
   num: string;
 }
 
-export interface IPerson {
+export interface Person {
   id: string;
   firstName: string;
   lastName: string;
@@ -23,7 +23,7 @@ export interface IPerson {
 export interface User {
   id: string;
   username: string;
-  person: IPerson;
+  person: Person;
   online: boolean;
   restaurantRoles: RestaurantRole[];
   isActive: boolean;

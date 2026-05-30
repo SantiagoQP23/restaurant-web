@@ -30,6 +30,7 @@ import { tablesRoute } from "@/modules/tables/router/tables.router";
 import { menuRoute } from "@/modules/menu/router/menu.router";
 import { AppLayout } from "@/shared/layout/app.layout";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
+import { usersRoute } from "@/modules/users/router/users.router";
 
 export const rootRoute = createRootRoute({
   component: App,
@@ -77,6 +78,7 @@ const routeTree = rootRoute.addChildren([
     menuRoute,
     settingsRoute,
     tablesRoute,
+    usersRoute,
   ]),
 ]);
 
