@@ -1,3 +1,4 @@
+import type { UserFiltersDto } from "@/modules/users/interfaces/dto/user-filters.dto";
 import { QueryClient } from "@tanstack/react-query";
 
 export const queryClient = new QueryClient();
@@ -7,7 +8,7 @@ export const queryKeys = {
   users: {
     all: ["users"] as const,
     lists: () => ["users", "list"] as const,
-    list: (filters: UserFilters) => ["users", "list", filters] as const,
+    list: (filters: UserFiltersDto) => ["users", "list", filters] as const,
     suggestions: (search: string) => ["users-suggestions", search] as const,
     detail: (id: string) => ["user", id] as const,
   },
@@ -22,5 +23,8 @@ export const queryKeys = {
   menu: {
     all: ["menu"] as const,
     detail: (restaurantId: string) => ["menu", restaurantId] as const,
+  },
+  roles: {
+    all: ["roles"] as const,
   },
 } as const;

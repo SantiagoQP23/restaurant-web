@@ -1,7 +1,6 @@
 import * as React from "react";
 import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { useForm } from "react-hook-form";
-import type { ProductionArea } from "@/shared/models/production-area.model";
 import {
   Dialog,
   DialogClose,

@@ -8,6 +8,7 @@ import { usePaginationAsync } from "@/shared/hooks/usePaginationAsync";
 
 export const useUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
+  const [count, setCount] = useState(0);
 
   const { page, rowsPerPage, handleChangePage, handleChangeRowsPerPage } =
     usePaginationAsync();
@@ -32,11 +33,14 @@ export const useUsers = () => {
   useEffect(() => {
     if (usersQuery.isSuccess && usersQuery.data) {
       setUsers(usersQuery.data.users);
+      setCount(usersQuery.data.count);
     }
   }, [usersQuery.data, usersQuery.isSuccess]);
 
   return {
     usersQuery,
+    count,
+    totalPages: Math.ceil(count / rowsPerPage),
     users,
     page,
     search,
@@ -45,6 +49,25 @@ export const useUsers = () => {
     rowsPerPage,
     handleChangePage,
     handleChangeRowsPerPage,
+    handleChangeSearch,
+  };
+};
+
+export const useUsersSuggestions = () => {
+  const { search, debouncedSearch, handleChangeSearch } = useSearch(1000);
+
+  const usersQuery = useQuery<{ users: User[] }>({
+    queryKey: queryKeys.users.suggestions(debouncedSearch),
+    queryFn: () =>
+      debouncedSearch
+        ? UsersService.getUsersSuggestions(debouncedSearch)
+        : { users: [] },
+  });
+
+  return {
+    usersQuery,
+    search,
+    debouncedSearch,
     handleChangeSearch,
   };
 };

@@ -1,9 +1,7 @@
 import { queryClient, queryKeys } from "@/app/api/query-client";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
-import type { Menu } from "@/shared/models/menu.model";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { MenuService } from "../services/menu.service";
 import type { Section } from "@/shared/models/section.model";
 import type { UpdateSectionDto } from "../interface/dto/update-section.dto";
 import { SectionsService } from "../services/sections.service";
@@ -35,12 +33,12 @@ export const useMenu = () => {
 
   const createSection = useMutation<Section, unknown, CreateSectionDto>({
     mutationFn: (data: CreateSectionDto) => SectionsService.create(data),
-    onSuccess: (data: Section) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [queryKeys.menu.detail(restaurant!.id), "sections"],
       });
     },
-    onError: (error: unknown) => {
+    onError: () => {
       toast.error("No se pudo crear");
     },
   });
