@@ -1,13 +1,12 @@
 import { appRoute } from "@/app/router/router.config";
 import { createRoute } from "@tanstack/react-router";
-import { SettingsLayout } from "../pages/settings.page";
+import { SettingsLayout } from "../layout/settings.layout";
 import { RestaurantSettingsPage } from "../pages/restaurant-settings.page";
-import { ProductionAreasPage } from "@/modules/setup/pages/production-areas.page";
 import { ProductsPage } from "@/modules/setup/pages/products.page";
-import { AccountsPage } from "@/modules/setup/pages/accounts.page";
 import { PaymentMethodsPage } from "@/modules/setup/pages/payment-methods.page";
-import { StaffPage } from "@/modules/setup/pages/staff.page";
 import { TablesSettings } from "../views/tables-settings.view";
+import { PrintersPage } from "../pages/printers.page";
+import { ProductionAreasPage } from "../pages/production-areas.page";
 
 export const settingsRoute = createRoute({
   getParentRoute: () => appRoute,
@@ -33,7 +32,6 @@ const productionAreasRoute = createRoute({
   component: ProductionAreasPage,
 });
 
-
 const productsRoute = createRoute({
   getParentRoute: () => settingsRoute,
   path: "products",
@@ -46,10 +44,10 @@ const tablesRoute = createRoute({
   component: TablesSettings,
 });
 
-const accountsRoute = createRoute({
+const printersRoute = createRoute({
   getParentRoute: () => settingsRoute,
-  path: "accounts",
-  component: AccountsPage,
+  path: "printers",
+  component: PrintersPage,
 });
 
 const paymentMethodsRoute = createRoute({
@@ -58,19 +56,12 @@ const paymentMethodsRoute = createRoute({
   component: PaymentMethodsPage,
 });
 
-const staffRoute = createRoute({
-  getParentRoute: () => settingsRoute,
-  path: "staff",
-  component: StaffPage,
-});
-
 settingsRoute.addChildren([
   settingsIndexRoute,
   restaurantRoute,
   productionAreasRoute,
   productsRoute,
   tablesRoute,
-  accountsRoute,
+  printersRoute,
   paymentMethodsRoute,
-  staffRoute,
 ]);

@@ -152,7 +152,7 @@ const ProductionAreaModal = NiceModal.create(
   },
 );
 
-export const ProductionAreasPage = () => {
+export const SetupProductionAreasPage = () => {
   const navigate = useNavigate();
   const productionAreas = useSetupStore((state) => state.productionAreas);
   const addProductionArea = useSetupStore((state) => state.addProductionArea);

@@ -8,34 +8,34 @@ const settingsOptions = [
     to: "/app/settings/restaurant",
   },
   {
-    title: "Areas de produccion",
+    title: "Areas de producción",
     description: "Gestiona las areas donde se preparan los productos.",
     to: "/app/settings/production-areas",
   },
-  {
-    title: "Productos",
-    description: "Configura productos y asigna areas de preparacion.",
-    to: "/app/settings/products",
-  },
+  // {
+  //   title: "Productos",
+  //   description: "Configura productos y asigna areas de preparacion.",
+  //   to: "/app/settings/products",
+  // },
   {
     title: "Mesas",
     description: "Define la cantidad de mesas y sus detalles.",
     to: "/app/settings/tables",
   },
-  {
-    title: "Cuentas",
-    description: "Administra cuentas base para los pagos.",
-    to: "/app/settings/accounts",
-  },
+  // {
+  //   title: "Cuentas",
+  //   description: "Administra cuentas base para los pagos.",
+  //   to: "/app/settings/accounts",
+  // },
   {
     title: "Metodos de pago",
     description: "Configura comisiones y cuentas destino.",
     to: "/app/settings/payment-methods",
   },
   {
-    title: "Equipo",
-    description: "Invita usuarios y define sus roles.",
-    to: "/app/settings/staff",
+    title: "Impresoras",
+    description: "Configura impresoras y asignalas a areas de produccion.",
+    to: "/app/settings/printers",
   },
 ];
 
@@ -58,8 +58,7 @@ export const SettingsLayout = () => {
             <div className="flex flex-col gap-1">
               {settingsOptions.map((option) => {
                 const isActive =
-                  pathname === "/app/settings" ||
-                  pathname === "/app/settings/"
+                  pathname === "/app/settings" || pathname === "/app/settings/"
                     ? option.to === "/app/settings/restaurant"
                     : pathname.startsWith(option.to);
                 return (
