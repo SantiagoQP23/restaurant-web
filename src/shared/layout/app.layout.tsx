@@ -8,6 +8,7 @@ import {
   Table2,
   Users,
   UtensilsCrossed,
+  UtensilsCrossedIcon,
 } from "lucide-react";
 import {
   Sidebar,
@@ -40,7 +41,7 @@ const navigation = [
   { label: "Menu", icon: UtensilsCrossed, to: "/app/menu" },
   { label: "Usuarios", icon: Users, to: "/app/users" },
   { label: "Pagos", icon: CreditCard, to: "/app/payments" },
-  { label: "Configuracion", icon: Settings, to: "/app/settings" },
+  { label: "Restaurante", icon: UtensilsCrossedIcon, to: "/app/restaurant" },
 ];
 
 export const AppLayout = () => {

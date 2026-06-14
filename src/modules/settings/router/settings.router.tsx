@@ -7,16 +7,17 @@ import { PaymentMethodsPage } from "@/modules/setup/pages/payment-methods.page";
 import { TablesSettings } from "../views/tables-settings.view";
 import { PrintersPage } from "../pages/printers.page";
 import { ProductionAreasPage } from "../pages/production-areas.page";
+import { OtherSettingsPage } from "../pages/other-settings.page";
 
 export const settingsRoute = createRoute({
   getParentRoute: () => appRoute,
-  path: "settings",
+  path: "restaurant",
   component: SettingsLayout,
 });
 
 const restaurantRoute = createRoute({
   getParentRoute: () => settingsRoute,
-  path: "restaurant",
+  path: "information",
   component: RestaurantSettingsPage,
 });
 
@@ -56,6 +57,12 @@ const paymentMethodsRoute = createRoute({
   component: PaymentMethodsPage,
 });
 
+const otherSettings = createRoute({
+  getParentRoute: () => settingsRoute,
+  path: "other-settings",
+  component: OtherSettingsPage,
+});
+
 settingsRoute.addChildren([
   settingsIndexRoute,
   restaurantRoute,
@@ -64,4 +71,5 @@ settingsRoute.addChildren([
   tablesRoute,
   printersRoute,
   paymentMethodsRoute,
+  otherSettings,
 ]);

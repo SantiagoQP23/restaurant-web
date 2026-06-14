@@ -3,14 +3,14 @@ import { cn } from "@/shared/lib/utils";
 
 const settingsOptions = [
   {
-    title: "Restaurante",
+    title: "Información",
     description: "Actualiza nombre, contacto y direccion.",
-    to: "/app/settings/restaurant",
+    to: "/app/restaurant/information",
   },
   {
     title: "Areas de producción",
     description: "Gestiona las areas donde se preparan los productos.",
-    to: "/app/settings/production-areas",
+    to: "/app/restaurant/production-areas",
   },
   // {
   //   title: "Productos",
@@ -20,22 +20,22 @@ const settingsOptions = [
   {
     title: "Mesas",
     description: "Define la cantidad de mesas y sus detalles.",
-    to: "/app/settings/tables",
+    to: "/app/restaurant/tables",
   },
-  // {
-  //   title: "Cuentas",
-  //   description: "Administra cuentas base para los pagos.",
-  //   to: "/app/settings/accounts",
-  // },
   {
     title: "Metodos de pago",
     description: "Configura comisiones y cuentas destino.",
-    to: "/app/settings/payment-methods",
+    to: "/app/restaurant/payment-methods",
   },
   {
     title: "Impresoras",
     description: "Configura impresoras y asignalas a areas de produccion.",
-    to: "/app/settings/printers",
+    to: "/app/restaurant/printers",
+  },
+  {
+    title: "Más",
+    description: "",
+    to: "/app/restaurant/other-settings",
   },
 ];
 
@@ -47,7 +47,7 @@ export const SettingsLayout = () => {
   return (
     <div className="flex min-h-svh flex-col gap-6 p-6 md:p-10">
       <div>
-        <h1 className="text-2xl font-bold">Configuracion</h1>
+        <h1 className="text-2xl font-600">Restaurante</h1>
         <p className="text-sm text-muted-foreground">
           Actualiza la informacion principal del restaurante y sus opciones.
         </p>
