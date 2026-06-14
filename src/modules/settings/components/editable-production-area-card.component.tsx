@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
+  CardContent,
 } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -64,12 +65,15 @@ export const EditableProductionAreaCard = ({ area, onDelete }: Props) => {
                   NiceModal.show(ProductionAreaFormDialog, {
                     title: "Editar área de producción",
                     submitLabel: "Guardar cambios",
-                    description: "Actualiza la información del área de producción.",
+                    description:
+                      "Actualiza la información del área de producción.",
                     areaId: area.id,
                     initialValues: {
                       name: area.name,
                       description: area.description,
                     },
+                    printerIds:
+                      area.printers?.map((printer) => printer.id) ?? [],
                   })
                 }
               >
@@ -85,13 +89,22 @@ export const EditableProductionAreaCard = ({ area, onDelete }: Props) => {
           </DropdownMenu>
         </div>
       </CardHeader>
+      {area.printers && area.printers.length > 0 && (
+        <CardContent>
+          <span className="font-semibold">Impresoras</span>
+          <br />
+          {area.printers.map((printer) => (
+            <span>{printer.name}</span>
+          ))}
+        </CardContent>
+      )}
       <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Eliminar área de producción</AlertDialogTitle>
             <AlertDialogDescription>
-              Estás a punto de eliminar el área de producción &quot;{area.name}&quot;.
-              Esta acción no se puede deshacer.
+              Estás a punto de eliminar el área de producción &quot;{area.name}
+              &quot;. Esta acción no se puede deshacer.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -110,4 +123,5 @@ export const EditableProductionAreaCard = ({ area, onDelete }: Props) => {
       </AlertDialog>
     </Card>
   );
-}
+};
+

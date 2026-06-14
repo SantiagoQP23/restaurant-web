@@ -21,7 +21,7 @@ export const ProductionAreasPage = () => {
             Gestiona las áreas de producción de tu restaurante
           </p>
         </div>
-        <Button
+          <Button
           type="button"
           variant="outline"
           onClick={() =>
@@ -33,6 +33,7 @@ export const ProductionAreasPage = () => {
                 name: "",
                 description: "",
               },
+              printerIds: [],
             })
           }
         >
