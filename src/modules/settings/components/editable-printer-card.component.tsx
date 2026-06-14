@@ -24,35 +24,34 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
-import { MoreVertical, Pencil, Trash2, Network, Cable } from "lucide-react";
+import { MoreVertical, Pencil, Trash2, PrinterIcon } from "lucide-react";
 import { PrinterFormDialog } from "./printer-form-dialog.component";
+import { usePrinters } from "../hooks/usePrinters";
 
 type Props = {
   printer: Printer;
   onDelete: (printerId: string) => void;
-  onToggleActive?: (printerId: string, isActive: boolean) => void;
+  isTesting?: boolean;
 };
 
 export const EditablePrinterCard = ({
   printer,
   onDelete,
-  onToggleActive,
+  isTesting,
 }: Props) => {
+  const { testPrinter } = usePrinters();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-  const connectionIcon =
-    printer.connectionType === "TCP" ? (
-      <Network className="h-4 w-4" />
-    ) : (
-      <Cable className="h-4 w-4" />
-    );
+  const handleTestPrinter = () => {
+    testPrinter.mutate(printer.id);
+  };
 
   return (
     <Card size="sm">
       <CardHeader>
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            {connectionIcon}
+        <div className="flex items-start justify-between gap-2">
+          <div className="gap-4 flex flex-col">
+            <PrinterIcon size={18} />
             <div>
               <CardTitle>{printer.name}</CardTitle>
               <CardDescription className="text-xs">
@@ -63,6 +62,14 @@ export const EditablePrinterCard = ({
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleTestPrinter}
+              disabled={testPrinter.isPending}
+            >
+              {isTesting ? "Probando..." : "Test"}
+            </Button>
             {/* <Switch */}
             {/*   checked={printer.isActive} */}
             {/*   onCheckedChange={(checked) => { */}

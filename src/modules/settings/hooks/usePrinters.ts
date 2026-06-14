@@ -55,10 +55,22 @@ export const usePrinters = () => {
     },
   });
 
+  const testPrinter = useMutation<void, ApiErrorRespDto, string>({
+    mutationFn: (id: string) => PrintersService.test(id),
+    onSuccess: () => {
+      toast.success("Impresora responde correctamente");
+    },
+    onError: (error) => {
+      console.log("Error testing printer", error);
+      toast.error("No se pudo conectar con la impresora");
+    },
+  });
+
   return {
     getAllQuery,
     createPrinter,
     updatePrinter,
     deletePrinter,
+    testPrinter,
   };
 };

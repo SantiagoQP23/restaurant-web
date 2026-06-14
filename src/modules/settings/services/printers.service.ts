@@ -27,4 +27,8 @@ export class PrintersService {
   static delete = async (id: string) => {
     await restaurantApi.delete(`/printers/${id}`);
   };
+
+  static test = async (id: string) => {
+    await restaurantApi.post(`/printers/${id}/test`);
+  };
 }

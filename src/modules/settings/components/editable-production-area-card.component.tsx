@@ -25,7 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { MoreVertical, Pencil, PrinterIcon, Trash2 } from "lucide-react";
 import { ProductionAreaFormDialog } from "./production-area-form-dialog.component";
 
 type Props = {
@@ -91,10 +91,11 @@ export const EditableProductionAreaCard = ({ area, onDelete }: Props) => {
       </CardHeader>
       {area.printers && area.printers.length > 0 && (
         <CardContent>
-          <span className="font-semibold">Impresoras</span>
-          <br />
           {area.printers.map((printer) => (
-            <span>{printer.name}</span>
+            <div key={printer.id} className="flex items-center gap-2">
+              <PrinterIcon size={16} />
+              <span>{printer.name}</span>
+            </div>
           ))}
         </CardContent>
       )}
@@ -124,4 +125,3 @@ export const EditableProductionAreaCard = ({ area, onDelete }: Props) => {
     </Card>
   );
 };
-

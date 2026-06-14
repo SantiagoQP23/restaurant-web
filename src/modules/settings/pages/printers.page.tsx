@@ -1,27 +1,19 @@
-import { useEffect, useRef, useState } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Plus } from "lucide-react";
 import NiceModal from "@ebay/nice-modal-react";
-import type { Printer } from "@/shared/models/printer.model";
 import { usePrinters } from "../hooks/usePrinters";
 import { EditablePrinterCard } from "../components/editable-printer-card.component";
 import { PrinterFormDialog } from "../components/printer-form-dialog.component";
 
 export const PrintersPage = () => {
   const { getAllQuery, updatePrinter, deletePrinter } = usePrinters();
-  const [printers, setPrinters] = useState<Printer[]>([]);
-
-  useEffect(() => {
-    if (getAllQuery.isSuccess && getAllQuery.data) {
-      setPrinters(getAllQuery.data);
-    }
-  }, [getAllQuery.data, getAllQuery.isSuccess]);
+  const printers = getAllQuery.data ?? [];
 
   const handleDeletePrinter = (printerId: string) => {
     deletePrinter.mutate(printerId);
   };
 
-  const handleToggleActive = (printerId: string, isActive: boolean) => {
+  const handleToggleActive = (printerId: string) => {
     const printer = printers.find((p) => p.id === printerId);
     if (!printer) return;
 
@@ -73,7 +65,6 @@ export const PrintersPage = () => {
               key={printer.id}
               printer={printer}
               onDelete={handleDeletePrinter}
-              onToggleActive={handleToggleActive}
             />
           ))}
         </div>
@@ -81,4 +72,3 @@ export const PrintersPage = () => {
     </div>
   );
 };
-
