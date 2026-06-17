@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import type { Section } from "@/shared/models/section.model";
 import type { Category } from "@/shared/models/category.model";
 import type { Product } from "@/shared/models/product.model";
-import type { ProductionArea } from "@/shared/models/production-area.model";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { MoreVertical, Plus } from "lucide-react";
@@ -32,12 +31,16 @@ import {
 } from "@/shared/components/ui/collapsible";
 import { MenuSectionDialog } from "@/modules/menu/components/menu-section-dialog.component";
 import { MenuCategoryDialog } from "@/modules/menu/components/menu-category-dialog.component";
-import { MenuProductDialog } from "@/modules/menu/components/menu-product-dialog.component";
+import {
+  MenuProductDialog,
+  type MenuCategoryWithIndex,
+} from "@/modules/menu/components/menu-product-dialog.component";
 import { MenuProductCard } from "@/modules/menu/components/menu-product-card.component";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { ProductsService } from "@/modules/menu/services/products.service";
 import { queryKeys } from "@/app/api/query-client";
 import { useMenu } from "../hooks/useMenu";
+import { MenuProductOptionsDialog } from "../components/menu-product-options-dialog.component";
 
 type MenuCategory = Category & { products: Product[] };
 type MenuSection = Section & { categories: MenuCategory[] };
@@ -45,21 +48,6 @@ type MenuProduct = Product & {
   categoryId?: string;
   category?: { id: string; name: string };
 };
-
-const productionArea = (name: string): ProductionArea => ({
-  id: Math.floor(Math.random() * 1000),
-  name,
-  description: "",
-  isActive: true,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
-
-const productionAreas: ProductionArea[] = [
-  productionArea("Cocina"),
-  productionArea("Bar"),
-  productionArea("Postres"),
-];
 
 export const MenuPage = () => {
   const {
@@ -155,7 +143,6 @@ export const MenuPage = () => {
   const handleDeleteCategory = (categoryId: string) => {
     deleteCategory.mutate(categoryId);
   };
-
 
   return (
     <div className="flex min-h-svh flex-col gap-6 p-6 md:p-10">
@@ -424,7 +411,6 @@ export const MenuPage = () => {
                                   selectedSection={selectedSection}
                                   selectedSectionIndex={selectedSectionIndex}
                                   sections={sections}
-                                  productionAreas={productionAreas}
                                   onUpdateProduct={(values) =>
                                     updateProduct.mutate(values)
                                   }
@@ -460,7 +446,6 @@ export const MenuPage = () => {
                                         }),
                                       ),
                                   ),
-                                  productionAreas,
                                   onSubmit: (values) => {
                                     NiceModal.show(MenuProductOptionsDialog, {
                                       productName: values.name,

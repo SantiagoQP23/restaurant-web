@@ -1,7 +1,9 @@
+import type { Product } from "./product.model";
+
 export interface Category {
   id: string;
   name: string;
-  // products: IProduct[];
+  products: Product[];
   isActive: boolean;
   isPublic: boolean;
 }

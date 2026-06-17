@@ -6,25 +6,25 @@ import { EditablePrinterCard } from "../components/editable-printer-card.compone
 import { PrinterFormDialog } from "../components/printer-form-dialog.component";
 
 export const PrintersPage = () => {
-  const { getAllQuery, updatePrinter, deletePrinter } = usePrinters();
+  const { getAllQuery, deletePrinter } = usePrinters();
   const printers = getAllQuery.data ?? [];
 
   const handleDeletePrinter = (printerId: string) => {
     deletePrinter.mutate(printerId);
   };
 
-  const handleToggleActive = (printerId: string) => {
-    const printer = printers.find((p) => p.id === printerId);
-    if (!printer) return;
-
-    updatePrinter.mutate({
-      id: printerId,
-      name: printer.name,
-      connectionType: printer.connectionType,
-      ipAddress: printer.ipAddress,
-      port: printer.port,
-    });
-  };
+  // const handleToggleActive = (printerId: string) => {
+  //   const printer = printers.find((p) => p.id === printerId);
+  //   if (!printer) return;
+  //
+  //   updatePrinter.mutate({
+  //     id: printerId,
+  //     name: printer.name,
+  //     connectionType: printer.connectionType,
+  //     ipAddress: printer.ipAddress,
+  //     port: printer.port,
+  //   });
+  // };
 
   return (
     <div className="flex flex-col gap-6 px-6">

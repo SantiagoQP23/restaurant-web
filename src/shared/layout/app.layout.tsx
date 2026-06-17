@@ -2,7 +2,6 @@ import { Link, Navigate, Outlet, useRouterState } from "@tanstack/react-router";
 import {
   CreditCard,
   Home,
-  Settings,
   ShoppingBag,
   Soup,
   Table2,

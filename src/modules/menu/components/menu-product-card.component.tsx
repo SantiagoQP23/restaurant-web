@@ -31,7 +31,6 @@ import { formatCurrency } from "@/shared/lib/utils";
 import type { Category } from "@/shared/models/category.model";
 import type { Product } from "@/shared/models/product.model";
 import type { ProductOption } from "@/shared/models/product-option.model";
-import type { ProductionArea } from "@/shared/models/production-area.model";
 import type { Section } from "@/shared/models/section.model";
 import {
   MenuProductDialog,
@@ -40,8 +39,7 @@ import {
 import { MenuProductOptionsDialog } from "@/modules/menu/components/menu-product-options-dialog.component";
 import { MenuProductOptionDialog } from "@/modules/menu/components/menu-product-option-dialog.component";
 
-type MenuCategory = Category & { products: Product[] };
-type MenuSection = Section & { categories: MenuCategory[] };
+type MenuSection = Section & { categories: Category[] };
 
 type MenuProduct = Product & {
   categoryId?: string;
@@ -50,12 +48,11 @@ type MenuProduct = Product & {
 
 type MenuProductCardProps = {
   product: MenuProduct;
-  category: MenuCategory;
+  category: Category;
   categoryIndex: number;
   selectedSection: MenuSection;
   selectedSectionIndex: number;
   sections: MenuSection[];
-  productionAreas: ProductionArea[];
   onDeleteProduct: (
     sectionId: string,
     categoryId: string,
@@ -85,7 +82,6 @@ export const MenuProductCard = ({
   selectedSection,
   selectedSectionIndex,
   sections,
-  productionAreas,
   onDeleteProduct,
   onUpdateProduct,
   onUpdateOption,
@@ -131,15 +127,12 @@ export const MenuProductCard = ({
                         categoryIndex,
                       })),
                     ),
-                    productionAreas,
                     initialValues: {
                       name: product.name,
                       description: product.description,
                       categoryId: `${selectedSectionIndex}-${categoryIndex}`,
                       productionAreaId:
-                        product.productionArea?.id.toString() ??
-                        productionAreas[0]?.id.toString() ??
-                        "",
+                        product.productionArea?.id.toString() ?? "",
                     },
                     onSubmit: (values) => {
                       const [sectionIndex, nextCategoryIndex] =

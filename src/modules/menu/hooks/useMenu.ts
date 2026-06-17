@@ -46,7 +46,7 @@ export const useMenu = () => {
   const updateSection = useMutation<Section, unknown, UpdateSectionDto>({
     mutationFn: (data: UpdateSectionDto) =>
       SectionsService.update(data.id!, data),
-    onSuccess: (data: Section) => {
+    onSuccess: () => {
       // enqueueSnackbar('Se actualizó correctamente', { variant: 'success' });
       // dispatch(updateSectionStore(data));
       queryClient.invalidateQueries({

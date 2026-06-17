@@ -8,39 +8,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
-import type { ProductionArea } from "@/shared/models/production-area.model";
 import { SetupStepper } from "../components/setup-stepper.component";
 import { useSetupStore } from "@/shared/store/setup.store";
-import type { CreateSectionCategoryDto } from "@/modules/menu/interface/dto/create-menu.dto";
 import { MenuProductDialog } from "@/modules/menu/components/menu-product-dialog.component";
-import { MenuProductOptionsDialog } from "@/modules/menu/components/menu-product-options-dialog.component";
-
-const productionAreas: ProductionArea[] = [
-  {
-    id: 1,
-    name: "Cocina",
-    description: "Preparacion principal de platos calientes.",
-    isActive: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 2,
-    name: "Bar",
-    description: "Cocteles, bebidas frias y cafe.",
-    isActive: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 3,
-    name: "Postres",
-    description: "Pasteleria y emplatado de dulces.",
-    isActive: false,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
+// import { MenuProductOptionsDialog } from "@/modules/menu/components/menu-product-options-dialog.component";
 
 export const ProductsPage = () => {
   const menu = useSetupStore((state) => state.menu);
@@ -62,7 +33,7 @@ export const ProductsPage = () => {
   );
 
   return (
-      <div className="flex min-h-svh flex-col p-6 md:p-10">
+    <div className="flex min-h-svh flex-col p-6 md:p-10">
       <div className="flex flex-col gap-8">
         <div>
           <h1 className="text-2xl font-bold">Productos</h1>
@@ -84,8 +55,8 @@ export const ProductsPage = () => {
               </div>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  {allProducts.map((product) => (
-                    <Card key={product.id} size="sm">
+                {allProducts.map((product) => (
+                  <Card key={product.id} size="sm">
                     <CardHeader>
                       <CardTitle>{product.name}</CardTitle>
                       <CardDescription>
@@ -107,25 +78,27 @@ export const ProductsPage = () => {
                             category: product.category,
                             categories: menu.sections.flatMap(
                               (section, sectionIndex) =>
-                                section.categories.map((item, categoryIndex) => ({
-                                  ...item,
-                                  sectionIndex,
-                                  categoryIndex,
-                                })),
+                                section.categories.map(
+                                  (item, categoryIndex) => ({
+                                    ...item,
+                                    sectionIndex,
+                                    categoryIndex,
+                                  }),
+                                ),
                             ),
-                            productionAreas,
-                            onSubmit: (values) => {
-                              const [sectionIndex, categoryIndex] = values.categoryId
-                                .split("-")
-                                .map((value) => Number.parseInt(value, 10));
-                              addMenuProduct(sectionIndex, categoryIndex, {
-                                name: values.name,
-                                description: values.description,
-                              });
-                              NiceModal.show(MenuProductOptionsDialog, {
-                                productName: values.name,
-                                onSubmit: () => undefined,
-                              });
+                            onSubmit: () => {
+                              // const [sectionIndex, categoryIndex] =
+                              //   values.categoryId
+                              //     .split("-")
+                              //     .map((value) => Number.parseInt(value, 10));
+                              // addMenuProduct(sectionIndex, categoryIndex, {
+                              //   name: values.name,
+                              //   description: values.description,
+                              // });
+                              // NiceModal.show(MenuProductOptionsDialog, {
+                              //   productName: values.name,
+                              //   onSubmit: () => undefined,
+                              // });
                             },
                           })
                         }
@@ -190,26 +163,35 @@ export const ProductsPage = () => {
                                     },
                                     categories: menu.sections.flatMap(
                                       (section, sectionIndex) =>
-                                        section.categories.map((item, categoryIndex) => ({
-                                          ...item,
-                                          sectionIndex,
-                                          categoryIndex,
-                                        })),
+                                        section.categories.map(
+                                          (item, categoryIndex) => ({
+                                            ...item,
+                                            sectionIndex,
+                                            categoryIndex,
+                                          }),
+                                        ),
                                     ),
-                                    productionAreas,
-                                    onSubmit: (values) => {
-                                      const [nextSectionIndex, nextCategoryIndex] =
-                                        values.categoryId
-                                          .split("-")
-                                          .map((value) => Number.parseInt(value, 10));
-                                      addMenuProduct(nextSectionIndex, nextCategoryIndex, {
-                                        name: values.name,
-                                        description: values.description,
-                                      });
-                                      NiceModal.show(MenuProductOptionsDialog, {
-                                        productName: values.name,
-                                        onSubmit: () => undefined,
-                                      });
+                                    onSubmit: () => {
+                                      // const [
+                                      //   nextSectionIndex,
+                                      //   nextCategoryIndex,
+                                      // ] = values.categoryId
+                                      //   .split("-")
+                                      //   .map((value) =>
+                                      //     Number.parseInt(value, 10),
+                                      //   );
+                                      // addMenuProduct(
+                                      //   nextSectionIndex,
+                                      //   nextCategoryIndex,
+                                      //   {
+                                      //     name: values.name,
+                                      //     description: values.description,
+                                      //   },
+                                      // );
+                                      // NiceModal.show(MenuProductOptionsDialog, {
+                                      //   productName: values.name,
+                                      //   onSubmit: () => undefined,
+                                      // });
                                     },
                                   })
                                 }

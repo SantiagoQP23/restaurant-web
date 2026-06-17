@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/components/ui/select";
-import { Field, FieldLabel } from "@/shared/components/ui/field";
+import { FieldLabel } from "@/shared/components/ui/field";
 import { Loader2 } from "lucide-react";
 
 const PREP_TIME_OPTIONS = [5, 10, 15, 20, 30, 45, 60];

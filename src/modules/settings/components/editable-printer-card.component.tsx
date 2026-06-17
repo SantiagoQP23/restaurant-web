@@ -26,7 +26,6 @@ import {
 } from "@/shared/components/ui/alert-dialog";
 import { MoreVertical, Pencil, Trash2, PrinterIcon } from "lucide-react";
 import { PrinterFormDialog } from "./printer-form-dialog.component";
-import { usePrinters } from "../hooks/usePrinters";
 
 type Props = {
   printer: Printer;
@@ -34,17 +33,8 @@ type Props = {
   isTesting?: boolean;
 };
 
-export const EditablePrinterCard = ({
-  printer,
-  onDelete,
-  isTesting,
-}: Props) => {
-  const { testPrinter } = usePrinters();
+export const EditablePrinterCard = ({ printer, onDelete }: Props) => {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-
-  const handleTestPrinter = () => {
-    testPrinter.mutate(printer.id);
-  };
 
   return (
     <Card size="sm">
@@ -62,14 +52,14 @@ export const EditablePrinterCard = ({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleTestPrinter}
-              disabled={testPrinter.isPending}
-            >
-              {isTesting ? "Probando..." : "Test"}
-            </Button>
+            {/* <Button */}
+            {/*   variant="outline" */}
+            {/*   size="sm" */}
+            {/*   onClick={handleTestPrinter} */}
+            {/*   disabled={testPrinter.isPending} */}
+            {/* > */}
+            {/*   {isTesting ? "Probando..." : "Test"} */}
+            {/* </Button> */}
             {/* <Switch */}
             {/*   checked={printer.isActive} */}
             {/*   onCheckedChange={(checked) => { */}
