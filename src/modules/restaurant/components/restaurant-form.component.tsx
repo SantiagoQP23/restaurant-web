@@ -1,5 +1,7 @@
 import * as React from "react";
 import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -9,7 +11,10 @@ import {
   FieldLabel,
 } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
+import { useAuthStore } from "@/modules/auth/store/auth.store";
+import { RestaurantService } from "@/modules/restaurant/service/restaurant.service";
 import type { CreateRestaurantDto } from "@/modules/restaurant/interface/dto/create-restaurant.dto";
+import type { LoginRespDto } from "@/modules/auth/interfaces/dto/login-resp.dto";
 
 type RestaurantFormProps = React.ComponentProps<"form"> & {
   showSubmit?: boolean;
@@ -28,6 +33,9 @@ export function RestaurantForm({
   defaultValues,
   ...props
 }: RestaurantFormProps) {
+  const currentRestaurant = useAuthStore((state) => state.restaurant);
+  const changeStatus = useAuthStore((state) => state.changeStatus);
+
   const {
     register,
     handleSubmit,
@@ -42,6 +50,17 @@ export function RestaurantForm({
     },
   });
 
+  const createRestaurantMutation = useMutation<LoginRespDto, unknown, CreateRestaurantDto>({
+    mutationFn: (data: CreateRestaurantDto) => RestaurantService.createRestaurant(data),
+    onSuccess: (data) => {
+      changeStatus(data.token, data.user, data.currentRestaurant);
+      toast.success("Restaurante creado exitosamente");
+    },
+    onError: () => {
+      toast.error("Error al crear el restaurante");
+    },
+  });
+
   React.useEffect(() => {
     if (!defaultValues) {
       return;
@@ -53,6 +72,17 @@ export function RestaurantForm({
       address: defaultValues.address ?? "",
     });
   }, [defaultValues, reset]);
+
+  const handleFormSubmit = (values: CreateRestaurantDto) => {
+    if (currentRestaurant) {
+      // TODO: Update restaurant
+      onSubmit?.(values);
+    } else {
+      createRestaurantMutation.mutate(values);
+    }
+  };
+
+  const isSubmitting = createRestaurantMutation.isPending;
 
   const modeInfo = {
     setup: {
@@ -72,7 +102,7 @@ export function RestaurantForm({
   return (
     <form
       className={cn("flex flex-col gap-6", className)}
-      onSubmit={handleSubmit((values) => onSubmit?.(values))}
+      onSubmit={handleSubmit(handleFormSubmit)}
       {...props}
     >
       <FieldGroup>
@@ -108,9 +138,7 @@ export function RestaurantForm({
               type="tel"
               placeholder="+593 99 123 4567"
               aria-invalid={Boolean(errors.phone)}
-              {...register("phone", {
-                required: "El telefono es obligatorio.",
-              })}
+              {...register("phone")}
             />
             {errors.phone?.message && (
               <FieldDescription>{errors.phone.message}</FieldDescription>
@@ -124,7 +152,6 @@ export function RestaurantForm({
               placeholder="restaurante@example.com"
               aria-invalid={Boolean(errors.email)}
               {...register("email", {
-                required: "El email es obligatorio.",
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                   message: "Ingresa un email valido.",
@@ -143,9 +170,7 @@ export function RestaurantForm({
             type="text"
             placeholder="Av. Principal 123"
             aria-invalid={Boolean(errors.address)}
-            {...register("address", {
-              required: "La direccion es obligatoria.",
-            })}
+              {...register("address")}
           />
           {errors.address?.message && (
             <FieldDescription>{errors.address.message}</FieldDescription>
@@ -154,7 +179,9 @@ export function RestaurantForm({
         {showSubmit && (
           <Field>
             <div className="flex justify-center">
-              <Button type="submit">{submitLabel ?? modeSubmitLabel}</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Guardando..." : submitLabel ?? modeSubmitLabel}
+              </Button>
             </div>
           </Field>
         )}

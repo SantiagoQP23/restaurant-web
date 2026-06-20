@@ -9,46 +9,60 @@ import {
 import { Input } from "@/shared/components/ui/input";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "@tanstack/react-router";
+import { useSignup } from "../hooks/useAuth";
 
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
   const navigate = useNavigate();
+  const { mutateAsync, isPending } = useSignup();
   const {
     register,
     handleSubmit,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<{
-    name: string;
-    lastname: string;
+    firstName: string;
+    lastName: string;
     username: string;
-    phone: string;
+    numPhone: string;
     email: string;
     password: string;
-    confirmPassword: string;
+    samePassword: string;
   }>({
     defaultValues: {
-      name: "",
-      lastname: "",
+      firstName: "",
+      lastName: "",
       username: "",
-      phone: "",
+      numPhone: "",
       email: "",
       password: "",
-      confirmPassword: "",
+      samePassword: "",
     },
   });
 
   const passwordValue = watch("password");
 
+  const handleRegister = (form: {
+    firstName: string;
+    lastName: string;
+    username: string;
+    numPhone: string;
+    email: string;
+    password: string;
+    samePassword: string;
+  }) => {
+    mutateAsync(form).then(() => {
+      navigate({ to: "/" });
+    });
+  };
+
   return (
     <form
       className={cn("flex flex-col gap-6", className)}
       {...props}
-      onSubmit={handleSubmit(() => {
-        navigate({ to: "/auth/login" });
-      })}
+      onSubmit={handleSubmit(handleRegister)}
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
@@ -59,33 +73,35 @@ export function SignupForm({
         </div>
         <div className="grid grid-cols-2 gap-4">
           <Field>
-            <FieldLabel htmlFor="name">Nombres</FieldLabel>
+            <FieldLabel htmlFor="firstName">Nombres</FieldLabel>
             <Input
-              id="name"
+              id="firstName"
               type="text"
               placeholder="Juan Perez"
-              aria-invalid={Boolean(errors.name)}
-              {...register("name", {
+              aria-invalid={Boolean(errors.firstName)}
+              {...register("firstName", {
                 required: "Los nombres son obligatorios.",
+                minLength: { value: 2, message: "Minimo 2 caracteres" },
               })}
             />
-            {errors.name?.message && (
-              <FieldDescription>{errors.name.message}</FieldDescription>
+            {errors.firstName?.message && (
+              <FieldDescription>{errors.firstName.message}</FieldDescription>
             )}
           </Field>
           <Field>
-            <FieldLabel htmlFor="lastname">Apellidos</FieldLabel>
+            <FieldLabel htmlFor="lastName">Apellidos</FieldLabel>
             <Input
-              id="lastname"
+              id="lastName"
               type="text"
               placeholder="Perez Gomez"
-              aria-invalid={Boolean(errors.lastname)}
-              {...register("lastname", {
+              aria-invalid={Boolean(errors.lastName)}
+              {...register("lastName", {
                 required: "Los apellidos son obligatorios.",
+                minLength: { value: 2, message: "Minimo 2 caracteres" },
               })}
             />
-            {errors.lastname?.message && (
-              <FieldDescription>{errors.lastname.message}</FieldDescription>
+            {errors.lastName?.message && (
+              <FieldDescription>{errors.lastName.message}</FieldDescription>
             )}
           </Field>
         </div>
@@ -99,6 +115,7 @@ export function SignupForm({
               aria-invalid={Boolean(errors.username)}
               {...register("username", {
                 required: "El nombre de usuario es obligatorio.",
+                minLength: { value: 2, message: "Minimo 2 caracteres" },
               })}
             />
             {errors.username?.message && (
@@ -106,18 +123,19 @@ export function SignupForm({
             )}
           </Field>
           <Field>
-            <FieldLabel htmlFor="phone">Celular</FieldLabel>
+            <FieldLabel htmlFor="numPhone">Celular</FieldLabel>
             <Input
-              id="phone"
+              id="numPhone"
               type="tel"
               placeholder="+593 99 123 4567"
-              aria-invalid={Boolean(errors.phone)}
-              {...register("phone", {
-                required: "El celular es obligatorio.",
+              aria-invalid={Boolean(errors.numPhone)}
+              {...register("numPhone", {
+                minLength: { value: 10, message: "Minimo 10 caracteres" },
+                maxLength: { value: 10, message: "Maximo 10 caracteres" },
               })}
             />
-            {errors.phone?.message && (
-              <FieldDescription>{errors.phone.message}</FieldDescription>
+            {errors.numPhone?.message && (
+              <FieldDescription>{errors.numPhone.message}</FieldDescription>
             )}
           </Field>
         </div>
@@ -135,6 +153,7 @@ export function SignupForm({
                 value: /\S+@\S+\.\S+/,
                 message: "Ingresa un email valido.",
               },
+              minLength: { value: 2, message: "Minimo 2 caracteres" },
             })}
           />
           <FieldDescription>
@@ -155,9 +174,11 @@ export function SignupForm({
               aria-invalid={Boolean(errors.password)}
               {...register("password", {
                 required: "La contraseña es obligatoria.",
-                minLength: {
-                  value: 8,
-                  message: "Debe tener al menos 8 caracteres.",
+                pattern: {
+                  value:
+                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/,
+                  message:
+                    "La contraseña debe tener al menos 8 caracteres e incluir mayuscula, minuscula, numero y caracter especial",
                 },
               })}
             />
@@ -169,29 +190,30 @@ export function SignupForm({
             )}
           </Field>
           <Field>
-            <FieldLabel htmlFor="confirm-password">
+            <FieldLabel htmlFor="samePassword">
               Confirmar contraseña
             </FieldLabel>
             <Input
-              id="confirm-password"
+              id="samePassword"
               type="password"
-              aria-invalid={Boolean(errors.confirmPassword)}
-              {...register("confirmPassword", {
+              aria-invalid={Boolean(errors.samePassword)}
+              {...register("samePassword", {
                 required: "Confirma tu contraseña.",
+                minLength: { value: 2, message: "Minimo 2 caracteres" },
                 validate: (value) =>
                   value === passwordValue || "Las contraseñas no coinciden.",
               })}
             />
             <FieldDescription>Confirma tu contraseña.</FieldDescription>
-            {errors.confirmPassword?.message && (
+            {errors.samePassword?.message && (
               <FieldDescription>
-                {errors.confirmPassword.message}
+                {errors.samePassword.message}
               </FieldDescription>
             )}
           </Field>
         </div>
         <Field>
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={isPending}>
             Crear cuenta
           </Button>
         </Field>

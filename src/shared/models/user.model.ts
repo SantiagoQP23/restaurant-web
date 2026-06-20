@@ -27,5 +27,5 @@ export interface User {
   online: boolean;
   restaurantRoles: RestaurantRole[];
   isActive: boolean;
-  role: Role;
+  role: Role | null;
 }

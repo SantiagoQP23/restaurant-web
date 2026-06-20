@@ -1,11 +1,14 @@
 // import { useNavigate } from "@tanstack/react-router";
+import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { RestaurantForm } from "../../restaurant/components/restaurant-form.component";
 import { SetupStepper } from "../components/setup-stepper.component";
 import { useSetupStore } from "@/shared/store/setup.store";
 
-export const RestaurantPage = () => {
+export const CreateRestaurantPage = () => {
   // const navigate = useNavigate();
-  const restaurant = useSetupStore((state) => state.restaurant);
+  // const restaurant = useSetupStore((state) => state.restaurant);
+  const currentRestaurant = useAuthStore((state) => state.restaurant);
+
   // const setRestaurant = useSetupStore((state) => state.setRestaurant);
 
   return (
@@ -14,7 +17,7 @@ export const RestaurantPage = () => {
         <div className="w-full max-w-lg">
           <RestaurantForm
             submitLabel="Guardar y continuar"
-            defaultValues={restaurant ?? undefined}
+            defaultValues={currentRestaurant ?? undefined}
             onSubmit={() => {
               // setRestaurant(values);
               // navigate({ to: "/setup/production-areas" });

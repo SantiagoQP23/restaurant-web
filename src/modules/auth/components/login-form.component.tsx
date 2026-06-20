@@ -51,13 +51,17 @@ export function LoginForm({
       data.password.trim(),
     );
 
+    const user = useAuthStore.getState().user;
+
     if (wasSuccessful) {
-      // router.replace("/(app)/(tabs)/(orders-module)/my-orders");
-      navigate({ to: "/app/orders", replace: true });
+      if (user?.role) {
+        navigate({ to: "/app/orders", replace: true });
+      } else {
+        navigate({ to: "/setup/welcome", replace: true });
+      }
 
       return;
     }
-    console.log("Login failed");
 
     toast.error("Credenciales inválidas. Por favor, inténtalo de nuevo.");
   };
@@ -71,9 +75,9 @@ export function LoginForm({
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-2xl font-bold">Iniciar sesión</h1>
-          <p className="text-sm text-balance text-muted-foreground">
-            Ingrese su nombre de usuario para acceder a su cuenta
-          </p>
+          {/* <p className="text-sm text-balance text-muted-foreground"> */}
+          {/*   Ingrese su nombre de usuario para acceder a su cuenta */}
+          {/* </p> */}
         </div>
         <Field>
           <FieldLabel htmlFor="username">Nombre de usuario</FieldLabel>

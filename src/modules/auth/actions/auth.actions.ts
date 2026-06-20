@@ -1,6 +1,8 @@
 import restaurantApi from "@/app/api/restaurant-api";
 import type { Restaurant } from "@/shared/models/restaurant.model";
 import type { User } from "@/shared/models/user.model";
+import type { RegisterUserDto } from "../interfaces/dto/register-user.dto";
+import type { Role } from "@/shared/models/role.model";
 
 export interface AuthResponse {
   token: string;
@@ -16,9 +18,11 @@ const returnUserToken = (
   currentRestaurant: Restaurant;
 } => {
   const { token, user, currentRestaurant } = data;
-  const currentRole = data.user.restaurantRoles.find(
+  const currentRestaurantRole = data.user.restaurantRoles.find(
     (resRole) => resRole.restaurant.id === data.currentRestaurant?.id,
-  )!.role;
+  );
+
+  const currentRole: Role | null = currentRestaurantRole?.role ?? null;
 
   return {
     user: { ...user, role: currentRole },
@@ -47,9 +51,24 @@ export const authCheckStatus = async () => {
     const { data } = await restaurantApi.get<AuthResponse>("/auth/auth-renew");
 
     return returnUserToken(data);
-  } catch (error) {
+  } catch {
     return null;
   }
 };
 
-// TODO: Tarea: Hacer el register
+export const authRegister = async ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  samePassword,
+  ...data
+}: RegisterUserDto) => {
+  if (data.numPhone === "") {
+    delete data.numPhone;
+  }
+
+  const { data: respData } = await restaurantApi.post<AuthResponse>(
+    "/auth/register",
+    data,
+  );
+
+  return returnUserToken(respData);
+};

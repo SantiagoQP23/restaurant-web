@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import type { Restaurant } from "@/shared/models/restaurant.model";
 import type { User } from "@/shared/models/user.model";
-import { authCheckStatus, authLogin } from "../actions/auth.actions";
+import { authCheckStatus, authLogin, authRegister } from "../actions/auth.actions";
 
 export type AuthStatus = "authenticated" | "unauthenticated" | "checking";
 
@@ -12,6 +12,7 @@ export type AuthState = {
   restaurant?: Restaurant;
 
   login: (email: string, password: string) => Promise<boolean>;
+  register: (data: import("../interfaces/dto/register-user.dto").RegisterUserDto) => Promise<boolean>;
   checkStatus: () => Promise<void>;
   logout: () => Promise<void>;
 
@@ -55,6 +56,12 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   login: async (email: string, password: string) => {
     const resp = await authLogin(email, password);
+
+    return get().changeStatus(resp?.token, resp?.user, resp?.currentRestaurant);
+  },
+
+  register: async (data) => {
+    const resp = await authRegister(data);
 
     return get().changeStatus(resp?.token, resp?.user, resp?.currentRestaurant);
   },

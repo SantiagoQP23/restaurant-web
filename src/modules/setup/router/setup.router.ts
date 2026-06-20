@@ -5,7 +5,6 @@ import { CompletePage } from "../pages/complete.page";
 import { MenuSetupPage } from "../pages/menu-setup.page";
 import { PaymentMethodsPage } from "../pages/payment-methods.page";
 import { ProductsPage } from "../pages/products.page";
-import { RestaurantPage } from "../pages/restaurant.page";
 import { StaffPage } from "../pages/staff.page";
 import { TablesPage } from "../pages/tables.page";
 import { WelcomePage } from "../pages/welcome.page";
@@ -13,6 +12,7 @@ import { JoinRestaurantPage } from "../pages/join-restaurant.page";
 
 import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { SetupProductionAreasPage } from "../pages/setup-production-areas.page";
+import { CreateRestaurantPage } from "../pages/create-restaurant.page";
 
 export const setupRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -34,7 +34,7 @@ export const welcomeRoute = createRoute({
 export const restaurantRoute = createRoute({
   getParentRoute: () => setupRoute,
   path: "restaurant",
-  component: RestaurantPage,
+  component: CreateRestaurantPage,
 });
 
 export const joinRestaurantRoute = createRoute({

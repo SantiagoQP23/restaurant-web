@@ -15,10 +15,10 @@ export const WelcomePage = () => {
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Button asChild className="flex-1">
+            <Button asChild>
               <Link to="/setup/restaurant">Crear un restaurante</Link>
             </Button>
-            <Button asChild variant="outline" className="flex-1">
+            <Button asChild variant="outline">
               <Link to="/setup/join-restaurant">Unirme a un restaurante</Link>
             </Button>
           </div>
