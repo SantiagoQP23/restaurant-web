@@ -14,7 +14,10 @@ import { Input } from "@/shared/components/ui/input";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { RestaurantService } from "@/modules/restaurant/service/restaurant.service";
 import type { CreateRestaurantDto } from "@/modules/restaurant/interface/dto/create-restaurant.dto";
+import type { UpdateRestaurantDto } from "@/modules/restaurant/interface/dto/update-restaurant.dto";
 import type { LoginRespDto } from "@/modules/auth/interfaces/dto/login-resp.dto";
+import type { Restaurant } from "@/shared/models/restaurant.model";
+import { useNavigate } from "@tanstack/react-router";
 
 type RestaurantFormProps = React.ComponentProps<"form"> & {
   showSubmit?: boolean;
@@ -35,6 +38,8 @@ export function RestaurantForm({
 }: RestaurantFormProps) {
   const currentRestaurant = useAuthStore((state) => state.restaurant);
   const changeStatus = useAuthStore((state) => state.changeStatus);
+  const setRestaurant = useAuthStore((state) => state.setRestaurant);
+  const navigate = useNavigate();
 
   const {
     register,
@@ -50,14 +55,34 @@ export function RestaurantForm({
     },
   });
 
-  const createRestaurantMutation = useMutation<LoginRespDto, unknown, CreateRestaurantDto>({
-    mutationFn: (data: CreateRestaurantDto) => RestaurantService.createRestaurant(data),
+  const createRestaurantMutation = useMutation<
+    LoginRespDto,
+    unknown,
+    CreateRestaurantDto
+  >({
+    mutationFn: (data: CreateRestaurantDto) =>
+      RestaurantService.createRestaurant(data),
     onSuccess: (data) => {
-      changeStatus(data.token, data.user, data.currentRestaurant);
+      changeStatus(data.token, data.user, data.currentRestaurant ?? undefined);
       toast.success("Restaurante creado exitosamente");
     },
     onError: () => {
       toast.error("Error al crear el restaurante");
+    },
+  });
+
+  const updateRestaurantMutation = useMutation<
+    Restaurant,
+    unknown,
+    { id: string; data: UpdateRestaurantDto }
+  >({
+    mutationFn: ({ id, data }) => RestaurantService.update(id, data),
+    onSuccess: (data) => {
+      setRestaurant(data);
+      toast.success("Restaurante actualizado exitosamente");
+    },
+    onError: () => {
+      toast.error("Error al actualizar el restaurante");
     },
   });
 
@@ -75,14 +100,23 @@ export function RestaurantForm({
 
   const handleFormSubmit = (values: CreateRestaurantDto) => {
     if (currentRestaurant) {
-      // TODO: Update restaurant
-      onSubmit?.(values);
+      updateRestaurantMutation
+        .mutateAsync({
+          id: currentRestaurant.id,
+          data: values,
+        })
+        .then(() => {
+          navigate({ to: "/setup/production-areas" });
+        });
     } else {
-      createRestaurantMutation.mutate(values);
+      createRestaurantMutation.mutateAsync(values).then(() => {
+        navigate({ to: "/setup/production-areas" });
+      });
     }
   };
 
-  const isSubmitting = createRestaurantMutation.isPending;
+  const isSubmitting =
+    createRestaurantMutation.isPending || updateRestaurantMutation.isPending;
 
   const modeInfo = {
     setup: {
@@ -170,7 +204,7 @@ export function RestaurantForm({
             type="text"
             placeholder="Av. Principal 123"
             aria-invalid={Boolean(errors.address)}
-              {...register("address")}
+            {...register("address")}
           />
           {errors.address?.message && (
             <FieldDescription>{errors.address.message}</FieldDescription>
@@ -180,7 +214,9 @@ export function RestaurantForm({
           <Field>
             <div className="flex justify-center">
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Guardando..." : submitLabel ?? modeSubmitLabel}
+                {isSubmitting
+                  ? "Guardando..."
+                  : (submitLabel ?? modeSubmitLabel)}
               </Button>
             </div>
           </Field>
