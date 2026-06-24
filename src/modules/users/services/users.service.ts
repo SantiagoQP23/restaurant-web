@@ -53,4 +53,9 @@ export class UsersService {
     const resp = await restaurantApi.patch<void>(`users/user-role`, dto);
     return resp.data;
   }
+
+  static async removeUserFromRestaurant(userId: string) {
+    const resp = await restaurantApi.delete<void>(`users/${userId}/restaurant`);
+    return resp.data;
+  }
 }

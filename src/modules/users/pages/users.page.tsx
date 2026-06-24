@@ -40,6 +40,7 @@ import { Edit, Plus, Trash } from "lucide-react";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import { InviteUserModal } from "../components/invite-user.modal";
 import { ChangeUserRoleModal } from "../components/change-user-role.modal";
+import { RemoveUserModal } from "../components/remove-user.modal";
 import { useTranslation } from "react-i18next";
 
 const columnHelper = createColumnHelper<User>();
@@ -165,6 +166,12 @@ export const UsersPage = () => {
                         variant="destructive"
                         size="icon"
                         className="bg-transparent"
+                        onClick={() =>
+                          NiceModal.show(RemoveUserModal, {
+                            user: row.original,
+                            onRemoved: () => usersQuery.refetch(),
+                          })
+                        }
                       >
                         <Trash />
                       </Button>

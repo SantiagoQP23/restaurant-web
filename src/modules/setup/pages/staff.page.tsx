@@ -34,13 +34,14 @@ import {
   type ColumnDef,
 } from "@tanstack/react-table";
 import NiceModal from "@ebay/nice-modal-react";
-import { Edit, Plus } from "lucide-react";
+import { Edit, Plus, Trash } from "lucide-react";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import { useUsers } from "@/modules/users/hooks/useUsers";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
 import type { User } from "@/shared/models/user.model";
 import { InviteUserModal } from "@/modules/users/components/invite-user.modal";
 import { ChangeUserRoleModal } from "@/modules/users/components/change-user-role.modal";
+import { RemoveUserModal } from "@/modules/users/components/remove-user.modal";
 import { SetupStepper } from "../components/setup-stepper.component";
 import { useTranslation } from "react-i18next";
 
@@ -167,6 +168,19 @@ export const StaffPage = () => {
                         }
                       >
                         <Edit />
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        className="bg-transparent"
+                        onClick={() =>
+                          NiceModal.show(RemoveUserModal, {
+                            user: row.original,
+                            onRemoved: () => usersQuery.refetch(),
+                          })
+                        }
+                      >
+                        <Trash />
                       </Button>
                     </TableCell>
                   </TableRow>
