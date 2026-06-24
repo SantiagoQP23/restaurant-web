@@ -1,425 +1,203 @@
-import * as React from "react";
-import NiceModal, { useModal } from "@ebay/nice-modal-react";
-import { Pencil, Trash2, UserPlus, Users } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/components/ui/table";
 import { Button } from "@/shared/components/ui/button";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/shared/components/ui/alert-dialog";
+  Field,
+} from "@/shared/components/ui/field";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/shared/components/ui/dialog";
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/shared/components/ui/empty";
-import { Field, FieldGroup, FieldLabel } from "@/shared/components/ui/field";
-import { Input } from "@/shared/components/ui/input";
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/shared/components/ui/pagination";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/shared/components/ui/select";
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+  type ColumnDef,
+} from "@tanstack/react-table";
+import NiceModal from "@ebay/nice-modal-react";
+import { Plus } from "lucide-react";
+import { Card, CardContent } from "@/shared/components/ui/card";
+import { useUsers } from "@/modules/users/hooks/useUsers";
+import { useAuthStore } from "@/modules/auth/store/auth.store";
+import type { User } from "@/shared/models/user.model";
+import { InviteUserModal } from "@/modules/users/components/invite-user.modal";
 import { SetupStepper } from "../components/setup-stepper.component";
+import { useTranslation } from "react-i18next";
 
-type StaffUser = {
-  id: string;
-  name: string;
-  email: string;
-  username: string;
-  role: "admin" | "waiter" | "production";
-};
-
-const mockUsers: StaffUser[] = [
-  {
-    id: "usr-1",
-    name: "Camila Perez",
-    email: "camila.perez@example.com",
-    username: "camila.p",
-    role: "admin",
-  },
-  {
-    id: "usr-2",
-    name: "Luis Andrade",
-    email: "luis.andrade@example.com",
-    username: "landrade",
-    role: "waiter",
-  },
-  {
-    id: "usr-3",
-    name: "Sofia Mena",
-    email: "sofia.mena@example.com",
-    username: "sofia.m",
-    role: "production",
-  },
-  {
-    id: "usr-4",
-    name: "David Ortiz",
-    email: "david.ortiz@example.com",
-    username: "dortiz",
-    role: "waiter",
-  },
-];
-
-const InviteUserModal = NiceModal.create(
-  ({
-    existingUsers,
-    onInvite,
-  }: {
-    existingUsers: StaffUser[];
-    onInvite: (user: StaffUser) => void;
-  }) => {
-    const modal = useModal();
-    const [query, setQuery] = React.useState("");
-    const [selectedId, setSelectedId] = React.useState<string | null>(null);
-    const [role, setRole] = React.useState<StaffUser["role"]>("waiter");
-
-    const normalizedQuery = query.trim().toLowerCase();
-    const availableUsers = React.useMemo(
-      () =>
-        mockUsers.filter(
-          (user) =>
-            !existingUsers.some((member) => member.id === user.id) &&
-            (normalizedQuery.length === 0 ||
-              user.name.toLowerCase().includes(normalizedQuery) ||
-              user.email.toLowerCase().includes(normalizedQuery) ||
-              user.username.toLowerCase().includes(normalizedQuery))
-        ),
-      [existingUsers, normalizedQuery]
-    );
-
-    const handleInvite = () => {
-      const selectedUser = availableUsers.find(
-        (user) => user.id === selectedId
-      );
-      if (!selectedUser) {
-        return;
-      }
-      onInvite({ ...selectedUser, role });
-      modal.hide();
-    };
-
-    return (
-      <Dialog
-        open={modal.visible}
-        onOpenChange={(open) => {
-          if (!open) {
-            modal.hide();
-          }
-        }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Invitar usuario</DialogTitle>
-            <DialogDescription>
-              Busca por email o nombre de usuario para agregar al equipo.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col gap-4">
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="staff-search">
-                  Email o usuario
-                </FieldLabel>
-                <Input
-                  id="staff-search"
-                  type="text"
-                  placeholder="sofia.mena@example.com"
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="staff-role">Rol</FieldLabel>
-                <Select
-                  value={role}
-                  onValueChange={(value) =>
-                    setRole(value as StaffUser["role"])
-                  }
-                >
-                  <SelectTrigger id="staff-role" className="w-full">
-                    <SelectValue placeholder="Selecciona un rol" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="admin">Administrador</SelectItem>
-                    <SelectItem value="waiter">Mesero</SelectItem>
-                    <SelectItem value="production">Produccion</SelectItem>
-                  </SelectContent>
-                </Select>
-              </Field>
-            </FieldGroup>
-            <div className="flex flex-col gap-2">
-              {availableUsers.length === 0 ? (
-                <div className="rounded-3xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
-                  No encontramos usuarios con ese criterio.
-                </div>
-              ) : (
-                availableUsers.map((user) => (
-                  <button
-                    key={user.id}
-                    type="button"
-                    className={
-                      selectedId === user.id
-                        ? "flex items-center justify-between gap-2 rounded-3xl border border-primary/40 bg-primary/5 px-4 py-3 text-left"
-                        : "flex items-center justify-between gap-2 rounded-3xl border border-border/60 px-4 py-3 text-left"
-                    }
-                    onClick={() => setSelectedId(user.id)}
-                  >
-                    <div>
-                      <div className="text-sm font-medium">{user.name}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {user.email} · @{user.username}
-                      </div>
-                    </div>
-                    {selectedId === user.id && (
-                      <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700">
-                        Seleccionado
-                      </span>
-                    )}
-                  </button>
-                ))
-              )}
-            </div>
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" variant="outline">
-                Cancelar
-              </Button>
-            </DialogClose>
-            <Button type="button" onClick={handleInvite} disabled={!selectedId}>
-              Invitar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-);
-
-const EditRoleModal = NiceModal.create(
-  ({
-    user,
-    onUpdate,
-  }: {
-    user: StaffUser;
-    onUpdate: (updatedUser: StaffUser) => void;
-  }) => {
-    const modal = useModal();
-    const [role, setRole] = React.useState<StaffUser["role"]>(user.role);
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      onUpdate({ ...user, role });
-      modal.hide();
-    };
-
-    return (
-      <Dialog
-        open={modal.visible}
-        onOpenChange={(open) => {
-          if (!open) {
-            modal.hide();
-          }
-        }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Editar rol</DialogTitle>
-            <DialogDescription>
-              Actualiza el rol de "{user.name}".
-            </DialogDescription>
-          </DialogHeader>
-          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor={`staff-role-${user.id}`}>Rol</FieldLabel>
-                <Select
-                  value={role}
-                  onValueChange={(value) =>
-                    setRole(value as StaffUser["role"])
-                  }
-                >
-                  <SelectTrigger id={`staff-role-${user.id}`} className="w-full">
-                    <SelectValue placeholder="Selecciona un rol" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="admin">Administrador</SelectItem>
-                    <SelectItem value="waiter">Mesero</SelectItem>
-                    <SelectItem value="production">Produccion</SelectItem>
-                  </SelectContent>
-                </Select>
-              </Field>
-            </FieldGroup>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button type="button" variant="outline">
-                  Cancelar
-                </Button>
-              </DialogClose>
-              <Button type="submit">Guardar</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-);
+const columnHelper = createColumnHelper<User>();
 
 export const StaffPage = () => {
-  const [staff, setStaff] = React.useState<StaffUser[]>([]);
+  const { t } = useTranslation();
+  const {
+    users,
+    rowsPerPage,
+    handleChangeRowsPerPage,
+    page,
+    handleChangePage,
+    usersQuery,
+  } = useUsers();
 
-  const handleInvite = (user: StaffUser) => {
-    setStaff((current) => [...current, user]);
+  const columns: ColumnDef<User, any>[] = [
+    columnHelper.accessor(
+      (row) => `${row.person.firstName} ${row.person.lastName}`,
+      {
+        id: "fullName",
+        header: "Nombre",
+      },
+    ),
+
+    columnHelper.accessor((row) => row.person.email, {
+      id: "email",
+      header: "Email",
+    }),
+
+    columnHelper.accessor("username", {
+      header: "Username",
+    }),
+
+    columnHelper.accessor((row) => row.restaurantRoles, {
+      id: "role",
+      cell: (info) => {
+        const roles = info.row.original.restaurantRoles;
+        const restaurant = useAuthStore.getState().restaurant;
+
+        const userRole = roles.find(
+          (resRole) => resRole.restaurant.id === restaurant?.id,
+        )?.role;
+        return userRole ? t(`roles.${userRole.name}`, { defaultValue: userRole.name }) : "";
+      },
+      header: "Rol",
+    }),
+  ];
+
+  const table = useReactTable<User>({
+    data: users,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  const handleInviteClick = () => {
+    NiceModal.show(InviteUserModal, {
+      existingUsers: users,
+      onInvite: () => {
+        usersQuery.refetch();
+      },
+    });
   };
-
-  const handleRemove = (userId: string) => {
-    setStaff((current) => current.filter((user) => user.id !== userId));
-  };
-
-  const handleUpdateRole = (updatedUser: StaffUser) => {
-    setStaff((current) =>
-      current.map((user) =>
-        user.id === updatedUser.id ? updatedUser : user
-      )
-    );
-  };
-
-  const inviteButton = (
-    <Button
-      type="button"
-      onClick={() =>
-        NiceModal.show(InviteUserModal, {
-          existingUsers: staff,
-          onInvite: handleInvite,
-        })
-      }
-    >
-      <UserPlus />
-      Invitar usuario
-    </Button>
-  );
 
   return (
     <div className="flex min-h-svh flex-col p-6 md:p-10">
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-1 flex-col gap-6 w-full max-w-7xl mx-auto">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold">Equipo</h1>
             <p className="text-sm text-muted-foreground">
-              Agrega usuarios para operar el restaurante.
+              Gestiona los empleados de tu restaurante.
             </p>
           </div>
-          {staff.length > 0 && inviteButton}
+          <Button
+            variant="outline"
+            className="rounded-full"
+            onClick={handleInviteClick}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Invitar usuario
+          </Button>
         </div>
 
-        {staff.length === 0 ? (
-          <Empty className="border-border/70">
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <Users />
-              </EmptyMedia>
-              <EmptyTitle>No hay usuarios invitados</EmptyTitle>
-              <EmptyDescription>
-                Invita a tu equipo para comenzar a gestionar el restaurante.
-              </EmptyDescription>
-            </EmptyHeader>
-            <EmptyContent>{inviteButton}</EmptyContent>
-          </Empty>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {staff.map((user) => (
-              <div
-                key={user.id}
-                className="rounded-4xl border border-border/60 bg-card px-4 py-4"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <div className="text-sm font-medium">{user.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {user.email}
-                    </div>
-                    <div className="mt-2 text-xs text-muted-foreground">
-                      @{user.username}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      aria-label={`Editar rol de ${user.name}`}
-                      onClick={() =>
-                        NiceModal.show(EditRoleModal, {
-                          user,
-                          onUpdate: handleUpdateRole,
-                        })
-                      }
-                    >
-                      <Pencil />
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          aria-label={`Eliminar a ${user.name}`}
-                        >
-                          <Trash2 />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Eliminar usuario</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Estas a punto de eliminar a "{user.name}" del restaurante.
-                            Esta accion no se puede deshacer.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction
-                            variant="destructive"
-                            onClick={() => handleRemove(user.id)}
-                          >
-                            Eliminar
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                </div>
-                <div className="mt-3 inline-flex rounded-full bg-muted px-2 py-1 text-xs font-medium text-muted-foreground">
-                  {user.role === "admin"
-                    ? "Administrador"
-                    : user.role === "waiter"
-                      ? "Mesero"
-                      : "Produccion"}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        <Card className="p-0">
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <div className="flex items-center justify-between gap-4 px-4 py-3">
+              <Field orientation="horizontal" className="w-fit">
+                <Select
+                  defaultValue={String(rowsPerPage)}
+                  onValueChange={(value) => handleChangeRowsPerPage(+value)}
+                >
+                  <SelectTrigger className="w-20" id="select-rows-per-page">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent align="start">
+                    <SelectGroup>
+                      <SelectItem value="5">5</SelectItem>
+                      <SelectItem value="10">10</SelectItem>
+                      <SelectItem value="25">25</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Pagination className="mx-0 w-auto">
+                <PaginationContent>
+                  <PaginationItem aria-disabled={page === 0}>
+                    <PaginationPrevious
+                      aria-disabled={page === 0}
+                      onClick={() => handleChangePage(page - 1)}
+                    />
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationNext onClick={() => handleChangePage(page + 1)} />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="flex justify-end">
+          <Button asChild className="rounded-full px-6">
+            <Link to="/setup/payment-methods">Guardar y continuar</Link>
+          </Button>
+        </div>
       </div>
       <SetupStepper className="mt-auto pt-6" />
     </div>

@@ -6,7 +6,7 @@ import { MenuSetupPage } from "../pages/menu-setup.page";
 import { PaymentMethodsPage } from "../pages/payment-methods.page";
 import { ProductsPage } from "../pages/products.page";
 import { StaffPage } from "../pages/staff.page";
-import { TablesPage } from "../pages/tables.page";
+import { TablesSetupPage } from "../pages/tables.page";
 import { WelcomePage } from "../pages/welcome.page";
 import { JoinRestaurantPage } from "../pages/join-restaurant.page";
 
@@ -61,10 +61,10 @@ export const productsRoute = createRoute({
   component: ProductsPage,
 });
 
-export const tablesRoute = createRoute({
+export const tablesSetupRoute = createRoute({
   getParentRoute: () => setupRoute,
   path: "tables",
-  component: TablesPage,
+  component: TablesSetupPage,
 });
 
 export const accountsRoute = createRoute({

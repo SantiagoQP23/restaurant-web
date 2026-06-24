@@ -1,0 +1,8 @@
+{
+  "roles": {
+    "admin": "Administrador",
+    "cook": "Cocinero",
+    "waiter": "Mesero",
+    "cashier": "Cajero"
+  }
+}

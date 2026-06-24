@@ -39,43 +39,12 @@ import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { Edit, Plus, Trash } from "lucide-react";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import { InviteUserModal } from "../components/invite-user.modal";
+import { useTranslation } from "react-i18next";
 
 const columnHelper = createColumnHelper<User>();
 
-const columns: ColumnDef<User, any>[] = [
-  columnHelper.accessor(
-    (row) => `${row.person.firstName} ${row.person.lastName}`,
-    {
-      id: "fullName",
-      header: "Nombre",
-    },
-  ),
-
-  columnHelper.accessor((row) => row.person.email, {
-    id: "email",
-    header: "Email",
-  }),
-
-  columnHelper.accessor("username", {
-    header: "Username",
-  }),
-
-  columnHelper.accessor((row) => row.restaurantRoles, {
-    id: "role",
-    cell: (info) => {
-      const roles = info.row.original.restaurantRoles;
-      const restaurant = useAuthStore.getState().restaurant;
-
-      const userRole = roles.find(
-        (resRole) => resRole.restaurant.id === restaurant?.id,
-      )?.role;
-      return userRole ? userRole.name : "";
-    },
-    header: "Rol",
-  }),
-];
-
 export const UsersPage = () => {
+  const { t } = useTranslation();
   const {
     users,
     rowsPerPage,
@@ -84,6 +53,39 @@ export const UsersPage = () => {
     handleChangePage,
     usersQuery,
   } = useUsers();
+
+  const columns: ColumnDef<User, any>[] = [
+    columnHelper.accessor(
+      (row) => `${row.person.firstName} ${row.person.lastName}`,
+      {
+        id: "fullName",
+        header: "Nombre",
+      },
+    ),
+
+    columnHelper.accessor((row) => row.person.email, {
+      id: "email",
+      header: "Email",
+    }),
+
+    columnHelper.accessor("username", {
+      header: "Username",
+    }),
+
+    columnHelper.accessor((row) => row.restaurantRoles, {
+      id: "role",
+      cell: (info) => {
+        const roles = info.row.original.restaurantRoles;
+        const restaurant = useAuthStore.getState().restaurant;
+
+        const userRole = roles.find(
+          (resRole) => resRole.restaurant.id === restaurant?.id,
+        )?.role;
+        return userRole ? t(`roles.${userRole.name}`, { defaultValue: userRole.name }) : "";
+      },
+      header: "Rol",
+    }),
+  ];
 
   const table = useReactTable<User>({
     data: users,

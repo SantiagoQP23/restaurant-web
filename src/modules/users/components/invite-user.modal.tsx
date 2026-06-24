@@ -24,6 +24,7 @@ import { useRoles } from "@/modules/auth/hooks/useRoles";
 import { useInvitation } from "../hooks/useInvitation";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
 import type { User } from "@/shared/models/user.model";
+import { useTranslation } from "react-i18next";
 
 type InviteUserModalProps = {
   existingUsers: User[];
@@ -33,6 +34,7 @@ type InviteUserModalProps = {
 export const InviteUserModal = NiceModal.create(
   ({ existingUsers, onInvite }: InviteUserModalProps) => {
     const modal = useModal();
+    const { t } = useTranslation();
     const { search, handleChangeSearch, usersQuery } = useUsersSuggestions();
     const { rolesQuery } = useRoles();
     const { sendInvitation } = useInvitation();
@@ -117,7 +119,7 @@ export const InviteUserModal = NiceModal.create(
                   <SelectContent>
                     {rolesQuery.data?.map((role) => (
                       <SelectItem key={role.id} value={role.id.toString()}>
-                        {role.name}
+                        {t(`roles.${role.name}`, { defaultValue: role.name })}
                       </SelectItem>
                     ))}
                   </SelectContent>

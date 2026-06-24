@@ -23,6 +23,7 @@ import {
   setupRoute,
   staffRoute,
   welcomeRoute,
+  tablesSetupRoute,
 } from "@/modules/setup/router/setup.router";
 import { ordersRoute } from "@/modules/orders/router/orders.router";
 import { settingsRoute } from "@/modules/settings/router/settings.router";
@@ -66,7 +67,7 @@ const routeTree = rootRoute.addChildren([
     productionAreasRoute,
     setupMenuRoute,
     productsRoute,
-    tablesRoute,
+    tablesSetupRoute,
     accountsRoute,
     paymentMethodsRoute,
     staffRoute,
