@@ -53,6 +53,9 @@ import {
   PaymentMethodCategory,
   type PaymentMethod,
 } from "@/shared/models/payment-method.model";
+import { useAccounts } from "@/modules/finances/hooks/useAccounts";
+import { AccountFormModal } from "@/modules/finances/components/account-form.modal";
+import { RemoveAccountModal } from "@/modules/finances/components/remove-account.modal";
 
 const formatAccountType = (type: AccountType) =>
   type === AccountType.CASH ? "Efectivo" : "Banco";
@@ -72,37 +75,14 @@ const formatPaymentType = (type: PaymentMethodCategory) => {
   }
 };
 
-const initialAccounts: Account[] = [
-  {
-    id: 1,
-    name: "Caja principal",
-    description: "Caja en local",
-    num: "CAJA-001",
-    type: AccountType.CASH,
-    isActive: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 2,
-    name: "Banco Pichincha",
-    description: "Cuenta corriente",
-    num: "0101234567",
-    type: AccountType.BANK,
-    isActive: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
-
 const initialPaymentMethods: PaymentMethod[] = [
   {
     id: 1,
     name: "Efectivo",
     commissionPercentage: 0,
     type: PaymentMethodCategory.CASH,
-    allowedDestinationAccounts: [initialAccounts[0]],
-    defaultDestinationAccount: initialAccounts[0],
+    allowedDestinationAccounts: [],
+    defaultDestinationAccount: undefined,
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -112,235 +92,13 @@ const initialPaymentMethods: PaymentMethod[] = [
     name: "Tarjeta Visa",
     commissionPercentage: 3.2,
     type: PaymentMethodCategory.CARD,
-    allowedDestinationAccounts: [initialAccounts[1]],
-    defaultDestinationAccount: initialAccounts[1],
+    allowedDestinationAccounts: [],
+    defaultDestinationAccount: undefined,
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date(),
   },
 ];
-
-const AddAccountModal = NiceModal.create(
-  ({ onCreate }: { onCreate: (account: Account) => void }) => {
-    const modal = useModal();
-    const [name, setName] = React.useState("");
-    const [description, setDescription] = React.useState("");
-    const [num, setNum] = React.useState("");
-    const [type, setType] = React.useState<AccountType>(AccountType.CASH);
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      onCreate({
-        id: Date.now(),
-        name,
-        description,
-        num,
-        type,
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-      modal.hide();
-    };
-
-    return (
-      <Dialog
-        open={modal.visible}
-        onOpenChange={(open) => {
-          if (!open) {
-            modal.hide();
-          }
-        }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Nueva cuenta</DialogTitle>
-            <DialogDescription>
-              Registra una cuenta de caja o banco.
-            </DialogDescription>
-          </DialogHeader>
-          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="account-name">Nombre</FieldLabel>
-                <Input
-                  id="account-name"
-                  type="text"
-                  placeholder="Caja secundaria"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  required
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="account-description">Descripcion</FieldLabel>
-                <Input
-                  id="account-description"
-                  type="text"
-                  placeholder="Caja de apoyo"
-                  value={description}
-                  onChange={(event) => setDescription(event.target.value)}
-                  required
-                />
-                <FieldDescription>
-                  Agrega una referencia para el equipo.
-                </FieldDescription>
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="account-num">Numero</FieldLabel>
-                <Input
-                  id="account-num"
-                  type="text"
-                  placeholder="0001234567"
-                  value={num}
-                  onChange={(event) => setNum(event.target.value)}
-                  required
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="account-type">Tipo</FieldLabel>
-                <Select value={type} onValueChange={(value) => setType(value as AccountType)}>
-                  <SelectTrigger id="account-type" className="w-full">
-                    <SelectValue placeholder="Selecciona un tipo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.values(AccountType).map((value) => (
-                      <SelectItem key={value} value={value}>
-                        {formatAccountType(value)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
-            </FieldGroup>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button type="button" variant="outline">
-                  Cancelar
-                </Button>
-              </DialogClose>
-              <Button type="submit">Guardar</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-);
-
-const EditAccountModal = NiceModal.create(
-  ({
-    account,
-    onUpdate,
-  }: {
-    account: Account;
-    onUpdate: (account: Account) => void;
-  }) => {
-    const modal = useModal();
-    const [name, setName] = React.useState(account.name);
-    const [description, setDescription] = React.useState(account.description);
-    const [num, setNum] = React.useState(account.num);
-    const [type, setType] = React.useState<AccountType>(account.type);
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      onUpdate({
-        ...account,
-        name,
-        description,
-        num,
-        type,
-        updatedAt: new Date(),
-      });
-      modal.hide();
-    };
-
-    return (
-      <Dialog
-        open={modal.visible}
-        onOpenChange={(open) => {
-          if (!open) {
-            modal.hide();
-          }
-        }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Editar cuenta</DialogTitle>
-            <DialogDescription>
-              Actualiza la informacion de "{account.name}".
-            </DialogDescription>
-          </DialogHeader>
-          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor={`edit-account-name-${account.id}`}>
-                  Nombre
-                </FieldLabel>
-                <Input
-                  id={`edit-account-name-${account.id}`}
-                  type="text"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  required
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor={`edit-account-description-${account.id}`}>
-                  Descripcion
-                </FieldLabel>
-                <Input
-                  id={`edit-account-description-${account.id}`}
-                  type="text"
-                  value={description}
-                  onChange={(event) => setDescription(event.target.value)}
-                  required
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor={`edit-account-num-${account.id}`}>
-                  Numero
-                </FieldLabel>
-                <Input
-                  id={`edit-account-num-${account.id}`}
-                  type="text"
-                  value={num}
-                  onChange={(event) => setNum(event.target.value)}
-                  required
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor={`edit-account-type-${account.id}`}>
-                  Tipo
-                </FieldLabel>
-                <Select value={type} onValueChange={(value) => setType(value as AccountType)}>
-                  <SelectTrigger id={`edit-account-type-${account.id}`} className="w-full">
-                    <SelectValue placeholder="Selecciona un tipo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.values(AccountType).map((value) => (
-                      <SelectItem key={value} value={value}>
-                        {formatAccountType(value)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
-            </FieldGroup>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button type="button" variant="outline">
-                  Cancelar
-                </Button>
-              </DialogClose>
-              <Button type="submit">Guardar</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-);
 
 const AddPaymentMethodModal = NiceModal.create(
   ({
@@ -701,36 +459,12 @@ const EditPaymentMethodModal = NiceModal.create(
 );
 
 export const PaymentMethodsPage = () => {
-  const [accounts, setAccounts] = React.useState<Account[]>(initialAccounts);
+  const { accountsQuery } = useAccounts();
+  const accounts = accountsQuery.data ?? [];
+
   const [methods, setMethods] = React.useState<PaymentMethod[]>(
     initialPaymentMethods
   );
-
-  const handleCreateAccount = (account: Account) => {
-    setAccounts((current) => [...current, account]);
-  };
-
-  const handleUpdateAccount = (account: Account) => {
-    setAccounts((current) =>
-      current.map((item) => (item.id === account.id ? account : item))
-    );
-  };
-
-  const handleRemoveAccount = (accountId: number) => {
-    setAccounts((current) => current.filter((item) => item.id !== accountId));
-    setMethods((current) =>
-      current.map((method) => ({
-        ...method,
-        allowedDestinationAccounts: method.allowedDestinationAccounts.filter(
-          (account) => account.id !== accountId
-        ),
-        defaultDestinationAccount:
-          method.defaultDestinationAccount?.id === accountId
-            ? undefined
-            : method.defaultDestinationAccount,
-      }))
-    );
-  };
 
   const handleCreateMethod = (method: PaymentMethod) => {
     setMethods((current) => [...current, method]);
@@ -767,7 +501,9 @@ export const PaymentMethodsPage = () => {
             <Button
               type="button"
               onClick={() =>
-                NiceModal.show(AddAccountModal, { onCreate: handleCreateAccount })
+                NiceModal.show(AccountFormModal, {
+                  onSaved: () => accountsQuery.refetch(),
+                })
               }
             >
               <Plus />
@@ -799,44 +535,28 @@ export const PaymentMethodsPage = () => {
                         size="icon"
                         aria-label={`Editar ${account.name}`}
                         onClick={() =>
-                          NiceModal.show(EditAccountModal, {
+                          NiceModal.show(AccountFormModal, {
                             account,
-                            onUpdate: handleUpdateAccount,
+                            onSaved: () => accountsQuery.refetch(),
                           })
                         }
                       >
                         <Pencil />
                       </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            aria-label={`Eliminar ${account.name}`}
-                          >
-                            <Trash2 />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Eliminar cuenta</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Estas a punto de eliminar "{account.name}". Esta accion no
-                              se puede deshacer.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction
-                              variant="destructive"
-                              onClick={() => handleRemoveAccount(account.id)}
-                            >
-                              Eliminar
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        aria-label={`Eliminar ${account.name}`}
+                        onClick={() =>
+                          NiceModal.show(RemoveAccountModal, {
+                            account,
+                            onRemoved: () => accountsQuery.refetch(),
+                          })
+                        }
+                      >
+                        <Trash2 />
+                      </Button>
                     </div>
                   </CardAction>
                 </CardHeader>
