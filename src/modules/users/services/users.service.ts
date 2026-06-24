@@ -3,6 +3,7 @@ import type { User } from "@/shared/models/user.model";
 import type { UserFiltersDto } from "../interfaces/dto/user-filters.dto";
 import type { InviteUserDto } from "../interfaces/dto/invite-user.dto";
 import type { InviteUserRespDto } from "../interfaces/dto/invite-user-resp.dto";
+import type { UpdateUserRoleDto } from "../interfaces/dto/update-user-role.dto";
 
 export class UsersService {
   static getAll = async (
@@ -45,6 +46,11 @@ export class UsersService {
       inviteUserDto,
     );
 
+    return resp.data;
+  }
+
+  static async updateUserRole(dto: UpdateUserRoleDto) {
+    const resp = await restaurantApi.patch<void>(`users/user-role`, dto);
     return resp.data;
   }
 }

@@ -34,12 +34,13 @@ import {
   type ColumnDef,
 } from "@tanstack/react-table";
 import NiceModal from "@ebay/nice-modal-react";
-import { Plus } from "lucide-react";
+import { Edit, Plus } from "lucide-react";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import { useUsers } from "@/modules/users/hooks/useUsers";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
 import type { User } from "@/shared/models/user.model";
 import { InviteUserModal } from "@/modules/users/components/invite-user.modal";
+import { ChangeUserRoleModal } from "@/modules/users/components/change-user-role.modal";
 import { SetupStepper } from "../components/setup-stepper.component";
 import { useTranslation } from "react-i18next";
 
@@ -154,6 +155,20 @@ export const StaffPage = () => {
                         )}
                       </TableCell>
                     ))}
+                    <TableCell className="text-center">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() =>
+                          NiceModal.show(ChangeUserRoleModal, {
+                            user: row.original,
+                            onRoleChanged: () => usersQuery.refetch(),
+                          })
+                        }
+                      >
+                        <Edit />
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

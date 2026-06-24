@@ -39,6 +39,7 @@ import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { Edit, Plus, Trash } from "lucide-react";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import { InviteUserModal } from "../components/invite-user.modal";
+import { ChangeUserRoleModal } from "../components/change-user-role.modal";
 import { useTranslation } from "react-i18next";
 
 const columnHelper = createColumnHelper<User>();
@@ -148,7 +149,16 @@ export const UsersPage = () => {
                       </TableCell>
                     ))}
                     <TableCell colSpan={columns.length} className="text-center">
-                      <Button variant="ghost" size="icon">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() =>
+                          NiceModal.show(ChangeUserRoleModal, {
+                            user: row.original,
+                            onRoleChanged: () => usersQuery.refetch(),
+                          })
+                        }
+                      >
                         <Edit />
                       </Button>
                       <Button
