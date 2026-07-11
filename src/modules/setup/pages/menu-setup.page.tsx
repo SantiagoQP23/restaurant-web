@@ -8,8 +8,21 @@ import type { Product } from "@/shared/models/product.model";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Badge } from "@/shared/components/ui/badge";
+import { Switch } from "@/shared/components/ui/switch";
 import { cn } from "@/shared/lib/utils";
-import { MoreVertical, Plus, Search } from "lucide-react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/shared/components/ui/collapsible";
+import {
+  ChevronDown,
+  Eye,
+  EyeOff,
+  MoreVertical,
+  Plus,
+  Search,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,13 +58,15 @@ type MenuSection = Section & { categories: MenuCategory[] };
 type MenuProduct = Product & {
   categoryId?: string;
   category?: { id: string; name: string };
+  isActive?: boolean;
+  isPublic?: boolean;
 };
 
 export const MenuSetupPage = () => {
   const {
     sections: fetchedSections,
     createSection,
-    // updateSection,
+    updateSection,
     createCategory,
     updateCategory,
     deleteCategory,
@@ -59,12 +74,12 @@ export const MenuSetupPage = () => {
   } = useMenu();
   const { restaurant } = useAuthStore();
   const [sections, setSections] = React.useState<MenuSection[]>([]);
-  const [selectedSectionId, setSelectedSectionId] = React.useState<
-    string | null
-  >(null);
-  const [selectedCategoryId, setSelectedCategoryId] = React.useState<
-    string | null
-  >(null);
+  const [expandedSections, setExpandedSections] = React.useState<Set<string>>(
+    new Set(),
+  );
+  const [expandedCategories, setExpandedCategories] = React.useState<
+    Set<string>
+  >(new Set());
   const [searchQuery, setSearchQuery] = React.useState("");
 
   const productsQuery = useQuery<MenuProduct[]>({
@@ -91,78 +106,63 @@ export const MenuSetupPage = () => {
     return { byId, byName };
   }, [productsQuery.data]);
 
-  const selectedSection = React.useMemo(
-    () => sections.find((section) => section.id === selectedSectionId),
-    [sections, selectedSectionId],
-  );
-
-  const selectedSectionIndex = React.useMemo(
-    () => sections.findIndex((section) => section.id === selectedSectionId),
-    [sections, selectedSectionId],
-  );
-
-  const selectedCategory = React.useMemo(
-    () =>
-      selectedSection?.categories.find(
-        (category) => category.id === selectedCategoryId,
-      ),
-    [selectedSection, selectedCategoryId],
-  );
-
-  const selectedCategoryIndex = React.useMemo(
-    () =>
-      selectedSection?.categories.findIndex(
-        (category) => category.id === selectedCategoryId,
-      ) ?? -1,
-    [selectedSection, selectedCategoryId],
-  );
-
   React.useEffect(() => {
     if (fetchedSections) {
-      setSections(
-        fetchedSections.map((section) => ({
-          ...section,
-          categories: section.categories ?? [],
-        })) as MenuSection[],
+      const mapped = fetchedSections.map((section) => ({
+        ...section,
+        categories: section.categories ?? [],
+      })) as MenuSection[];
+      setSections(mapped);
+      // Expand all sections and categories by default
+      setExpandedSections(new Set(mapped.map((s) => s.id)));
+      setExpandedCategories(
+        new Set(mapped.flatMap((s) => s.categories.map((c) => c.id))),
       );
     }
   }, [fetchedSections]);
 
-  React.useEffect(() => {
-    if (!selectedSectionId && sections.length > 0) {
-      setSelectedSectionId(sections[0]?.id ?? null);
-    }
-  }, [sections, selectedSectionId]);
-
-  React.useEffect(() => {
-    if (
-      selectedSection &&
-      !selectedCategoryId &&
-      selectedSection.categories.length > 0
-    ) {
-      setSelectedCategoryId(selectedSection.categories[0]?.id ?? null);
-    }
-  }, [selectedSection, selectedCategoryId]);
-
-  const handleSelectSection = (sectionId: string) => {
-    setSelectedSectionId(sectionId);
-    setSelectedCategoryId(null);
-    setSearchQuery("");
+  const getCategoryProducts = (category: Category) => {
+    const categoryId = (category as { id?: string }).id;
+    const products = categoryId
+      ? (productsByCategory.byId.get(categoryId) ?? [])
+      : (productsByCategory.byName.get(category.name.toLowerCase()) ?? []);
+    if (!searchQuery.trim()) return products;
+    const q = searchQuery.toLowerCase();
+    return products.filter((p) => p.name.toLowerCase().includes(q));
   };
 
-  // const handleUpdateSection = (sectionId: string, name: string) => {
-  //   updateSection.mutate({ id: sectionId, name });
-  // };
+  const getCategoryProductCount = (category: Category) => {
+    const categoryId = (category as { id?: string }).id;
+    const products = categoryId
+      ? (productsByCategory.byId.get(categoryId) ?? [])
+      : (productsByCategory.byName.get(category.name.toLowerCase()) ?? []);
+    return products.length;
+  };
 
-  // const handleDeleteSection = (sectionId: string) => {
-  //   setSections((current) =>
-  //     current.filter((section) => section.id !== sectionId),
-  //   );
-  //   if (selectedSectionId === sectionId) {
-  //     setSelectedSectionId(null);
-  //     setSelectedCategoryId(null);
-  //   }
-  // };
+  const getSectionProductCount = (section: MenuSection) => {
+    return section.categories.reduce(
+      (sum, cat) => sum + getCategoryProductCount(cat),
+      0,
+    );
+  };
+
+  const toggleSection = (sectionId: string, open: boolean) => {
+    setExpandedSections((prev) => {
+      const next = new Set(prev);
+      if (open) next.add(sectionId);
+      else next.delete(sectionId);
+      return next;
+    });
+  };
+
+  const toggleCategory = (categoryId: string, open: boolean) => {
+    setExpandedCategories((prev) => {
+      const next = new Set(prev);
+      if (open) next.add(categoryId);
+      else next.delete(categoryId);
+      return next;
+    });
+  };
 
   const handleUpdateCategory = (
     sectionId: string,
@@ -174,9 +174,6 @@ export const MenuSetupPage = () => {
 
   const handleDeleteCategory = (categoryId: string) => {
     deleteCategory.mutate(categoryId);
-    if (selectedCategoryId === categoryId) {
-      setSelectedCategoryId(null);
-    }
   };
 
   const handleUpdateProduct = (
@@ -204,410 +201,538 @@ export const MenuSetupPage = () => {
     });
   };
 
-  const getCategoryProductCount = (category: Category) => {
-    const categoryId = (category as { id?: string }).id;
-    const products = categoryId
-      ? (productsByCategory.byId.get(categoryId) ?? [])
-      : (productsByCategory.byName.get(category.name.toLowerCase()) ?? []);
-    return products.length;
-  };
-
-  const getFilteredProducts = (category: Category) => {
-    const categoryId = (category as { id?: string }).id;
-    const products = categoryId
-      ? (productsByCategory.byId.get(categoryId) ?? [])
-      : (productsByCategory.byName.get(category.name.toLowerCase()) ?? []);
-    if (!searchQuery.trim()) return products;
-    const q = searchQuery.toLowerCase();
-    return products.filter((p) => p.name.toLowerCase().includes(q));
-  };
-
   return (
     <div className="flex min-h-svh flex-col p-6 md:p-10">
-      <div className="flex flex-1 flex-col gap-6 w-full max-w-7xl mx-auto">
+      <div className="flex flex-1 flex-col gap-6 w-full max-w-4xl mx-auto">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-600">Menú</h1>
+          <h1 className="text-2xl font-semibold">Menú</h1>
           <p className="text-sm text-muted-foreground">
-            Organiza tus secciones, categorias y productos del menú.
+            Organiza tus secciones, categorías y productos del menú.
           </p>
         </div>
 
-        {/* Section Tabs */}
-        <div className="flex items-center gap-1 border-b border-border/60 pb-1 overflow-x-auto">
-          {sections.map((section) => {
-            const isActive = section.id === selectedSectionId;
-            return (
-              <button
-                key={section.id}
-                type="button"
-                onClick={() => handleSelectSection(section.id)}
-                className={cn(
-                  "relative px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors rounded-t-lg",
-                  isActive
-                    ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {section.name}
-                {isActive && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
-                )}
-              </button>
-            );
-          })}
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="rounded-full shrink-0"
-            onClick={() =>
-              NiceModal.show(MenuSectionDialog, {
-                title: "Nueva seccion",
-                submitLabel: "Guardar",
-                onSubmit: (name) => createSection.mutate({ name }),
-              })
-            }
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Buscar productos..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 rounded-full"
+          />
         </div>
 
-        {/* 2 Columns: Categories + Products */}
-        <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-          {/* Column 1: Categories */}
-          <aside className="rounded-3xl border border-border/60 bg-card/60 p-4 shadow-sm h-fit">
-            <div className="flex items-center justify-between mb-3">
-              <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wide">
-                {selectedSection
-                  ? `Categorías de "${selectedSection.name}"`
-                  : "Categorías"}
-              </div>
-              {selectedSection && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() =>
-                    NiceModal.show(MenuCategoryDialog, {
-                      title: "Nueva categoria",
-                      submitLabel: "Guardar",
-                      sectionName: selectedSection.name,
-                      onSubmit: (name) =>
-                        createCategory.mutate({
-                          name,
-                          sectionId: selectedSection.id,
-                        }),
-                    })
-                  }
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              )}
+        {/* Sections */}
+        <div className="flex flex-col gap-4">
+          {sections.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-border/60 px-4 py-8 text-sm text-muted-foreground text-center">
+              No hay secciones creadas aún.
             </div>
-            {selectedSection ? (
-              <>
-                <div className="flex flex-col gap-1">
-                  {selectedSection.categories.map((category) => {
-                    const isActive = category.id === selectedCategoryId;
-                    const count = getCategoryProductCount(category);
-                    return (
-                      <div
-                        key={category.id}
-                        onClick={() => setSelectedCategoryId(category.id)}
-                        onKeyDown={(event) => {
-                          if (event.key === "Enter" || event.key === " ") {
-                            event.preventDefault();
-                            setSelectedCategoryId(category.id);
-                          }
-                        }}
-                        role="button"
-                        tabIndex={0}
-                        className={cn(
-                          "group flex items-center justify-between gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition cursor-pointer border-l-4",
-                          isActive
-                            ? "bg-muted/80 text-foreground font-medium border-l-primary"
-                            : "text-muted-foreground hover:bg-muted/50 hover:text-foreground border-l-transparent",
-                        )}
-                      >
-                        <div className="min-w-0">
-                          <div className="font-medium truncate">
-                            {category.name}
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            {count} {count === 1 ? "producto" : "productos"}
-                          </div>
+          ) : (
+            sections.map((section) => {
+              const sectionIndex = sections.findIndex(
+                (s) => s.id === section.id,
+              );
+              const isSectionOpen = expandedSections.has(section.id);
+              const categoryCount = section.categories.length;
+              const productCount = getSectionProductCount(section);
+
+              return (
+                <Collapsible
+                  key={section.id}
+                  open={isSectionOpen}
+                  onOpenChange={(open) => toggleSection(section.id, open)}
+                >
+                  <div className="rounded-xl border border-border/60 bg-card shadow-sm overflow-hidden">
+                    {/* Section Header */}
+                    <div className="flex items-center gap-2 px-4 py-3">
+                      <CollapsibleTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 shrink-0"
+                        >
+                          <ChevronDown
+                            className={cn(
+                              "h-4 w-4 transition-transform duration-200",
+                              isSectionOpen && "rotate-180",
+                            )}
+                          />
+                        </Button>
+                      </CollapsibleTrigger>
+
+                      <span className="font-semibold text-sm">
+                        {section.name}
+                      </span>
+
+                      <Badge variant="secondary" className="text-xs">
+                        {categoryCount}{" "}
+                        {categoryCount === 1
+                          ? "categoría"
+                          : "categorías"}
+                      </Badge>
+
+                      <Badge variant="secondary" className="text-xs">
+                        {productCount}{" "}
+                        {productCount === 1 ? "producto" : "productos"}
+                      </Badge>
+
+                      <div className="ml-auto flex items-center gap-3">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs text-muted-foreground">
+                            Activa
+                          </span>
+                          <Switch
+                            size="sm"
+                            checked={section.isActive}
+                            onCheckedChange={(checked) =>
+                              updateSection.mutate({
+                                id: section.id,
+                                isActive: checked,
+                              })
+                            }
+                          />
                         </div>
+
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
                               type="button"
                               variant="ghost"
                               size="icon"
-                              className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
-                              aria-label={`Opciones para ${category.name}`}
-                              onClick={(event) => event.stopPropagation()}
-                              onKeyDown={(event) => event.stopPropagation()}
+                              className="h-8 w-8"
                             >
                               <MoreVertical className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                NiceModal.show(MenuCategoryDialog, {
-                                  title: "Actualizar categoria",
+                              onClick={() =>
+                                NiceModal.show(MenuSectionDialog, {
+                                  title: "Actualizar sección",
                                   submitLabel: "Guardar cambios",
-                                  sectionName: selectedSection.name,
-                                  initialValues: { name: category.name },
+                                  initialValues: { name: section.name },
                                   onSubmit: (name) =>
-                                    handleUpdateCategory(
-                                      selectedSection.id,
-                                      category.id,
+                                    updateSection.mutate({
+                                      id: section.id,
                                       name,
-                                    ),
-                                });
-                              }}
+                                    }),
+                                })
+                              }
                             >
                               Actualizar
                             </DropdownMenuItem>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <DropdownMenuItem
-                                  variant="destructive"
-                                  onClick={(event) => event.stopPropagation()}
-                                >
-                                  Eliminar
-                                </DropdownMenuItem>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>
-                                    Eliminar categoria
-                                  </AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    Estas a punto de eliminar la categoria
-                                    &quot;
-                                    {category.name}&quot;. Esta accion no se
-                                    puede deshacer.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>
-                                    Cancelar
-                                  </AlertDialogCancel>
-                                  <AlertDialogAction
-                                    variant="destructive"
-                                    onClick={() =>
-                                      handleDeleteCategory(category.id)
-                                    }
-                                  >
-                                    Eliminar
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
-                    );
-                  })}
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="w-full mt-3 rounded-full text-sm justify-start"
-                  onClick={() =>
-                    NiceModal.show(MenuCategoryDialog, {
-                      title: "Nueva categoria",
-                      submitLabel: "Guardar",
-                      sectionName: selectedSection.name,
-                      onSubmit: (name) =>
-                        createCategory.mutate({
-                          name,
-                          sectionId: selectedSection.id,
-                        }),
-                    })
-                  }
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Agregar categoria
-                </Button>
-              </>
-            ) : (
-              <div className="text-sm text-muted-foreground py-4 text-center">
-                Selecciona una seccion
-              </div>
-            )}
-          </aside>
-
-          {/* Column 2: Products */}
-          <section className="flex flex-col gap-4">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <h2 className="text-lg font-semibold">
-                {selectedCategory
-                  ? `Productos en ${selectedCategory.name}`
-                  : "Productos"}
-              </h2>
-              {selectedCategory && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="rounded-full"
-                  onClick={() =>
-                    NiceModal.show(MenuProductDialog, {
-                      title: "Nuevo producto",
-                      submitLabel: "Guardar",
-                      category: {
-                        name: selectedCategory.name,
-                        sectionIndex: selectedSectionIndex,
-                        categoryIndex: selectedCategoryIndex,
-                      } as MenuCategoryWithIndex,
-                      categories: sections.flatMap((section, sectionIndex) =>
-                        section.categories.map((item, categoryIndex) => ({
-                          ...item,
-                          sectionIndex,
-                          categoryIndex,
-                        })),
-                      ),
-                      onSubmit: (values) => {
-                        NiceModal.show(MenuProductOptionsDialog, {
-                          productName: values.name,
-                          onSubmit: () => undefined,
-                        });
-                      },
-                    })
-                  }
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Agregar producto
-                </Button>
-              )}
-            </div>
-
-            {selectedCategory ? (
-              (() => {
-                const remoteProducts = getFilteredProducts(selectedCategory);
-                const totalCount = getCategoryProductCount(selectedCategory);
-
-                return (
-                  <div className="flex flex-col gap-3">
-                    {/* Search */}
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        type="text"
-                        placeholder="Buscar productos..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-9 rounded-full"
-                      />
                     </div>
 
-                    {/* Products count */}
-                    <div className="text-xs text-muted-foreground">
-                      {remoteProducts.length} de {totalCount}{" "}
-                      {totalCount === 1 ? "producto" : "productos"}
-                    </div>
+                    <CollapsibleContent>
+                      <div className="px-4 pb-4 flex flex-col gap-3">
+                        {section.categories.map((category) => {
+                          const categoryIndex = section.categories.findIndex(
+                            (c) => c.id === category.id,
+                          );
+                          const isCategoryOpen = expandedCategories.has(
+                            category.id,
+                          );
+                          const catProductCount = getCategoryProductCount(
+                            category,
+                          );
+                          const products = getCategoryProducts(category);
 
-                    {/* Products list */}
-                    {remoteProducts.length === 0 ? (
-                      <div className="rounded-2xl border border-dashed border-border/60 px-4 py-6 text-sm text-muted-foreground text-center">
-                        {productsQuery.isLoading
-                          ? "Cargando productos..."
-                          : searchQuery
-                            ? "No se encontraron productos."
-                            : "Sin productos por ahora."}
-                      </div>
-                    ) : (
-                      remoteProducts.map((product) => (
-                        <div
-                          key={product.id}
-                          className="flex items-center justify-between gap-4 rounded-2xl border border-border/60 bg-card px-4 py-3"
-                        >
-                          <div className="flex items-center gap-3 min-w-0">
-                            <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center text-lg shrink-0">
-                              🍽️
-                            </div>
-                            <div className="min-w-0">
-                              <div className="font-medium text-sm truncate">
-                                {product.name}
-                              </div>
-                              <div className="flex items-center gap-2 mt-0.5">
-                                <Badge variant="outline" className="text-xs">
-                                  {product.productionArea?.name ?? "Sin area"}
-                                </Badge>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2 shrink-0">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8"
-                                >
-                                  <MoreVertical className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem
-                                  onClick={() =>
-                                    NiceModal.show(MenuProductDialog, {
-                                      title: "Actualizar producto",
-                                      submitLabel: "Guardar cambios",
-                                      category: {
-                                        name: selectedCategory.name,
-                                        sectionIndex: selectedSectionIndex,
-                                        categoryIndex: selectedCategoryIndex,
-                                      } as MenuCategoryWithIndex,
-                                      categories: sections.flatMap(
-                                        (section, sectionIndex) =>
-                                          section.categories.map(
-                                            (item, categoryIndex) => ({
-                                              ...item,
-                                              sectionIndex,
-                                              categoryIndex,
-                                            }),
+                          return (
+                            <Collapsible
+                              key={category.id}
+                              open={isCategoryOpen}
+                              onOpenChange={(open) =>
+                                toggleCategory(category.id, open)
+                              }
+                            >
+                              <div className="rounded-lg border border-border/40 overflow-hidden">
+                                {/* Category Header */}
+                                <div className="flex items-center gap-2 px-3 py-2">
+                                  <CollapsibleTrigger asChild>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-7 w-7 shrink-0"
+                                    >
+                                      <ChevronDown
+                                        className={cn(
+                                          "h-4 w-4 transition-transform duration-200",
+                                          isCategoryOpen && "rotate-180",
+                                        )}
+                                      />
+                                    </Button>
+                                  </CollapsibleTrigger>
+
+                                  <span className="font-medium text-sm">
+                                    {category.name}
+                                  </span>
+
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-xs"
+                                  >
+                                    {catProductCount}{" "}
+                                    {catProductCount === 1
+                                      ? "producto"
+                                      : "productos"}
+                                  </Badge>
+
+                                  <div className="ml-auto flex items-center gap-2">
+                                    <div className="flex items-center gap-1.5">
+                                      <span className="text-xs text-muted-foreground">
+                                        Activa
+                                      </span>
+                                      <Switch
+                                        size="sm"
+                                        checked={category.isActive}
+                                        onCheckedChange={(checked) =>
+                                          updateCategory.mutate({
+                                            id: category.id,
+                                            isActive: checked,
+                                          })
+                                        }
+                                      />
+                                    </div>
+
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-7 w-7"
+                                      onClick={() =>
+                                        updateCategory.mutate({
+                                          id: category.id,
+                                          isPublic: !category.isPublic,
+                                        })
+                                      }
+                                    >
+                                      {category.isPublic ? (
+                                        <Eye className="h-3.5 w-3.5 text-muted-foreground" />
+                                      ) : (
+                                        <EyeOff className="h-3.5 w-3.5 text-muted-foreground" />
+                                      )}
+                                    </Button>
+
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="icon"
+                                          className="h-7 w-7"
+                                        >
+                                          <MoreVertical className="h-4 w-4" />
+                                        </Button>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent align="end">
+                                        <DropdownMenuItem
+                                          onClick={() =>
+                                            NiceModal.show(
+                                              MenuCategoryDialog,
+                                              {
+                                                title:
+                                                  "Actualizar categoría",
+                                                submitLabel:
+                                                  "Guardar cambios",
+                                                sectionName: section.name,
+                                                initialValues: {
+                                                  name: category.name,
+                                                },
+                                                onSubmit: (name) =>
+                                                  handleUpdateCategory(
+                                                    section.id,
+                                                    category.id,
+                                                    name,
+                                                  ),
+                                              },
+                                            )
+                                          }
+                                        >
+                                          Actualizar
+                                        </DropdownMenuItem>
+                                        <AlertDialog>
+                                          <AlertDialogTrigger asChild>
+                                            <DropdownMenuItem
+                                              variant="destructive"
+                                              onClick={(event) =>
+                                                event.stopPropagation()
+                                              }
+                                            >
+                                              Eliminar
+                                            </DropdownMenuItem>
+                                          </AlertDialogTrigger>
+                                          <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                              <AlertDialogTitle>
+                                                Eliminar categoría
+                                              </AlertDialogTitle>
+                                              <AlertDialogDescription>
+                                                Estás a punto de eliminar la
+                                                categoría &quot;
+                                                {category.name}&quot;. Esta
+                                                acción no se puede deshacer.
+                                              </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                              <AlertDialogCancel>
+                                                Cancelar
+                                              </AlertDialogCancel>
+                                              <AlertDialogAction
+                                                variant="destructive"
+                                                onClick={() =>
+                                                  handleDeleteCategory(
+                                                    category.id,
+                                                  )
+                                                }
+                                              >
+                                                Eliminar
+                                              </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                          </AlertDialogContent>
+                                        </AlertDialog>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  </div>
+                                </div>
+
+                                <CollapsibleContent>
+                                  <div className="px-3 pb-3 flex flex-col gap-2">
+                                    {products.length === 0 ? (
+                                      <div className="rounded-lg border border-dashed border-border/40 px-3 py-4 text-xs text-muted-foreground text-center">
+                                        {productsQuery.isLoading
+                                          ? "Cargando productos..."
+                                          : searchQuery
+                                            ? "No se encontraron productos."
+                                            : "Sin productos por ahora."}
+                                      </div>
+                                    ) : (
+                                      products.map((product) => (
+                                        <div
+                                          key={product.id}
+                                          className="flex items-start gap-3 rounded-lg border border-border/40 px-3 py-2.5 bg-background/50"
+                                        >
+                                          {/* Status dot */}
+                                          <div
+                                            className={cn(
+                                              "mt-1.5 h-2 w-2 rounded-full shrink-0",
+                                              product.isActive
+                                                ? "bg-emerald-500"
+                                                : "bg-gray-300",
+                                            )}
+                                          />
+
+                                          <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 flex-wrap">
+                                              <span className="font-medium text-sm">
+                                                {product.name}
+                                              </span>
+                                              <Badge
+                                                variant="outline"
+                                                className="text-xs"
+                                              >
+                                                {product.productionArea
+                                                  ?.name ?? "Sin área"}
+                                              </Badge>
+                                            </div>
+                                            {product.description && (
+                                              <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
+                                                {product.description}
+                                              </p>
+                                            )}
+                                            {product.options &&
+                                              product.options.length > 0 && (
+                                                <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                                  {product.options.map(
+                                                    (option) => (
+                                                      <Badge
+                                                        key={option.id}
+                                                        variant="secondary"
+                                                        className="text-xs font-normal"
+                                                      >
+                                                        {option.name} ${" "}
+                                                        {option.price.toLocaleString()}
+                                                      </Badge>
+                                                    ),
+                                                  )}
+                                                </div>
+                                              )}
+                                          </div>
+
+                                          <div className="flex items-center gap-2 shrink-0">
+                                            <DropdownMenu>
+                                              <DropdownMenuTrigger asChild>
+                                                <Button
+                                                  type="button"
+                                                  variant="ghost"
+                                                  size="icon"
+                                                  className="h-8 w-8"
+                                                >
+                                                  <MoreVertical className="h-4 w-4" />
+                                                </Button>
+                                              </DropdownMenuTrigger>
+                                              <DropdownMenuContent align="end">
+                                                <DropdownMenuItem
+                                                  onClick={() =>
+                                                    NiceModal.show(
+                                                      MenuProductDialog,
+                                                      {
+                                                        title:
+                                                          "Actualizar producto",
+                                                        submitLabel:
+                                                          "Guardar cambios",
+                                                        category: {
+                                                          name: category.name,
+                                                          sectionIndex:
+                                                            sectionIndex,
+                                                          categoryIndex:
+                                                            categoryIndex,
+                                                        } as MenuCategoryWithIndex,
+                                                        categories:
+                                                          sections.flatMap(
+                                                            (
+                                                              sec,
+                                                              secIdx,
+                                                            ) =>
+                                                              sec.categories.map(
+                                                                (
+                                                                  item,
+                                                                  catIdx,
+                                                                ) => ({
+                                                                  ...item,
+                                                                  sectionIndex:
+                                                                    secIdx,
+                                                                  categoryIndex:
+                                                                    catIdx,
+                                                                }),
+                                                              ),
+                                                          ),
+                                                        initialValues: {
+                                                          name: product.name,
+                                                          description:
+                                                            product.description,
+                                                          categoryId: `${sectionIndex}-${categoryIndex}`,
+                                                          productionAreaId:
+                                                            product.productionArea?.id.toString() ??
+                                                            "",
+                                                        },
+                                                        onSubmit: (values) =>
+                                                          handleUpdateProduct(
+                                                            product.id,
+                                                            values,
+                                                          ),
+                                                      },
+                                                    )
+                                                  }
+                                                >
+                                                  Actualizar
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem variant="destructive">
+                                                  Eliminar
+                                                </DropdownMenuItem>
+                                              </DropdownMenuContent>
+                                            </DropdownMenu>
+                                          </div>
+                                        </div>
+                                      ))
+                                    )}
+
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      className="w-full justify-start text-sm rounded-lg mt-1"
+                                      onClick={() =>
+                                        NiceModal.show(MenuProductDialog, {
+                                          title: "Nuevo producto",
+                                          submitLabel: "Guardar",
+                                          category: {
+                                            name: category.name,
+                                            sectionIndex: sectionIndex,
+                                            categoryIndex: categoryIndex,
+                                          } as MenuCategoryWithIndex,
+                                          categories: sections.flatMap(
+                                            (sec, secIdx) =>
+                                              sec.categories.map(
+                                                (item, catIdx) => ({
+                                                  ...item,
+                                                  sectionIndex: secIdx,
+                                                  categoryIndex: catIdx,
+                                                }),
+                                              ),
                                           ),
-                                      ),
-                                      initialValues: {
-                                        name: product.name,
-                                        description: product.description,
-                                        categoryId: `${selectedSectionIndex}-${selectedCategoryIndex}`,
-                                        productionAreaId:
-                                          product.productionArea?.id.toString() ??
-                                          "",
-                                      },
-                                      onSubmit: (values) =>
-                                        handleUpdateProduct(product.id, values),
-                                    })
-                                  }
-                                >
-                                  Actualizar
-                                </DropdownMenuItem>
-                                <DropdownMenuItem variant="destructive">
-                                  Eliminar
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                        </div>
-                      ))
-                    )}
+                                          onSubmit: (values) => {
+                                            NiceModal.show(
+                                              MenuProductOptionsDialog,
+                                              {
+                                                productName: values.name,
+                                                onSubmit: () => undefined,
+                                              },
+                                            );
+                                          },
+                                        })
+                                      }
+                                    >
+                                      <Plus className="h-4 w-4 mr-2" />
+                                      Agregar producto
+                                    </Button>
+                                  </div>
+                                </CollapsibleContent>
+                              </div>
+                            </Collapsible>
+                          );
+                        })}
+
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          className="w-full justify-start text-sm rounded-lg"
+                          onClick={() =>
+                            NiceModal.show(MenuCategoryDialog, {
+                              title: "Nueva categoría",
+                              submitLabel: "Guardar",
+                              sectionName: section.name,
+                              onSubmit: (name) =>
+                                createCategory.mutate({
+                                  name,
+                                  sectionId: section.id,
+                                }),
+                            })
+                          }
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          Agregar categoría
+                        </Button>
+                      </div>
+                    </CollapsibleContent>
                   </div>
-                );
-              })()
-            ) : (
-              <div className="rounded-2xl border border-dashed border-border/60 px-4 py-6 text-sm text-muted-foreground text-center">
-                Selecciona una categoria para ver sus productos.
-              </div>
-            )}
-          </section>
+                </Collapsible>
+              );
+            })
+          )}
+
+          {/* Add Section Button */}
+          <Button
+            type="button"
+            variant="ghost"
+            className="w-full justify-start text-sm rounded-xl"
+            onClick={() =>
+              NiceModal.show(MenuSectionDialog, {
+                title: "Nueva sección",
+                submitLabel: "Guardar",
+                onSubmit: (name) => createSection.mutate({ name }),
+              })
+            }
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Agregar sección
+          </Button>
         </div>
 
         {/* Footer */}
