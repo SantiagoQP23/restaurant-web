@@ -1,8 +1,6 @@
-// import { useNavigate } from "@tanstack/react-router";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { RestaurantForm } from "../../restaurant/components/restaurant-form.component";
 import { SetupStepper } from "../components/setup-stepper.component";
-import { useSetupStore } from "@/shared/store/setup.store";
 
 export const CreateRestaurantPage = () => {
   // const navigate = useNavigate();

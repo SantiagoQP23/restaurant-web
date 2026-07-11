@@ -30,4 +30,7 @@ export const queryKeys = {
   accounts: {
     all: ["accounts"] as const,
   },
+  paymentMethods: {
+    all: ["payment-methods"] as const,
+  },
 } as const;

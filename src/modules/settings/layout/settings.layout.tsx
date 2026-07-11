@@ -23,7 +23,7 @@ const settingsOptions = [
     to: "/app/restaurant/tables",
   },
   {
-    title: "Metodos de pago",
+    title: "Métodos de pago",
     description: "Configura comisiones y cuentas destino.",
     to: "/app/restaurant/payment-methods",
   },
@@ -75,9 +75,9 @@ export const SettingsLayout = () => {
                     <div className="font-medium text-foreground">
                       {option.title}
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      {option.description}
-                    </div>
+                    {/* <div className="text-xs text-muted-foreground"> */}
+                    {/*   {option.description} */}
+                    {/* </div> */}
                   </Link>
                 );
               })}

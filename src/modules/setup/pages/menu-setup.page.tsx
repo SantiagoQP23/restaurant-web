@@ -51,7 +51,7 @@ export const MenuSetupPage = () => {
   const {
     sections: fetchedSections,
     createSection,
-    updateSection,
+    // updateSection,
     createCategory,
     updateCategory,
     deleteCategory,
@@ -150,19 +150,19 @@ export const MenuSetupPage = () => {
     setSearchQuery("");
   };
 
-  const handleUpdateSection = (sectionId: string, name: string) => {
-    updateSection.mutate({ id: sectionId, name });
-  };
+  // const handleUpdateSection = (sectionId: string, name: string) => {
+  //   updateSection.mutate({ id: sectionId, name });
+  // };
 
-  const handleDeleteSection = (sectionId: string) => {
-    setSections((current) =>
-      current.filter((section) => section.id !== sectionId),
-    );
-    if (selectedSectionId === sectionId) {
-      setSelectedSectionId(null);
-      setSelectedCategoryId(null);
-    }
-  };
+  // const handleDeleteSection = (sectionId: string) => {
+  //   setSections((current) =>
+  //     current.filter((section) => section.id !== sectionId),
+  //   );
+  //   if (selectedSectionId === sectionId) {
+  //     setSelectedSectionId(null);
+  //     setSelectedCategoryId(null);
+  //   }
+  // };
 
   const handleUpdateCategory = (
     sectionId: string,
@@ -377,9 +377,7 @@ export const MenuSetupPage = () => {
                               <AlertDialogTrigger asChild>
                                 <DropdownMenuItem
                                   variant="destructive"
-                                  onClick={(event) =>
-                                    event.stopPropagation()
-                                  }
+                                  onClick={(event) => event.stopPropagation()}
                                 >
                                   Eliminar
                                 </DropdownMenuItem>
@@ -390,9 +388,10 @@ export const MenuSetupPage = () => {
                                     Eliminar categoria
                                   </AlertDialogTitle>
                                   <AlertDialogDescription>
-                                    Estas a punto de eliminar la categoria &quot;
-                                    {category.name}&quot;. Esta accion no se puede
-                                    deshacer.
+                                    Estas a punto de eliminar la categoria
+                                    &quot;
+                                    {category.name}&quot;. Esta accion no se
+                                    puede deshacer.
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
@@ -466,15 +465,12 @@ export const MenuSetupPage = () => {
                         sectionIndex: selectedSectionIndex,
                         categoryIndex: selectedCategoryIndex,
                       } as MenuCategoryWithIndex,
-                      categories: sections.flatMap(
-                        (section, sectionIndex) =>
-                          section.categories.map(
-                            (item, categoryIndex) => ({
-                              ...item,
-                              sectionIndex,
-                              categoryIndex,
-                            }),
-                          ),
+                      categories: sections.flatMap((section, sectionIndex) =>
+                        section.categories.map((item, categoryIndex) => ({
+                          ...item,
+                          sectionIndex,
+                          categoryIndex,
+                        })),
                       ),
                       onSubmit: (values) => {
                         NiceModal.show(MenuProductOptionsDialog, {
@@ -540,12 +536,8 @@ export const MenuSetupPage = () => {
                                 {product.name}
                               </div>
                               <div className="flex items-center gap-2 mt-0.5">
-                                <Badge
-                                  variant="outline"
-                                  className="text-xs"
-                                >
-                                  {product.productionArea?.name ??
-                                    "Sin area"}
+                                <Badge variant="outline" className="text-xs">
+                                  {product.productionArea?.name ?? "Sin area"}
                                 </Badge>
                               </div>
                             </div>
@@ -592,10 +584,7 @@ export const MenuSetupPage = () => {
                                           "",
                                       },
                                       onSubmit: (values) =>
-                                        handleUpdateProduct(
-                                          product.id,
-                                          values,
-                                        ),
+                                        handleUpdateProduct(product.id, values),
                                     })
                                   }
                                 >
