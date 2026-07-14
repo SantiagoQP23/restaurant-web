@@ -117,6 +117,19 @@ export const MenuSetupPage = () => {
     });
   };
 
+  const filteredSections = React.useMemo(() => {
+    if (!searchQuery.trim()) return sections;
+    return sections
+      .map((section) => ({
+        ...section,
+        categories: section.categories.filter((category) => {
+          const products = categoryData.productsMap.get(category.id) ?? [];
+          return products.length > 0;
+        }),
+      }))
+      .filter((section) => section.categories.length > 0);
+  }, [sections, categoryData, searchQuery]);
+
   return (
     <div className="flex min-h-svh flex-col p-6 md:p-10">
       <div className="flex flex-1 flex-col gap-6 w-full max-w-4xl mx-auto">
@@ -133,28 +146,30 @@ export const MenuSetupPage = () => {
 
         {/* Sections */}
         <div className="flex flex-col gap-4">
-          {sections.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-border/60 px-4 py-8 text-sm text-muted-foreground text-center">
-              No hay secciones creadas aún.
-            </div>
-          ) : (
-            sections.map((section, sectionIndex) => (
-              <SectionAccordion
-                key={section.id}
-                section={section}
-                sectionIndex={sectionIndex}
-                isOpen={expandedSections.has(section.id)}
-                onToggle={(open) => toggleSection(section.id, open)}
-                expandedCategories={expandedCategories}
-                onToggleCategory={toggleCategory}
-                categoryProducts={categoryData.productsMap}
-                categoryProductCounts={categoryData.countsMap}
-                searchQuery={searchQuery}
-                isLoadingProducts={productsQuery.isLoading}
-                sections={sections}
-              />
-            ))
-          )}
+        {filteredSections.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-border/60 px-4 py-8 text-sm text-muted-foreground text-center">
+            {searchQuery.trim()
+              ? "No se encontraron productos."
+              : "No hay secciones creadas aún."}
+          </div>
+        ) : (
+          filteredSections.map((section, sectionIndex) => (
+            <SectionAccordion
+              key={section.id}
+              section={section}
+              sectionIndex={sectionIndex}
+              isOpen={expandedSections.has(section.id)}
+              onToggle={(open) => toggleSection(section.id, open)}
+              expandedCategories={expandedCategories}
+              onToggleCategory={toggleCategory}
+              categoryProducts={categoryData.productsMap}
+              categoryProductCounts={categoryData.countsMap}
+              searchQuery={searchQuery}
+              isLoadingProducts={productsQuery.isLoading}
+              sections={sections}
+            />
+          ))
+        )}
 
           {/* Add Section Button */}
           <Button

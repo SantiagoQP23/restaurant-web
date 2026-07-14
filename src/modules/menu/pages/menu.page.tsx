@@ -30,6 +30,8 @@ export const MenuPage = () => {
   >(new Set());
   const [searchQuery, setSearchQuery] = React.useState("");
 
+  const isFirstLoadRef = React.useRef(true);
+
   const productsQuery = useQuery<MenuProduct[]>({
     queryKey: [queryKeys.menu.detail(restaurant!.id), "products"],
     queryFn: () => ProductsService.getAll(restaurant!.id),
@@ -90,10 +92,25 @@ export const MenuPage = () => {
         categories: section.categories ?? [],
       })) as MenuSection[];
       setSections(mapped);
-      setExpandedSections(new Set());
-      setExpandedCategories(new Set());
+      if (isFirstLoadRef.current) {
+        setExpandedSections(new Set());
+        setExpandedCategories(new Set());
+        isFirstLoadRef.current = false;
+      }
     }
   }, [fetchedSections]);
+
+  // Auto-expand all when user starts searching so filtered products are visible
+  React.useEffect(() => {
+    if (searchQuery.trim()) {
+      const allSectionIds = new Set(sections.map((s) => s.id));
+      const allCategoryIds = new Set(
+        sections.flatMap((s) => s.categories.map((c) => c.id)),
+      );
+      setExpandedSections(allSectionIds);
+      setExpandedCategories(allCategoryIds);
+    }
+  }, [searchQuery, sections]);
 
   const toggleSection = (sectionId: string, open: boolean) => {
     setExpandedSections((prev) => {
@@ -113,6 +130,19 @@ export const MenuPage = () => {
     });
   };
 
+  const filteredSections = React.useMemo(() => {
+    if (!searchQuery.trim()) return sections;
+    return sections
+      .map((section) => ({
+        ...section,
+        categories: section.categories.filter((category) => {
+          const products = categoryData.productsMap.get(category.id) ?? [];
+          return products.length > 0;
+        }),
+      }))
+      .filter((section) => section.categories.length > 0);
+  }, [sections, categoryData, searchQuery]);
+
   return (
     <div className="flex min-h-svh flex-col gap-6 p-6 md:p-10">
       <div>
@@ -125,12 +155,14 @@ export const MenuPage = () => {
       <MenuSetupSearch value={searchQuery} onChange={setSearchQuery} />
 
       <div className="flex flex-col gap-4">
-        {sections.length === 0 ? (
+        {filteredSections.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border/60 px-4 py-8 text-sm text-muted-foreground text-center">
-            No hay secciones creadas aún.
+            {searchQuery.trim()
+              ? "No se encontraron productos."
+              : "No hay secciones creadas aún."}
           </div>
         ) : (
-          sections.map((section, sectionIndex) => (
+          filteredSections.map((section, sectionIndex) => (
             <SectionAccordion
               key={section.id}
               section={section}
