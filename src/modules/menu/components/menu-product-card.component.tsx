@@ -1,5 +1,4 @@
 import NiceModal from "@ebay/nice-modal-react";
-import type { UpdateProductDto } from "@/modules/menu/interface/dto/update-product.dto";
 import { MoreVertical, Plus } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -33,7 +32,9 @@ import type { Product } from "@/shared/models/product.model";
 import type { ProductOption } from "@/shared/models/product-option.model";
 import type { Section } from "@/shared/models/section.model";
 import {
-  MenuProductDialog,
+  MenuProductSheet,
+} from "@/modules/menu/components/menu-product-sheet.component";
+import {
   type MenuCategoryWithIndex,
 } from "@/modules/menu/components/menu-product-dialog.component";
 import { MenuProductOptionsDialog } from "@/modules/menu/components/menu-product-options-dialog.component";
@@ -58,7 +59,6 @@ type MenuProductCardProps = {
     categoryId: string,
     productId: string,
   ) => void;
-  onUpdateProduct: (values: UpdateProductDto) => void;
   onUpdateOption: (
     sectionId: string,
     categoryId: string,
@@ -83,7 +83,6 @@ export const MenuProductCard = ({
   selectedSectionIndex,
   sections,
   onDeleteProduct,
-  onUpdateProduct,
   onUpdateOption,
   onDeleteOption,
   onAddOption,
@@ -112,9 +111,9 @@ export const MenuProductCard = ({
             <DropdownMenuContent align="end">
               <DropdownMenuItem
                 onClick={() =>
-                  NiceModal.show(MenuProductDialog, {
-                    title: "Actualizar producto",
-                    submitLabel: "Guardar cambios",
+                  NiceModal.show(MenuProductSheet, {
+                    mode: "update",
+                    productId: product.id,
                     category: {
                       name: category.name,
                       sectionIndex: selectedSectionIndex,
@@ -127,34 +126,17 @@ export const MenuProductCard = ({
                         categoryIndex,
                       })),
                     ),
+                    sections,
                     initialValues: {
                       name: product.name,
                       description: product.description,
                       categoryId: `${selectedSectionIndex}-${categoryIndex}`,
                       productionAreaId:
                         product.productionArea?.id.toString() ?? "",
-                    },
-                    onSubmit: (values) => {
-                      const [sectionIndex, nextCategoryIndex] =
-                        values.categoryId
-                          .split("-")
-                          .map((value) => Number.parseInt(value, 10));
-                      const targetSection = sections[sectionIndex];
-                      const targetCategory =
-                        targetSection?.categories[nextCategoryIndex];
-                      if (!targetCategory?.id && !product.categoryId) {
-                        return;
-                      }
-                      onUpdateProduct({
-                        id: product.id,
-                        name: values.name,
-                        description: values.description ?? "",
-                        categoryId:
-                          targetCategory?.id ?? product.categoryId ?? "",
-                        productionAreaId: values.productionAreaId
-                          ? Number.parseInt(values.productionAreaId, 10)
-                          : undefined,
-                      });
+                      price: product.price,
+                      unitCost: product.unitCost,
+                      quantity: product.quantity,
+                      options: product.options,
                     },
                   })
                 }

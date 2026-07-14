@@ -80,32 +80,40 @@ export const MenuProductDialog = NiceModal.create(
     const categoryId = watch("categoryId");
     const productionAreaId = watch("productionAreaId");
 
+    // Capture props in refs so they don't trigger the reset effect on every render.
+    const initialValuesRef = React.useRef(initialValues);
+    const productionAreasRef = React.useRef(productionAreas);
+    const categoryRef = React.useRef(category);
+
     React.useEffect(() => {
-      if (!modal.visible) {
-        return;
+      if (modal.visible) {
+        initialValuesRef.current = initialValues;
+        productionAreasRef.current = productionAreas;
+        categoryRef.current = category;
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [modal.visible]);
+
+    React.useEffect(() => {
+      if (!modal.visible) return;
+
+      const iv = initialValuesRef.current;
+      const pa = productionAreasRef.current;
+      const cat = categoryRef.current;
+
       reset({
-        name: initialValues?.name ?? "",
-        description: initialValues?.description ?? "",
+        name: iv?.name ?? "",
+        description: iv?.description ?? "",
         categoryId:
-          initialValues?.categoryId ??
-          `${category.sectionIndex}-${category.categoryIndex}`,
+          iv?.categoryId ??
+          `${cat.sectionIndex}-${cat.categoryIndex}`,
         productionAreaId:
-          initialValues?.productionAreaId ??
-          productionAreas[0]?.id.toString() ??
+          iv?.productionAreaId ??
+          pa[0]?.id.toString() ??
           "",
       });
-    }, [
-      category.categoryIndex,
-      category.sectionIndex,
-      initialValues?.categoryId,
-      initialValues?.description,
-      initialValues?.name,
-      initialValues?.productionAreaId,
-      modal.visible,
-      productionAreas,
-      reset,
-    ]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [modal.visible, reset]);
 
     return (
       <Dialog

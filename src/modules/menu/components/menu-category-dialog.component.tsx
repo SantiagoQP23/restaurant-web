@@ -36,12 +36,19 @@ export const MenuCategoryDialog = NiceModal.create(
       },
     });
 
+    const initialValuesRef = React.useRef(initialValues);
     React.useEffect(() => {
-      if (!modal.visible) {
-        return;
+      if (modal.visible) {
+        initialValuesRef.current = initialValues;
       }
-      reset({ name: initialValues?.name ?? "" });
-    }, [initialValues?.name, modal.visible, reset]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [modal.visible]);
+
+    React.useEffect(() => {
+      if (!modal.visible) return;
+      reset({ name: initialValuesRef.current?.name ?? "" });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [modal.visible, reset]);
 
     return (
       <Dialog

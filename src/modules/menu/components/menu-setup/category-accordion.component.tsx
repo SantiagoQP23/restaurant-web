@@ -28,10 +28,11 @@ import {
 } from "@/shared/components/ui/alert-dialog";
 import { MenuCategoryDialog } from "@/modules/menu/components/menu-category-dialog.component";
 import {
-  MenuProductDialog,
+  MenuProductSheet,
+} from "@/modules/menu/components/menu-product-sheet.component";
+import {
   type MenuCategoryWithIndex,
 } from "@/modules/menu/components/menu-product-dialog.component";
-import { MenuProductOptionsDialog } from "@/modules/menu/components/menu-product-options-dialog.component";
 import { useMenuMutations } from "@/modules/menu/hooks/useMenuMutations";
 import { ProductCard } from "./product-card.component";
 import type {
@@ -218,38 +219,32 @@ export const CategoryAccordion = ({
               ))
             )}
 
-            <Button
-              type="button"
-              variant="ghost"
-              className="w-full justify-start text-sm rounded-lg mt-1"
-              onClick={() =>
-                NiceModal.show(MenuProductDialog, {
-                  title: "Nuevo producto",
-                  submitLabel: "Guardar",
-                  category: {
-                    name: category.name,
-                    sectionIndex,
-                    categoryIndex,
-                  } as MenuCategoryWithIndex,
-                  categories: sections.flatMap((sec, secIdx) =>
-                    sec.categories.map((item, catIdx) => ({
-                      ...item,
-                      sectionIndex: secIdx,
-                      categoryIndex: catIdx,
-                    })),
-                  ),
-                  onSubmit: (values) => {
-                    NiceModal.show(MenuProductOptionsDialog, {
-                      productName: values.name,
-                      onSubmit: () => undefined,
-                    });
-                  },
-                })
-              }
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Agregar producto
-            </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            className="w-full justify-start text-sm rounded-lg mt-1"
+            onClick={() =>
+              NiceModal.show(MenuProductSheet, {
+                mode: "create",
+                category: {
+                  name: category.name,
+                  sectionIndex,
+                  categoryIndex,
+                } as MenuCategoryWithIndex,
+                categories: sections.flatMap((sec, secIdx) =>
+                  sec.categories.map((item, catIdx) => ({
+                    ...item,
+                    sectionIndex: secIdx,
+                    categoryIndex: catIdx,
+                  })),
+                ),
+                sections,
+              })
+            }
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Agregar producto
+          </Button>
           </div>
         </CollapsibleContent>
       </div>

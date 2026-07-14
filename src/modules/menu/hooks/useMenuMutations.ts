@@ -11,6 +11,7 @@ import { SectionsService } from "../services/sections.service";
 import type { CreateCategoryDto } from "../interface/dto/create-category.dto";
 import type { UpdateCategoryDto } from "../interface/dto/update-category.dto";
 import { CategoriesService } from "../services/categories.service";
+import type { CreateProductDto } from "../interface/dto/create-product.dto";
 import type { UpdateProductDto } from "../interface/dto/update-product.dto";
 import { ProductsService } from "../services/products.service";
 
@@ -79,6 +80,18 @@ export const useMenuMutations = () => {
     },
   });
 
+  const createProduct = useMutation<Product, unknown, CreateProductDto>({
+    mutationFn: (data: CreateProductDto) => ProductsService.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.menu.detail(restaurant!.id), "products"],
+      });
+    },
+    onError: () => {
+      toast.error("No se pudo crear el producto");
+    },
+  });
+
   const updateProduct = useMutation<Product, unknown, UpdateProductDto>({
     mutationFn: (data: UpdateProductDto) =>
       ProductsService.update(data.id, data),
@@ -98,6 +111,7 @@ export const useMenuMutations = () => {
     createCategory,
     updateCategory,
     deleteCategory,
+    createProduct,
     updateProduct,
   };
 };
