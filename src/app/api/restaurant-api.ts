@@ -1,7 +1,6 @@
 import axios from "axios";
 
 import { getEnvVariables } from "../../shared/lib/helpers";
-import { useAuthStore } from "@/modules/auth/store/auth.store";
 
 const { VITE_API_URL } = getEnvVariables();
 
