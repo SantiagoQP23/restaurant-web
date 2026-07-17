@@ -65,8 +65,7 @@ export const MenuSetupPage = () => {
         const categoryId = (category as { id?: string }).id;
         const all = categoryId
           ? (productsByCategory.byId.get(categoryId) ?? [])
-          : (productsByCategory.byName.get(category.name.toLowerCase()) ??
-              []);
+          : (productsByCategory.byName.get(category.name.toLowerCase()) ?? []);
 
         countsMap.set(category.id, all.length);
 
@@ -146,30 +145,30 @@ export const MenuSetupPage = () => {
 
         {/* Sections */}
         <div className="flex flex-col gap-4">
-        {filteredSections.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border/60 px-4 py-8 text-sm text-muted-foreground text-center">
-            {searchQuery.trim()
-              ? "No se encontraron productos."
-              : "No hay secciones creadas aún."}
-          </div>
-        ) : (
-          filteredSections.map((section, sectionIndex) => (
-            <SectionAccordion
-              key={section.id}
-              section={section}
-              sectionIndex={sectionIndex}
-              isOpen={expandedSections.has(section.id)}
-              onToggle={(open) => toggleSection(section.id, open)}
-              expandedCategories={expandedCategories}
-              onToggleCategory={toggleCategory}
-              categoryProducts={categoryData.productsMap}
-              categoryProductCounts={categoryData.countsMap}
-              searchQuery={searchQuery}
-              isLoadingProducts={productsQuery.isLoading}
-              sections={sections}
-            />
-          ))
-        )}
+          {filteredSections.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-border/60 px-4 py-8 text-sm text-muted-foreground text-center">
+              {searchQuery.trim()
+                ? "No se encontraron productos."
+                : "No hay secciones creadas aún."}
+            </div>
+          ) : (
+            filteredSections.map((section, sectionIndex) => (
+              <SectionAccordion
+                key={section.id}
+                section={section}
+                sectionIndex={sectionIndex}
+                isOpen={expandedSections.has(section.id)}
+                onToggle={(open) => toggleSection(section.id, open)}
+                expandedCategories={expandedCategories}
+                onToggleCategory={toggleCategory}
+                categoryProducts={categoryData.productsMap}
+                categoryProductCounts={categoryData.countsMap}
+                searchQuery={searchQuery}
+                isLoadingProducts={productsQuery.isLoading}
+                sections={sections}
+              />
+            ))
+          )}
 
           {/* Add Section Button */}
           <Button
@@ -192,7 +191,7 @@ export const MenuSetupPage = () => {
         {/* Footer */}
         <div className="flex justify-end">
           <Button asChild className="rounded-full px-6">
-            <Link to="/setup/products">Guardar y continuar</Link>
+            <Link to="/setup/tables">Continuar</Link>
           </Button>
         </div>
       </div>

@@ -54,7 +54,7 @@ export function SignupForm({
     samePassword: string;
   }) => {
     mutateAsync(form).then(() => {
-      navigate({ to: "/" });
+      navigate({ to: "/setup/welcome" });
     });
   };
 
@@ -190,9 +190,7 @@ export function SignupForm({
             )}
           </Field>
           <Field>
-            <FieldLabel htmlFor="samePassword">
-              Confirmar contraseña
-            </FieldLabel>
+            <FieldLabel htmlFor="samePassword">Confirmar contraseña</FieldLabel>
             <Input
               id="samePassword"
               type="password"
@@ -206,9 +204,7 @@ export function SignupForm({
             />
             <FieldDescription>Confirma tu contraseña.</FieldDescription>
             {errors.samePassword?.message && (
-              <FieldDescription>
-                {errors.samePassword.message}
-              </FieldDescription>
+              <FieldDescription>{errors.samePassword.message}</FieldDescription>
             )}
           </Field>
         </div>
@@ -228,7 +224,7 @@ export function SignupForm({
                 navigate({ to: "/auth/login" });
               }}
             >
-              Inicia sesion
+              Inicia sesión
             </a>
           </FieldDescription>
         </Field>

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import * as React from "react";
 import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/shared/components/ui/button";
@@ -34,6 +34,7 @@ import { useAccounts } from "../hooks/useAccounts";
 import { useCreatePaymentMethod } from "../hooks/useCreatePaymentMethod";
 import { useUpdatePaymentMethod } from "../hooks/useUpdatePaymentMethod";
 import type { CreatePaymentMethodDto } from "../interfaces/dto/create-payment-method.dto";
+import { toast } from "sonner";
 
 type PaymentMethodFormModalProps = {
   method?: PaymentMethod;
@@ -83,8 +84,7 @@ export const PaymentMethodFormModal = NiceModal.create(
       defaultValues: {
         name: method?.name ?? "",
         type: method?.type ?? PaymentMethodCategory.CASH,
-        commissionPercentage:
-          method?.commissionPercentage?.toString() ?? "0",
+        commissionPercentage: method?.commissionPercentage?.toString() ?? "0",
         allowedDestinationAccountIds:
           method?.allowedDestinationAccounts.map((a) => a.id) ?? [],
         defaultDestinationAccountId:
@@ -93,13 +93,17 @@ export const PaymentMethodFormModal = NiceModal.create(
     });
 
     const watchedValues = watch();
+    const previousCategoryNameRef = React.useRef<string>("");
+
     const normalizedInitial = {
       name: method?.name?.trim() ?? "",
       type: method?.type ?? PaymentMethodCategory.CASH,
       commissionPercentage: method?.commissionPercentage?.toString() ?? "0",
       allowedDestinationAccountIds:
-        method?.allowedDestinationAccounts.map((a) => a.id).sort().join(",") ??
-        "",
+        method?.allowedDestinationAccounts
+          .map((a) => a.id)
+          .sort()
+          .join(",") ?? "",
       defaultDestinationAccountId:
         method?.defaultDestinationAccount?.id?.toString() ?? "",
     };
@@ -107,8 +111,11 @@ export const PaymentMethodFormModal = NiceModal.create(
       name: watchedValues.name?.trim() ?? "",
       type: watchedValues.type ?? PaymentMethodCategory.CASH,
       commissionPercentage: watchedValues.commissionPercentage ?? "0",
-      allowedDestinationAccountIds:
-        [...(watchedValues.allowedDestinationAccountIds ?? [])].sort().join(","),
+      allowedDestinationAccountIds: [
+        ...(watchedValues.allowedDestinationAccountIds ?? []),
+      ]
+        .sort()
+        .join(","),
       defaultDestinationAccountId:
         watchedValues.defaultDestinationAccountId ?? "",
     };
@@ -123,21 +130,67 @@ export const PaymentMethodFormModal = NiceModal.create(
         normalizedCurrent.defaultDestinationAccountId;
     const isSubmitDisabled = isSubmitting || (isEdit && !hasChanges);
 
-    useEffect(() => {
+    React.useEffect(() => {
       if (!modal.visible) {
         return;
       }
+      const initialType = method?.type ?? PaymentMethodCategory.CASH;
       reset({
-        name: method?.name ?? "",
-        type: method?.type ?? PaymentMethodCategory.CASH,
-        commissionPercentage:
-          method?.commissionPercentage?.toString() ?? "0",
+        name: method?.name ?? formatPaymentType(initialType),
+        type: initialType,
+        commissionPercentage: method?.commissionPercentage?.toString() ?? "0",
         allowedDestinationAccountIds:
           method?.allowedDestinationAccounts.map((a) => a.id) ?? [],
         defaultDestinationAccountId:
           method?.defaultDestinationAccount?.id?.toString() ?? "",
       });
     }, [method, modal.visible, reset]);
+
+    // Auto-clear default account if it is no longer in the allowed list
+    React.useEffect(() => {
+      const allowed = watchedValues.allowedDestinationAccountIds ?? [];
+      const currentDefault = watchedValues.defaultDestinationAccountId;
+      if (
+        currentDefault &&
+        !allowed.includes(Number.parseInt(currentDefault, 10))
+      ) {
+        setValue("defaultDestinationAccountId", "", {
+          shouldValidate: true,
+        });
+      }
+    }, [
+      watchedValues.allowedDestinationAccountIds,
+      watchedValues.defaultDestinationAccountId,
+      setValue,
+    ]);
+
+    // Initialize previousCategoryNameRef on modal open
+    React.useEffect(() => {
+      if (!isEdit && modal.visible) {
+        previousCategoryNameRef.current = formatPaymentType(
+          watchedValues.type ?? PaymentMethodCategory.CASH,
+        );
+      }
+    }, [modal.visible, isEdit, watchedValues.type]);
+
+    // Auto-update name to category label when name is empty or still matches previous category
+    React.useEffect(() => {
+      if (isEdit || !modal.visible) return;
+
+      const currentName = watchedValues.name ?? "";
+      const newCategoryName = formatPaymentType(
+        watchedValues.type ?? PaymentMethodCategory.CASH,
+      );
+
+      if (
+        currentName === "" ||
+        currentName === previousCategoryNameRef.current
+      ) {
+        setValue("name", newCategoryName, { shouldValidate: true });
+      }
+
+      previousCategoryNameRef.current = newCategoryName;
+    }, [watchedValues.type, isEdit, modal.visible, setValue]);
 
     const toggleAccount = (accountId: number) => {
       const current = watchedValues.allowedDestinationAccountIds ?? [];
@@ -149,19 +202,26 @@ export const PaymentMethodFormModal = NiceModal.create(
 
     const handleSave = async (values: PaymentMethodFormValues) => {
       const commissionValue = Number.parseFloat(values.commissionPercentage);
+      if (values.allowedDestinationAccountIds.length === 0) {
+        toast.error("Debe seleccionar al menos una cuenta permitida.");
+        return;
+      }
+      if (values.defaultDestinationAccountId === "") {
+        toast.error("Debe seleccionar una cuenta por defecto.");
+        return;
+      }
+
       const dto: CreatePaymentMethodDto = {
         name: values.name.trim(),
         type: values.type,
         commissionPercentage: Number.isFinite(commissionValue)
           ? commissionValue
           : 0,
-        allowedDestinationAccountIds:
-          values.allowedDestinationAccountIds.length > 0
-            ? values.allowedDestinationAccountIds
-            : undefined,
-        defaultDestinationAccountId: values.defaultDestinationAccountId
-          ? Number.parseInt(values.defaultDestinationAccountId, 10)
-          : undefined,
+        allowedDestinationAccountIds: values.allowedDestinationAccountIds,
+        defaultDestinationAccountId: Number.parseInt(
+          values.defaultDestinationAccountId,
+          10,
+        ),
       };
 
       try {
@@ -206,6 +266,28 @@ export const PaymentMethodFormModal = NiceModal.create(
           >
             <FieldGroup>
               <Field>
+                <FieldLabel htmlFor="payment-type">Categoría</FieldLabel>
+                <Select
+                  value={watchedValues.type}
+                  onValueChange={(value) =>
+                    setValue("type", value as PaymentMethodCategory, {
+                      shouldValidate: true,
+                    })
+                  }
+                >
+                  <SelectTrigger id="payment-type" className="w-full">
+                    <SelectValue placeholder="Selecciona una categoria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.values(PaymentMethodCategory).map((value) => (
+                      <SelectItem key={value} value={value}>
+                        {formatPaymentType(value)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Field>
                 <FieldLabel htmlFor="payment-name">Nombre</FieldLabel>
                 <Input
                   id="payment-name"
@@ -241,28 +323,6 @@ export const PaymentMethodFormModal = NiceModal.create(
                 )}
               </Field>
               <Field>
-                <FieldLabel htmlFor="payment-type">Categoria</FieldLabel>
-                <Select
-                  value={watchedValues.type}
-                  onValueChange={(value) =>
-                    setValue("type", value as PaymentMethodCategory, {
-                      shouldValidate: true,
-                    })
-                  }
-                >
-                  <SelectTrigger id="payment-type" className="w-full">
-                    <SelectValue placeholder="Selecciona una categoria" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.values(PaymentMethodCategory).map((value) => (
-                      <SelectItem key={value} value={value}>
-                        {formatPaymentType(value)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
-              <Field>
                 <FieldLabel>Cuentas permitidas</FieldLabel>
                 <FieldDescription>
                   Selecciona las cuentas donde se puede depositar.
@@ -295,6 +355,10 @@ export const PaymentMethodFormModal = NiceModal.create(
                       shouldValidate: true,
                     })
                   }
+                  disabled={
+                    (watchedValues.allowedDestinationAccountIds ?? [])
+                      .length === 0
+                  }
                 >
                   <SelectTrigger
                     id="payment-default-account"
@@ -303,14 +367,20 @@ export const PaymentMethodFormModal = NiceModal.create(
                     <SelectValue placeholder="Selecciona una cuenta" />
                   </SelectTrigger>
                   <SelectContent>
-                    {accounts.map((account) => (
-                      <SelectItem
-                        key={account.id}
-                        value={account.id.toString()}
-                      >
-                        {account.name}
-                      </SelectItem>
-                    ))}
+                    {accounts
+                      .filter((account) =>
+                        (
+                          watchedValues.allowedDestinationAccountIds ?? []
+                        ).includes(account.id),
+                      )
+                      .map((account) => (
+                        <SelectItem
+                          key={account.id}
+                          value={account.id.toString()}
+                        >
+                          {account.name}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </Field>

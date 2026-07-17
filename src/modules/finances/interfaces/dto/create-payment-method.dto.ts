@@ -4,6 +4,6 @@ export interface CreatePaymentMethodDto {
   name: string;
   type: PaymentMethodCategory;
   commissionPercentage?: number;
-  defaultDestinationAccountId?: number;
-  allowedDestinationAccountIds?: number[];
+  defaultDestinationAccountId: number;
+  allowedDestinationAccountIds: number[];
 }

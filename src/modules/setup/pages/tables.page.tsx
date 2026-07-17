@@ -93,7 +93,7 @@ export const TablesSetupPage = () => {
 
         <div className="flex justify-end">
           <Button asChild className="rounded-full px-6">
-            <Link to="/setup/staff">Guardar y continuar</Link>
+            <Link to="/setup/payment-methods">Continuar</Link>
           </Button>
         </div>
       </div>

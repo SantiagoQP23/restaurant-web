@@ -46,7 +46,7 @@ export const PaymentMethodsPage = () => {
     <div className="flex min-h-svh flex-col p-6 md:p-10">
       <div className="flex flex-col gap-10">
         <div>
-          <h1 className="text-2xl font-bold">Metodos de pago</h1>
+          <h1 className="text-2xl font-bold">Métodos de pago</h1>
           <p className="text-sm text-muted-foreground">
             Administra tus cuentas y los metodos disponibles para cobrar.
           </p>
@@ -78,8 +78,11 @@ export const PaymentMethodsPage = () => {
                 <CardHeader>
                   <CardTitle>{account.name}</CardTitle>
                   <CardDescription>
-                    {account.description} · {formatAccountType(account.type)}
+                    {formatAccountType(account.type)}
                   </CardDescription>
+                  {account.description && (
+                    <CardDescription>{account.description}</CardDescription>
+                  )}
                   <CardAction>
                     <div className="flex items-center gap-2">
                       <span

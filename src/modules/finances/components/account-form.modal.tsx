@@ -96,11 +96,17 @@ export const AccountFormModal = NiceModal.create(
     const handleSave = async (values: CreateAccountDto) => {
       try {
         if (isEdit && account) {
+          if (values.num === "") {
+            delete values.num;
+          }
           await updateAccount.mutateAsync({
             id: account.id,
             dto: values,
           });
         } else {
+          if (values.num === "") {
+            delete values.num;
+          }
           await createAccount.mutateAsync(values);
         }
         modal.hide();
@@ -136,6 +142,28 @@ export const AccountFormModal = NiceModal.create(
           >
             <FieldGroup>
               <Field>
+                <FieldLabel htmlFor="account-type">Tipo</FieldLabel>
+                <Select
+                  value={watchedValues.type}
+                  onValueChange={(value) =>
+                    setValue("type", value as AccountType, {
+                      shouldValidate: true,
+                    })
+                  }
+                >
+                  <SelectTrigger id="account-type" className="w-full">
+                    <SelectValue placeholder="Selecciona un tipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.values(AccountType).map((value) => (
+                      <SelectItem key={value} value={value}>
+                        {formatAccountType(value)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Field>
                 <FieldLabel htmlFor="account-name">Nombre</FieldLabel>
                 <Input
                   id="account-name"
@@ -159,56 +187,32 @@ export const AccountFormModal = NiceModal.create(
                   type="text"
                   placeholder="Caja de apoyo"
                   aria-invalid={Boolean(errors.description)}
-                  {...register("description", {
-                    required: "La descripción es obligatoria.",
-                  })}
+                  {...register("description", {})}
                 />
-                <FieldDescription>
-                  Agrega una referencia para el equipo.
-                </FieldDescription>
+                {/* <FieldDescription> */}
+                {/*   Agrega una referencia para el equipo. */}
+                {/* </FieldDescription> */}
                 {errors.description?.message && (
                   <FieldDescription>
                     {errors.description.message}
                   </FieldDescription>
                 )}
               </Field>
-              <Field>
-                <FieldLabel htmlFor="account-num">Número</FieldLabel>
-                <Input
-                  id="account-num"
-                  type="text"
-                  placeholder="0001234567"
-                  aria-invalid={Boolean(errors.num)}
-                  {...register("num", {
-                    required: "El número es obligatorio.",
-                  })}
-                />
-                {errors.num?.message && (
-                  <FieldDescription>{errors.num.message}</FieldDescription>
-                )}
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="account-type">Tipo</FieldLabel>
-                <Select
-                  value={watchedValues.type}
-                  onValueChange={(value) =>
-                    setValue("type", value as AccountType, {
-                      shouldValidate: true,
-                    })
-                  }
-                >
-                  <SelectTrigger id="account-type" className="w-full">
-                    <SelectValue placeholder="Selecciona un tipo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.values(AccountType).map((value) => (
-                      <SelectItem key={value} value={value}>
-                        {formatAccountType(value)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
+              {/* <Field> */}
+              {/*   <FieldLabel htmlFor="account-num">Número</FieldLabel> */}
+              {/*   <Input */}
+              {/*     id="account-num" */}
+              {/*     type="text" */}
+              {/*     placeholder="0001234567" */}
+              {/*     aria-invalid={Boolean(errors.num)} */}
+              {/*     {...register("num", { */}
+              {/*       required: "El número es obligatorio.", */}
+              {/*     })} */}
+              {/*   /> */}
+              {/*   {errors.num?.message && ( */}
+              {/*     <FieldDescription>{errors.num.message}</FieldDescription> */}
+              {/*   )} */}
+              {/* </Field> */}
             </FieldGroup>
             <DialogFooter>
               <DialogClose asChild>

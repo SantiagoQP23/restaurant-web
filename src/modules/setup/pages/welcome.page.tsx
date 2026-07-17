@@ -14,8 +14,8 @@ export const WelcomePage = () => {
               restaurante o unirte a uno existente.
             </p>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button asChild>
+          <div className="flex flex-col gap-3 ">
+            <Button asChild size="lg">
               <Link to="/setup/restaurant">Crear un restaurante</Link>
             </Button>
             <Button asChild variant="outline">
