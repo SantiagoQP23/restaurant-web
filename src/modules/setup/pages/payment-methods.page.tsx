@@ -17,6 +17,8 @@ import { AccountFormModal } from "@/modules/finances/components/account-form.mod
 import { RemoveAccountModal } from "@/modules/finances/components/remove-account.modal";
 import { PaymentMethodFormModal } from "@/modules/finances/components/payment-method-form.modal";
 import { RemovePaymentMethodModal } from "@/modules/finances/components/remove-payment-method.modal";
+import { useNavigate } from "@tanstack/react-router";
+import { toast } from "sonner";
 
 const formatAccountType = (type: AccountType) =>
   type === AccountType.CASH ? "Efectivo" : "Banco";
@@ -41,6 +43,15 @@ export const PaymentMethodsPage = () => {
   const { paymentMethodsQuery } = usePaymentMethods();
   const accounts = accountsQuery.data ?? [];
   const methods = paymentMethodsQuery.data ?? [];
+  const navigate = useNavigate();
+
+  const onContinue = () => {
+    if (methods.length === 0) {
+      toast.error("Debes agregar al menos un método de pago");
+      return;
+    }
+    navigate({ to: "/setup/staff" });
+  };
 
   return (
     <div className="flex min-h-svh flex-col p-6 md:p-10">
@@ -205,6 +216,11 @@ export const PaymentMethodsPage = () => {
             ))}
           </div>
         </section>
+        <div className="flex justify-center">
+          <Button size="lg" onClick={onContinue}>
+            Continuar
+          </Button>
+        </div>
       </div>
       <SetupStepper className="mt-auto pt-6" />
     </div>

@@ -8,9 +8,7 @@ import {
   TableRow,
 } from "@/shared/components/ui/table";
 import { Button } from "@/shared/components/ui/button";
-import {
-  Field,
-} from "@/shared/components/ui/field";
+import { Field } from "@/shared/components/ui/field";
 import {
   Pagination,
   PaginationContent,
@@ -85,11 +83,15 @@ export const StaffPage = () => {
         const userRole = roles.find(
           (resRole) => resRole.restaurant.id === restaurant?.id,
         )?.role;
-        return userRole ? t(`roles.${userRole.name}`, { defaultValue: userRole.name }) : "";
+        return userRole
+          ? t(`roles.${userRole.name}`, { defaultValue: userRole.name })
+          : "";
       },
       header: "Rol",
     }),
   ];
+
+  const currentUser = useAuthStore.getState().user;
 
   const table = useReactTable<User>({
     data: users,
@@ -157,31 +159,35 @@ export const StaffPage = () => {
                       </TableCell>
                     ))}
                     <TableCell className="text-center">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() =>
-                          NiceModal.show(ChangeUserRoleModal, {
-                            user: row.original,
-                            onRoleChanged: () => usersQuery.refetch(),
-                          })
-                        }
-                      >
-                        <Edit />
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        className="bg-transparent"
-                        onClick={() =>
-                          NiceModal.show(RemoveUserModal, {
-                            user: row.original,
-                            onRemoved: () => usersQuery.refetch(),
-                          })
-                        }
-                      >
-                        <Trash />
-                      </Button>
+                      {row.original.id !== currentUser?.id && (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() =>
+                              NiceModal.show(ChangeUserRoleModal, {
+                                user: row.original,
+                                onRoleChanged: () => usersQuery.refetch(),
+                              })
+                            }
+                          >
+                            <Edit />
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="icon"
+                            className="bg-transparent"
+                            onClick={() =>
+                              NiceModal.show(RemoveUserModal, {
+                                user: row.original,
+                                onRemoved: () => usersQuery.refetch(),
+                              })
+                            }
+                          >
+                            <Trash />
+                          </Button>
+                        </>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -214,7 +220,9 @@ export const StaffPage = () => {
                     />
                   </PaginationItem>
                   <PaginationItem>
-                    <PaginationNext onClick={() => handleChangePage(page + 1)} />
+                    <PaginationNext
+                      onClick={() => handleChangePage(page + 1)}
+                    />
                   </PaginationItem>
                 </PaginationContent>
               </Pagination>
@@ -224,7 +232,7 @@ export const StaffPage = () => {
 
         <div className="flex justify-end">
           <Button asChild className="rounded-full px-6">
-            <Link to="/setup/payment-methods">Guardar y continuar</Link>
+            <Link to="/setup/complete">Continuar</Link>
           </Button>
         </div>
       </div>
