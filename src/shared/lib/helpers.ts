@@ -5,5 +5,7 @@ export const getEnvVariables = () => {
     VITE_WS_URL: `${import.meta.env.VITE_SERVER_URL}/socket.io/socket.io.js`,
     VITE_APP_NAME: import.meta.env.VITE_APP_NAME,
     VITE_WHATSAPP_NUMBER: import.meta.env.VITE_WHATSAPP_NUMBER,
+    VITE_SUPPORT_EMAIL: import.meta.env.VITE_SUPPORT_EMAIL,
+    VITE_APK_URL: import.meta.env.VITE_APK_URL,
   };
 };

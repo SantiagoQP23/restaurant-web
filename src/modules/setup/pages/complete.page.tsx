@@ -1,8 +1,13 @@
 import { Button } from "@/shared/components/ui/button";
+import { getEnvVariables } from "@/shared/lib/helpers";
 import { Link } from "@tanstack/react-router";
 import { Smartphone, HelpCircle } from "lucide-react";
 
+export const environments = getEnvVariables();
+
 export const CompletePage = () => {
+  const supportEmail = environments.VITE_SUPPORT_EMAIL;
+  const apkUrl = environments.VITE_APK_URL;
   return (
     <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
       <div className="flex flex-col items-center gap-8 text-center max-w-lg w-full">
@@ -38,8 +43,10 @@ export const CompletePage = () => {
             <li>• Revisar ventas</li>
           </ul>
 
-          <Button variant="outline" className="rounded-full px-6">
-            Descargar APK
+          <Button variant="outline" className="rounded-full px-6" asChild>
+            <a href={apkUrl} target="_blank">
+              Descargar app
+            </a>
           </Button>
 
           <span className="text-xs text-muted-foreground">
@@ -57,7 +64,7 @@ export const CompletePage = () => {
           </div>
 
           <div className="flex flex-col gap-1 text-sm text-muted-foreground">
-            <span>soporte@teikio.com</span>
+            <span>{supportEmail}</span>
             <span>WhatsApp: +593 98 232 6842</span>
           </div>
         </div>
