@@ -16,15 +16,15 @@ const restaurantApi = axios.create({
 restaurantApi.interceptors.request.use(async (config) => {
   // Verificar si tenemos un token en el secure storage
   const token = localStorage.getItem("token") || "";
-  const restaurant = useAuthStore.getState().restaurant;
+  // const restaurant = useAuthStore.getState().restaurant;
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
-  if (restaurant) {
-    config.headers["x-restaurant-id"] = restaurant.id;
-  }
+  // if (restaurant) {
+  //   config.headers["x-restaurant-id"] = restaurant.id;
+  // }
 
   return config;
 });

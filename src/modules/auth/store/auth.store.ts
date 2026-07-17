@@ -76,7 +76,18 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   checkStatus: async () => {
     const resp = await authCheckStatus();
-    get().changeStatus(resp?.token, resp?.user, resp?.currentRestaurant);
+
+    if (resp) {
+      get().changeStatus(resp.token, resp.user, resp.currentRestaurant);
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (token) {
+      set({ status: "authenticated", token });
+    } else {
+      set({ status: "unauthenticated" });
+    }
   },
 
   logout: async () => {

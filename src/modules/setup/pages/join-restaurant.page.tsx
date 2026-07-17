@@ -1,7 +1,28 @@
 import { Button } from "@/shared/components/ui/button";
 import { RotateCcw } from "lucide-react";
 import { WhatsappFAB } from "../components/whatsapp-fab.component";
+import { useAuthStore } from "@/modules/auth/store/auth.store";
+import { useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
+
 export const JoinRestaurantPage = () => {
+  const navigate = useNavigate();
+  const { checkStatus, logout, user } = useAuthStore();
+
+  useEffect(() => {
+    if (user?.role) {
+      navigate({ to: "/app/orders", replace: true });
+    }
+  }, [user, navigate]);
+
+  const handleCheckAccess = async () => {
+    await checkStatus();
+    const currentUser = useAuthStore.getState().user;
+    if (currentUser?.role) {
+      navigate({ to: "/app/orders", replace: true });
+    }
+  };
+
   return (
     <div className="flex min-h-svh items-center justify-center p-6 md:p-10">
       <div className="flex w-full max-w-xl flex-col gap-6 justify-center items-center">
@@ -15,12 +36,12 @@ export const JoinRestaurantPage = () => {
           </p>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Button className="flex-1">
+          <Button onClick={handleCheckAccess}>
             <RotateCcw />
-            Verificar accesso
+            Verificar acceso
           </Button>
-          <Button variant="outline" className="flex-1">
-            Cerrar sesion
+          <Button variant="outline" onClick={logout}>
+            Cerrar sesión
           </Button>
         </div>
       </div>

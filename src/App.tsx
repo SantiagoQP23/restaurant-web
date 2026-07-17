@@ -1,7 +1,7 @@
 import "./App.css";
 import { useEffect } from "react";
 import NiceModal from "@ebay/nice-modal-react";
-import { Outlet } from "@tanstack/react-router";
+import { Outlet, useNavigate } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { TooltipProvider } from "./shared/components/ui/tooltip";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
@@ -12,6 +12,7 @@ import { SocketProvider } from "./shared/context/SocketContext";
 
 export function App() {
   const { status, checkStatus } = useAuthStore();
+  const navigate = useNavigate();
 
   useEffect(() => {
     checkStatus();
@@ -23,6 +24,10 @@ export function App() {
         <span className="text-2xl font-bold">Checking authentication...</span>
       </div>
     );
+  }
+
+  if (status === "unauthenticated") {
+    navigate({ to: "/auth/login", replace: true });
   }
 
   return (
