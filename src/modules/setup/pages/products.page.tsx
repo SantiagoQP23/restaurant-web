@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { SetupStepper } from "../components/setup-stepper.component";
+import { WhatsappFAB } from "../components/whatsapp-fab.component";
 import { useSetupStore } from "@/shared/store/setup.store";
 import { MenuProductDialog } from "@/modules/menu/components/menu-product-dialog.component";
 // import { MenuProductOptionsDialog } from "@/modules/menu/components/menu-product-options-dialog.component";
@@ -211,6 +212,7 @@ export const ProductsPage = () => {
           </aside>
         </div>
         <SetupStepper className="mt-auto pt-6" />
+        <WhatsappFAB />
       </div>
     </div>
   );

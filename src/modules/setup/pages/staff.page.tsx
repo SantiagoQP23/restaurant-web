@@ -41,6 +41,7 @@ import { InviteUserModal } from "@/modules/users/components/invite-user.modal";
 import { ChangeUserRoleModal } from "@/modules/users/components/change-user-role.modal";
 import { RemoveUserModal } from "@/modules/users/components/remove-user.modal";
 import { SetupStepper } from "../components/setup-stepper.component";
+import { WhatsappFAB } from "../components/whatsapp-fab.component";
 import { useTranslation } from "react-i18next";
 
 const columnHelper = createColumnHelper<User>();
@@ -237,6 +238,7 @@ export const StaffPage = () => {
         </div>
       </div>
       <SetupStepper className="mt-auto pt-6" />
+      <WhatsappFAB />
     </div>
   );
 };

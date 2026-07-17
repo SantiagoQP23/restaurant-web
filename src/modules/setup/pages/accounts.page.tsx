@@ -1,4 +1,5 @@
 import { SetupStepper } from "../components/setup-stepper.component";
+import { WhatsappFAB } from "../components/whatsapp-fab.component";
 
 export const AccountsPage = () => {
   return (
@@ -10,6 +11,7 @@ export const AccountsPage = () => {
         </p>
       </div>
       <SetupStepper className="mt-auto pt-6" />
+      <WhatsappFAB />
     </div>
   );
 };

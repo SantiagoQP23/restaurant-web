@@ -1,6 +1,7 @@
 import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { RestaurantForm } from "../../restaurant/components/restaurant-form.component";
 import { SetupStepper } from "../components/setup-stepper.component";
+import { WhatsappFAB } from "../components/whatsapp-fab.component";
 
 export const CreateRestaurantPage = () => {
   // const navigate = useNavigate();
@@ -24,6 +25,7 @@ export const CreateRestaurantPage = () => {
         </div>
       </div>
       <SetupStepper className="pt-6" />
+      <WhatsappFAB />
     </div>
   );
 };

@@ -8,6 +8,7 @@ import { useTables } from "@/modules/tables/hooks/useTables";
 import { EditableTableCard } from "@/modules/settings/components/editable-table-card.component";
 import { TableFormDialog } from "@/modules/settings/components/table-form-dialog.component";
 import { SetupStepper } from "../components/setup-stepper.component";
+import { WhatsappFAB } from "../components/whatsapp-fab.component";
 
 export const TablesSetupPage = () => {
   const [tables, setTables] = useState<Table[]>([]);
@@ -98,6 +99,7 @@ export const TablesSetupPage = () => {
         </div>
       </div>
       <SetupStepper className="mt-auto pt-6" />
+      <WhatsappFAB />
     </div>
   );
 };

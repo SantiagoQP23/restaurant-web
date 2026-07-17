@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { SetupStepper } from "../components/setup-stepper.component";
+import { WhatsappFAB } from "../components/whatsapp-fab.component";
 import { AccountType } from "@/shared/models/account.model";
 import { PaymentMethodCategory } from "@/shared/models/payment-method.model";
 import { useAccounts } from "@/modules/finances/hooks/useAccounts";
@@ -223,6 +224,7 @@ export const PaymentMethodsPage = () => {
         </div>
       </div>
       <SetupStepper className="mt-auto pt-6" />
+      <WhatsappFAB />
     </div>
   );
 };

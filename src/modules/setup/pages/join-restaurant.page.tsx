@@ -1,5 +1,6 @@
 import { Button } from "@/shared/components/ui/button";
 import { RotateCcw } from "lucide-react";
+import { WhatsappFAB } from "../components/whatsapp-fab.component";
 export const JoinRestaurantPage = () => {
   return (
     <div className="flex min-h-svh items-center justify-center p-6 md:p-10">
@@ -23,6 +24,7 @@ export const JoinRestaurantPage = () => {
           </Button>
         </div>
       </div>
+      <WhatsappFAB />
     </div>
   );
 };

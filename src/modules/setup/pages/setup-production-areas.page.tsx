@@ -6,6 +6,7 @@ import { useProductionAreas } from "@/modules/production-areas/hooks/useProducti
 import { EditableProductionAreaCard } from "@/modules/settings/components/editable-production-area-card.component";
 import { ProductionAreaFormDialog } from "@/modules/settings/components/production-area-form-dialog.component";
 import { SetupStepper } from "../components/setup-stepper.component";
+import { WhatsappFAB } from "../components/whatsapp-fab.component";
 
 export const SetupProductionAreasPage = () => {
   const navigate = useNavigate();
@@ -62,6 +63,7 @@ export const SetupProductionAreasPage = () => {
         </div>
       </div>
       <SetupStepper className="mt-auto pt-6" />
+      <WhatsappFAB />
     </div>
   );
 };

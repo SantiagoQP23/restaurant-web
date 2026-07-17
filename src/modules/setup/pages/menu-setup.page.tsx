@@ -13,6 +13,7 @@ import { queryKeys } from "@/app/api/query-client";
 import { useMenu } from "@/modules/menu/hooks/useMenu";
 import { MenuSectionDialog } from "@/modules/menu/components/menu-section-dialog.component";
 import { SetupStepper } from "../components/setup-stepper.component";
+import { WhatsappFAB } from "../components/whatsapp-fab.component";
 import { MenuSetupSearch } from "@/modules/menu/components/menu-setup/menu-setup-search.component";
 import { SectionAccordion } from "@/modules/menu/components/menu-setup/section-accordion.component";
 import type { MenuProduct } from "@/modules/menu/components/menu-setup/menu-setup.types";
@@ -196,6 +197,7 @@ export const MenuSetupPage = () => {
         </div>
       </div>
       <SetupStepper className="mt-auto pt-6" />
+      <WhatsappFAB />
     </div>
   );
 };
