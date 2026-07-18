@@ -33,7 +33,7 @@ import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { NavUser } from "./nav-user";
 
 const navigation = [
-  { label: "Inicio", icon: Home, to: "/app" },
+  { label: "Inicio", icon: Home, to: "/app/home" },
   { label: "Pedidos", icon: ShoppingBag, to: "/app/orders" },
   { label: "Producción", icon: Soup, to: "/app/production" },
   { label: "Mesas", icon: Table2, to: "/app/tables" },
