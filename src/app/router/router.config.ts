@@ -32,7 +32,7 @@ import { menuRoute } from "@/modules/menu/router/menu.router";
 import { AppLayout } from "@/shared/layout/app.layout";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { usersRoute } from "@/modules/users/router/users.router";
-import { homeRoute } from "@/modules/home/router/home.router";
+import { homeRoute, productsReportsRoute } from "@/modules/home/router/home.router";
 
 export const rootRoute = createRootRoute({
   component: App,
@@ -76,6 +76,7 @@ const routeTree = rootRoute.addChildren([
   ]),
   appRoute.addChildren([
     homeRoute,
+    productsReportsRoute,
     ordersRoute,
     productionRoute,
     menuRoute,

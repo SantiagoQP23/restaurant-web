@@ -49,7 +49,7 @@ export const BestSellingProducts = ({
         </div>
         <CardAction>
           <Button variant="ghost" size="sm" asChild>
-            <Link to="/app/orders">
+            <Link to="/app/home/products-reports">
               Ver todo
               <ArrowRight className="ml-1 h-4 w-4" />
             </Link>

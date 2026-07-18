@@ -13,6 +13,18 @@ export interface BestSellingProductsResponse {
   count: number;
 }
 
+export interface BestSellingCategory {
+  categoryId: string;
+  categoryName: string;
+  totalSold: string;
+  totalAmountSold: number;
+}
+
+export interface BestSellingCategoriesResponse {
+  categories: BestSellingCategory[];
+  count: number;
+}
+
 export interface GetBestSellingProductsFilters {
   startDate: Date;
   endDate: Date;
@@ -28,6 +40,27 @@ export class DashboardService {
 
     const resp = await restaurantApi.get<BestSellingProductsResponse>(
       "/orders/best-selling-products/",
+      {
+        params: {
+          period: "custom",
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
+          limit,
+          offset: limit * offset,
+        },
+      },
+    );
+
+    return resp.data;
+  }
+
+  static async getBestSellingCategories(
+    filters: GetBestSellingProductsFilters,
+  ): Promise<BestSellingCategoriesResponse> {
+    const { startDate, endDate, limit = 5, offset = 0 } = filters;
+
+    const resp = await restaurantApi.get<BestSellingCategoriesResponse>(
+      "/orders/best-selling-categories/",
       {
         params: {
           period: "custom",
