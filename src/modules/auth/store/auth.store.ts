@@ -44,6 +44,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     user?: User,
     currentRestaurant?: Restaurant,
   ) => {
+    console.log("changeStatus", { token, user, currentRestaurant });
     if (!token || !user) {
       set({ status: "unauthenticated", token: undefined, user: undefined });
       localStorage.removeItem("token");
@@ -76,6 +77,11 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   checkStatus: async () => {
     const resp = await authCheckStatus();
+
+    if (!resp) {
+      set({ status: "unauthenticated" });
+      return;
+    }
 
     if (resp) {
       get().changeStatus(resp.token, resp.user, resp.currentRestaurant);
