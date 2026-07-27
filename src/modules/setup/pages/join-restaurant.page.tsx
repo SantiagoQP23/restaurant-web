@@ -1,5 +1,5 @@
 import { Button } from "@/shared/components/ui/button";
-import { RotateCcw, ArrowLeft, Home } from "lucide-react";
+import { RotateCcw, Home } from "lucide-react";
 import { WhatsappFAB } from "../components/whatsapp-fab.component";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { useNavigate } from "@tanstack/react-router";

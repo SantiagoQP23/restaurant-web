@@ -311,6 +311,7 @@ export const PaymentMethodFormModal = NiceModal.create(
                   type="number"
                   inputMode="decimal"
                   placeholder="3.5"
+                  step="0.01"
                   aria-invalid={Boolean(errors.commissionPercentage)}
                   {...register("commissionPercentage", {
                     required: "La comision es obligatoria.",
