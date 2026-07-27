@@ -100,14 +100,13 @@ export function RestaurantForm({
 
   const handleFormSubmit = (values: CreateRestaurantDto) => {
     if (currentRestaurant) {
-      updateRestaurantMutation
-        .mutateAsync({
-          id: currentRestaurant.id,
-          data: values,
-        })
-        .then(() => {
-          navigate({ to: "/setup/production-areas" });
-        });
+      updateRestaurantMutation.mutateAsync({
+        id: currentRestaurant.id,
+        data: values,
+      });
+      // .then(() => {
+      //   navigate({ to: "/setup/production-areas" });
+      // });
     } else {
       createRestaurantMutation.mutateAsync(values).then(() => {
         navigate({ to: "/setup/production-areas" });

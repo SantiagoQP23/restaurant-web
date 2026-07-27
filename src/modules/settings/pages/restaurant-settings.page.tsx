@@ -1,9 +1,9 @@
 import { RestaurantForm } from "@/modules/restaurant/components/restaurant-form.component";
-import { useSetupStore } from "@/shared/store/setup.store";
+import { useAuthStore } from "@/modules/auth/store/auth.store";
 
 export const RestaurantSettingsPage = () => {
-  const restaurant = useSetupStore((state) => state.restaurant);
-  // const setRestaurant = useSetupStore((state) => state.setRestaurant);
+  const restaurant = useAuthStore((state) => state.restaurant);
+  // const setRestaurant = useAuthStore((state) => state.setRestaurant);
 
   return (
     <div className="flex w-full justify-center">

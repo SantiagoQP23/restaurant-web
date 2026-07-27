@@ -1,5 +1,5 @@
 import { Button } from "@/shared/components/ui/button";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, ArrowLeft, Home } from "lucide-react";
 import { WhatsappFAB } from "../components/whatsapp-fab.component";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { useNavigate } from "@tanstack/react-router";
@@ -24,7 +24,12 @@ export const JoinRestaurantPage = () => {
   };
 
   return (
-    <div className="flex min-h-svh items-center justify-center p-6 md:p-10">
+    <div className="relative flex min-h-svh items-center justify-center p-6 md:p-10">
+      <div className="absolute top-6 right-6 md:top-10 md:right-10">
+        <Button variant="ghost" onClick={logout}>
+          Cerrar sesión
+        </Button>
+      </div>
       <div className="flex w-full max-w-xl flex-col gap-6 justify-center items-center">
         <div className="space-y-2 text-center">
           <h1 className="text-2xl font-semibold">
@@ -40,8 +45,12 @@ export const JoinRestaurantPage = () => {
             <RotateCcw />
             Verificar acceso
           </Button>
-          <Button variant="outline" onClick={logout}>
-            Cerrar sesión
+          <Button
+            variant="ghost"
+            onClick={() => navigate({ to: "/setup/welcome" })}
+          >
+            <Home />
+            Ir al inicio
           </Button>
         </div>
       </div>

@@ -1,10 +1,18 @@
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/shared/components/ui/button";
 import { SetupStepper } from "@/modules/setup/components/setup-stepper.component";
+import { useAuthStore } from "@/modules/auth/store/auth.store";
 
 export const WelcomePage = () => {
+  const { logout } = useAuthStore();
+
   return (
-    <div className="flex min-h-svh flex-col p-6 md:p-10">
+    <div className="relative flex min-h-svh flex-col p-6 md:p-10">
+      <div className="flex justify-end">
+        <Button variant="ghost" onClick={logout}>
+          Cerrar sesión
+        </Button>
+      </div>
       <div className="flex flex-1 items-center justify-center">
         <div className="flex w-full max-w-xl flex-col items-center gap-6">
           <div className="space-y-2 text-center">
