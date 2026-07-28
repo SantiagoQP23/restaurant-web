@@ -1,7 +1,7 @@
 import "./App.css";
 import { useEffect } from "react";
 import NiceModal from "@ebay/nice-modal-react";
-import { Outlet, useNavigate } from "@tanstack/react-router";
+import { Outlet, useNavigate, useLocation } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { TooltipProvider } from "./shared/components/ui/tooltip";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
@@ -13,6 +13,7 @@ import { SocketProvider } from "./shared/context/SocketContext";
 export function App() {
   const { status, checkStatus } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     checkStatus();
@@ -26,7 +27,7 @@ export function App() {
     );
   }
 
-  if (status === "unauthenticated") {
+  if (status === "unauthenticated" && !location.pathname.startsWith("/auth")) {
     navigate({ to: "/auth/login", replace: true });
   }
 

@@ -100,6 +100,10 @@ export function LoginForm({
             <a
               href="#"
               className="ml-auto text-sm underline-offset-4 hover:underline"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate({ to: "/auth/forgot-password" });
+              }}
             >
               Olvidé mi contraseña
             </a>
