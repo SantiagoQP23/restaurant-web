@@ -3,4 +3,5 @@ export interface CreateRestaurantDto {
   address?: string;
   phone?: string;
   email?: string;
+  tablesQuantity: number;
 }

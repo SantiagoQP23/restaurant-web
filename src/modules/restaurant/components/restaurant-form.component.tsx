@@ -52,6 +52,7 @@ export function RestaurantForm({
       phone: "",
       email: "",
       address: "",
+      tablesQuantity: 4,
     },
   });
 
@@ -95,6 +96,7 @@ export function RestaurantForm({
       phone: defaultValues.phone ?? "",
       email: defaultValues.email ?? "",
       address: defaultValues.address ?? "",
+      tablesQuantity: defaultValues.tablesQuantity ?? 4,
     });
   }, [defaultValues, reset]);
 
@@ -209,6 +211,29 @@ export function RestaurantForm({
             <FieldDescription>{errors.address.message}</FieldDescription>
           )}
         </Field>
+        {mode === "setup" && (
+          <Field>
+            <FieldLabel htmlFor="tablesQuantity">Cantidad de mesas</FieldLabel>
+            <Input
+              id="tablesQuantity"
+              type="number"
+              placeholder="4"
+              min={1}
+              max={50}
+              aria-invalid={Boolean(errors.tablesQuantity)}
+              {...register("tablesQuantity", {
+                required: "La cantidad de mesas es obligatoria.",
+                valueAsNumber: true,
+                min: { value: 1, message: "Minimo 1 mesa." },
+                max: { value: 50, message: "Maximo 50 mesas." },
+              })}
+            />
+            <FieldDescription>
+              {errors.tablesQuantity?.message ??
+                "Numero de mesas que tendra tu restaurante."}
+            </FieldDescription>
+          </Field>
+        )}
         {showSubmit && (
           <Field>
             <div className="flex justify-center">
