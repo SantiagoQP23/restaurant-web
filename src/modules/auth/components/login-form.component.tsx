@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { toast } from "sonner";
+import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
 
 const loginSchema = z.object({
   username: z.string().min(1, { message: "" }),
@@ -31,7 +32,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"form">) {
   const navigate = useNavigate();
-  const { login } = useAuthStore();
+  const { login, loginWithGoogle } = useAuthStore();
   const {
     register,
     handleSubmit,
@@ -64,6 +65,32 @@ export function LoginForm({
     }
 
     toast.error("Credenciales inválidas. Por favor, inténtalo de nuevo.");
+  };
+
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    const credential = credentialResponse.credential;
+    if (!credential) {
+      toast.error("Error al iniciar sesión con Google.");
+      return;
+    }
+
+    const wasSuccessful = await loginWithGoogle(credential);
+    const user = useAuthStore.getState().user;
+
+    if (wasSuccessful) {
+      if (user?.role) {
+        navigate({ to: "/app/orders", replace: true });
+      } else {
+        navigate({ to: "/setup/welcome", replace: true });
+      }
+      return;
+    }
+
+    toast.error("Error al iniciar sesión con Google.");
+  };
+
+  const handleGoogleError = () => {
+    toast.error("Error al iniciar sesión con Google.");
   };
 
   return (
@@ -129,7 +156,14 @@ export function LoginForm({
             Iniciar sesión
           </Button>
         </Field>
-        {/* <FieldSeparator>Or continue with</FieldSeparator> */}
+        <Field>
+          <div className="flex justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+            />
+          </div>
+        </Field>
         <Field>
           {/* <Button variant="outline" type="button"> */}
           {/*   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"> */}

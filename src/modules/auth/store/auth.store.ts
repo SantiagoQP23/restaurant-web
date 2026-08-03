@@ -5,6 +5,7 @@ import {
   authCheckStatus,
   authLogin,
   authRegister,
+  authGoogleSignIn,
 } from "../actions/auth.actions";
 
 export type AuthStatus = "authenticated" | "unauthenticated" | "checking";
@@ -16,6 +17,7 @@ export type AuthState = {
   restaurant?: Restaurant;
 
   login: (email: string, password: string) => Promise<boolean>;
+  loginWithGoogle: (credential: string) => Promise<boolean>;
   register: (
     data: import("../interfaces/dto/register-user.dto").RegisterUserDto,
   ) => Promise<boolean>;
@@ -65,6 +67,12 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   login: async (email: string, password: string) => {
     const resp = await authLogin(email, password);
+
+    return get().changeStatus(resp?.token, resp?.user, resp?.currentRestaurant);
+  },
+
+  loginWithGoogle: async (credential: string) => {
+    const resp = await authGoogleSignIn(credential);
 
     return get().changeStatus(resp?.token, resp?.user, resp?.currentRestaurant);
   },

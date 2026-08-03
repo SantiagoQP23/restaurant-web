@@ -72,3 +72,19 @@ export const authRegister = async ({
 
   return returnUserToken(respData);
 };
+
+export const authGoogleSignIn = async (idToken: string) => {
+  try {
+    const { data } = await restaurantApi.post<AuthResponse>(
+      "/auth/google-signin",
+      {
+        idToken,
+      },
+    );
+
+    return returnUserToken(data);
+  } catch (error) {
+    console.log("Google auth error", error);
+    return null;
+  }
+};
