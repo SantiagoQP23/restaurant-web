@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { parseApiError, ParsedApiError } from "./parse-api-error";
+import { parseApiError } from "./parse-api-error";
+import type { ParsedApiError } from "./parse-api-error";
 
 export function useErrorResolver() {
   const { t } = useTranslation();
@@ -53,5 +54,7 @@ function getTranslatedMessage(
   }
 
   // Ultimate fallback
-  return t("errors.UNKNOWN_ERROR", { defaultValue: "An unexpected error occurred." });
+  return t("errors.UNKNOWN_ERROR", {
+    defaultValue: "An unexpected error occurred.",
+  });
 }
