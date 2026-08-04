@@ -4,5 +4,21 @@
     "cook": "Cocinero",
     "waiter": "Mesero",
     "cashier": "Cajero"
+  },
+  "errors": {
+    "RESTAURANT_NOT_FOUND": "No se encontró el restaurante solicitado.",
+    "RESTAURANT_LOGO_UPLOAD_FAILED": "Asegúrate de que el archivo sea una imagen válida.",
+    "PLAN_NO_ACTIVE_PLAN": "No hay un plan activo disponible. Contacta a soporte.",
+    "BAD_REQUEST": "La solicitud no es válida.",
+    "UNAUTHORIZED": "No estás autorizado. Inicia sesión de nuevo.",
+    "FORBIDDEN": "No tienes permiso para realizar esta acción.",
+    "NOT_FOUND": "El recurso solicitado no fue encontrado.",
+    "CONFLICT": "Existe un conflicto con los datos enviados.",
+    "UNPROCESSABLE_ENTITY": "Los datos enviados no pueden ser procesados.",
+    "INTERNAL_SERVER_ERROR": "Ha ocurrido un error interno. Intenta de nuevo más tarde.",
+    "VALIDATION_ERROR": "Algunos campos no cumplen con las reglas de validación.",
+    "NETWORK_ERROR": "Error de conexión. Verifica tu internet e intenta de nuevo.",
+    "UNKNOWN_ERROR": "Ha ocurrido un error inesperado.",
+    "RESTAURANT_GENERIC": "Ha ocurrido un error relacionado con el restaurante."
   }
 }
