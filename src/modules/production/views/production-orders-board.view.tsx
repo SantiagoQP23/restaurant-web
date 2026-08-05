@@ -1,13 +1,6 @@
 import { OrderDetailStatus, type Order } from "@/shared/models/order.model";
 import type { OrderDetail } from "@/shared/models/order-detail.model";
 import { Badge } from "@/shared/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
 import { statusLabel } from "../pages/production.views.helpers";
 import {
@@ -94,46 +87,35 @@ export const ProductionOrdersBoardView = ({
             <div className="flex flex-col gap-3">
               {column.entries.map(({ order, details }) => {
                 return (
-                  <Card key={`${order.id}-${column.key}`} size="sm">
-                    <CardHeader>
-                      <div className="flex items-center justify-center ">
-                        <Badge
-                          className={deliveryBadgeClass(order.deliveryTime)}
-                          variant="secondary"
-                        >
-                          {formatMinutesFromNow(order.deliveryTime, now)}
+                  <div
+                    key={`${order.id}-${column.key}`}
+                    className="flex flex-col gap-2 rounded-lg border border-dashed border-border/60 bg-white/60 p-3"
+                  >
+                    <div className="flex items-center justify-center">
+                      <Badge
+                        className={deliveryBadgeClass(order.deliveryTime)}
+                        variant="secondary"
+                      >
+                        {formatMinutesFromNow(order.deliveryTime, now)}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-base font-semibold">
+                          {orderTableLabel(order)}
+                        </span>
+                        <Badge variant="outline">
+                          {statusLabel(order.status)}
                         </Badge>
                       </div>
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                          <CardTitle>{orderTableLabel(order)}</CardTitle>
-                          <Badge variant="outline">
-                            {statusLabel(order.status)}
-                          </Badge>
-                        </div>
-                        {column.key !== OrderDetailStatus.READY && (
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="outline"
-                            onClick={() =>
-                              onAdvanceOrderDetails(details, column.key)
-                            }
-                          >
-                            {column.key === OrderDetailStatus.PENDING
-                              ? "Iniciar"
-                              : "Listo"}
-                          </Button>
-                        )}
-                      </div>
-                      <CardDescription>
-                        #{order.num} ·{" "}
-                        {formatStringDate(order.deliveryTime, "HH:mm")} ·{" "}
-                        {order.user.person.firstName}{" "}
-                        {order.user.person.lastName}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex flex-col gap-3">
+                    </div>
+                    <div className="text-xs text-muted-foreground text-center">
+                      #{order.num} ·{" "}
+                      {formatStringDate(order.deliveryTime, "HH:mm")} ·{" "}
+                      {order.user.person.firstName} {order.user.person.lastName}
+                    </div>
+                    <div className="border-t border-dashed border-border/60" />
+                    <div className="flex flex-col gap-4">
                       {details.map((detail) => (
                         <ProductionOrderDetail
                           key={detail.id}
@@ -141,8 +123,25 @@ export const ProductionOrdersBoardView = ({
                           orderId={order.id}
                         />
                       ))}
-                    </CardContent>
-                  </Card>
+                    </div>
+                    {column.key !== OrderDetailStatus.READY && (
+                      <div className="flex justify-end pt-1">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          className="h-auto px-2 py-1 text-xs font-medium underline-offset-2 hover:underline"
+                          onClick={() =>
+                            onAdvanceOrderDetails(details, column.key)
+                          }
+                        >
+                          {column.key === OrderDetailStatus.PENDING
+                            ? "Iniciar"
+                            : "Listo"}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 );
               })}
             </div>

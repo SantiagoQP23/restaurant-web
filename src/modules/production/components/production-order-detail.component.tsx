@@ -18,14 +18,15 @@ import { Progress } from "@/shared/components/ui/progress";
 import type { OrderDetail } from "@/shared/models/order-detail.model";
 import { OrderDetailStatus } from "@/shared/models/order.model";
 import NiceModal from "@ebay/nice-modal-react";
-import { ArrowRight, Edit, Pause, Plus } from "lucide-react";
+import { ArrowRight, Edit, MoreVertical, Pause, Plus } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { ProductionEditOrderDetailDialog } from "./production-edit-order-detail-dialog.component";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/shared/components/ui/tooltip";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shared/components/ui/dropdown-menu";
 import { useNow } from "@/shared/hooks/useNow";
 
 interface Props {
@@ -224,100 +225,74 @@ export const ProductionOrderDetail = ({ detail, orderId }: Props) => {
           </div>
         </div>
         {detail.status !== OrderDetailStatus.READY && (
-          <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  aria-label="Sumar listo"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    onUpdateReady(detail.readyQuantity + 1);
-                  }}
-                >
-                  <Plus />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top" align="center">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                aria-label="Acciones"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <MoreVertical />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onSelect={(event) => {
+                  event.stopPropagation();
+                  onUpdateReady(detail.readyQuantity + 1);
+                }}
+              >
+                <Plus className="mr-2 h-4 w-4" />
                 Sumar listo
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  aria-label="Ajustar listo"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    NiceModal.show(ProductionEditOrderDetailDialog, {
-                      detail,
-                      onUpdateQuantity: onUpdateReady,
-                    });
-                  }}
-                >
-                  <Edit />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top" align="center">
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onSelect={(event) => {
+                  event.stopPropagation();
+                  NiceModal.show(ProductionEditOrderDetailDialog, {
+                    detail,
+                    onUpdateQuantity: onUpdateReady,
+                  });
+                }}
+              >
+                <Edit className="mr-2 h-4 w-4" />
                 Ajustar listo
-              </TooltipContent>
-            </Tooltip>
-            {detail.status === OrderDetailStatus.IN_PROGRESS && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-xs"
-                    aria-label="Detener preparación"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      onStopPreparation();
-                    }}
-                  >
-                    <Pause />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top" align="center">
-                  Detener preparación
-                </TooltipContent>
-              </Tooltip>
-            )}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  aria-label={
-                    detail.status === OrderDetailStatus.PENDING
-                      ? "Marcar como preparando"
-                      : "Marcar como listo"
-                  }
-                  onClick={(event) => {
+              </DropdownMenuItem>
+
+              {detail.status === OrderDetailStatus.IN_PROGRESS && (
+                <DropdownMenuItem
+                  onSelect={(event) => {
                     event.stopPropagation();
-                    onAdvanceDetail();
+                    onStopPreparation();
                   }}
                 >
-                  <ArrowRight />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top" align="center">
+                  <Pause className="mr-2 h-4 w-4" />
+                  Detener
+                </DropdownMenuItem>
+              )}
+
+              <DropdownMenuItem
+                onSelect={(event) => {
+                  event.stopPropagation();
+                  onAdvanceDetail();
+                }}
+              >
+                <ArrowRight className="mr-2 h-4 w-4" />
                 {detail.status === OrderDetailStatus.PENDING
-                  ? "Empezar preparación"
-                  : "Marcar como listo"}
-              </TooltipContent>
-            </Tooltip>
-          </div>
+                  ? "Empezar"
+                  : "Listo"}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </div>
 
       {detail.description && (
-        <span className=" text-gray-500">{detail.description}</span>
+        <span className="text-base text-sm text-gray-500">
+          **{detail.description}**
+        </span>
       )}
       {detail.quantity > 1 && detail.readyQuantity > 0 && (
         <div className="flex flex-col gap-1">
