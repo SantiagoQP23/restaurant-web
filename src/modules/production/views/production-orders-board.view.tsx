@@ -73,79 +73,82 @@ export const ProductionOrdersBoardView = ({
   };
 
   return (
-    <div className="grid gap-4 lg:grid-cols-3">
-      {grouped.map((column) => (
-        <section
-          key={column.key}
-          className="flex flex-col gap-4 rounded-4xl border border-border/60 bg-muted/30 p-4"
-        >
-          <div className="flex items-center justify-between">
-            <div className="text-sm font-semibold">{column.label}</div>
-            <span
-              className={`rounded-full px-2 py-1 text-xs font-medium ${column.accent}`}
-            >
-              {column.entries.reduce(
-                (total, entry) => total + entry.details.length,
-                0,
-              )}
-            </span>
-          </div>
-          <div className="flex flex-col gap-3">
-            {column.entries.map(({ order, details }) => {
-              return (
-                <Card key={`${order.id}-${column.key}`} size="sm">
-                  <CardHeader>
-                    <div className="flex items-center justify-center ">
-                      <Badge
-                        className={deliveryBadgeClass(order.deliveryTime)}
-                        variant="secondary"
-                      >
-                        {formatMinutesFromNow(order.deliveryTime, now)}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <CardTitle>{orderTableLabel(order)}</CardTitle>
-                        <Badge variant="outline">
-                          {statusLabel(order.status)}
+    <div className="overflow-x-auto">
+      <div className="flex flex-nowrap gap-4">
+        {grouped.map((column) => (
+          <section
+            key={column.key}
+            className="flex flex-col gap-4 rounded-4xl border border-border/60 bg-muted/30 p-4 min-w-[320px] flex-1"
+          >
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-semibold">{column.label}</div>
+              <span
+                className={`rounded-full px-2 py-1 text-xs font-medium ${column.accent}`}
+              >
+                {column.entries.reduce(
+                  (total, entry) => total + entry.details.length,
+                  0,
+                )}
+              </span>
+            </div>
+            <div className="flex flex-col gap-3">
+              {column.entries.map(({ order, details }) => {
+                return (
+                  <Card key={`${order.id}-${column.key}`} size="sm">
+                    <CardHeader>
+                      <div className="flex items-center justify-center ">
+                        <Badge
+                          className={deliveryBadgeClass(order.deliveryTime)}
+                          variant="secondary"
+                        >
+                          {formatMinutesFromNow(order.deliveryTime, now)}
                         </Badge>
                       </div>
-                      {column.key !== OrderDetailStatus.READY && (
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="outline"
-                          onClick={() =>
-                            onAdvanceOrderDetails(details, column.key)
-                          }
-                        >
-                          {column.key === OrderDetailStatus.PENDING
-                            ? "Iniciar"
-                            : "Listo"}
-                        </Button>
-                      )}
-                    </div>
-                    <CardDescription>
-                      #{order.num} ·{" "}
-                      {formatStringDate(order.deliveryTime, "HH:mm")} ·{" "}
-                      {order.user.person.firstName} {order.user.person.lastName}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex flex-col gap-3">
-                    {details.map((detail) => (
-                      <ProductionOrderDetail
-                        key={detail.id}
-                        detail={detail}
-                        orderId={order.id}
-                      />
-                    ))}
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </section>
-      ))}
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <CardTitle>{orderTableLabel(order)}</CardTitle>
+                          <Badge variant="outline">
+                            {statusLabel(order.status)}
+                          </Badge>
+                        </div>
+                        {column.key !== OrderDetailStatus.READY && (
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() =>
+                              onAdvanceOrderDetails(details, column.key)
+                            }
+                          >
+                            {column.key === OrderDetailStatus.PENDING
+                              ? "Iniciar"
+                              : "Listo"}
+                          </Button>
+                        )}
+                      </div>
+                      <CardDescription>
+                        #{order.num} ·{" "}
+                        {formatStringDate(order.deliveryTime, "HH:mm")} ·{" "}
+                        {order.user.person.firstName}{" "}
+                        {order.user.person.lastName}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex flex-col gap-3">
+                      {details.map((detail) => (
+                        <ProductionOrderDetail
+                          key={detail.id}
+                          detail={detail}
+                          orderId={order.id}
+                        />
+                      ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </section>
+        ))}
+      </div>
     </div>
   );
 };
