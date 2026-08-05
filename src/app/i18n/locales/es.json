@@ -5,6 +5,10 @@
     "waiter": "Mesero",
     "cashier": "Cajero"
   },
+  "orderTypes": {
+    "TAKE_AWAY": "Para llevar",
+    "IN_PLACE": "En sitio"
+  },
   "errors": {
     "RESTAURANT_NOT_FOUND": "No se encontró el restaurante solicitado.",
     "RESTAURANT_LOGO_UPLOAD_FAILED": "Asegúrate de que el archivo sea una imagen válida.",

@@ -5,6 +5,10 @@
     "waiter": "Waiter",
     "cashier": "Cashier"
   },
+  "orderTypes": {
+    "TAKE_AWAY": "Take away",
+    "IN_PLACE": "In place"
+  },
   "errors": {
     "RESTAURANT_NOT_FOUND": "The requested restaurant was not found.",
     "RESTAURANT_LOGO_UPLOAD_FAILED": "Make sure the file is a valid image.",

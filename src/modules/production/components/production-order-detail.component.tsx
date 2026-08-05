@@ -16,10 +16,11 @@ import {
 } from "@/shared/components/ui/dialog";
 import { Progress } from "@/shared/components/ui/progress";
 import type { OrderDetail } from "@/shared/models/order-detail.model";
-import { OrderDetailStatus } from "@/shared/models/order.model";
+import { OrderDetailStatus, OrderType } from "@/shared/models/order.model";
 import NiceModal from "@ebay/nice-modal-react";
 import { ArrowRight, Edit, MoreVertical, Pause, Plus } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ProductionEditOrderDetailDialog } from "./production-edit-order-detail-dialog.component";
 import {
   DropdownMenu,
@@ -32,12 +33,18 @@ import { useNow } from "@/shared/hooks/useNow";
 interface Props {
   detail: OrderDetail;
   orderId: string;
+  orderType: OrderType;
 }
 
-export const ProductionOrderDetail = ({ detail, orderId }: Props) => {
+export const ProductionOrderDetail = ({
+  detail,
+  orderId,
+  orderType,
+}: Props) => {
   const { mutate: update } = useOrders().updateOrderDetail;
   const [isOpen, setIsOpen] = useState(false);
   const now = useNow();
+  const { t } = useTranslation();
 
   const formattedCreatedAt = useMemo(
     () =>
@@ -289,6 +296,11 @@ export const ProductionOrderDetail = ({ detail, orderId }: Props) => {
         )}
       </div>
 
+      {detail.typeOrderDetail !== orderType && (
+        <span className="text-xs text-muted-foreground">
+          {t(`orderTypes.${detail.typeOrderDetail}`)}
+        </span>
+      )}
       {detail.description && (
         <span className="text-base text-sm text-gray-500">
           **{detail.description}**

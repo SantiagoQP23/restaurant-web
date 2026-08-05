@@ -121,6 +121,7 @@ export const ProductionOrdersBoardView = ({
                           key={detail.id}
                           detail={detail}
                           orderId={order.id}
+                          orderType={order.type}
                         />
                       ))}
                     </div>
