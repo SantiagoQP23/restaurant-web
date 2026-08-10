@@ -132,7 +132,8 @@ export const ProductionPage = () => {
           if (!current) {
             return acc;
           }
-          current.totalQuantity += entry.detail.quantity;
+          current.totalQuantity +=
+            entry.detail.quantity - entry.detail.qtyDelivered;
           current.totalReady += entry.detail.readyQuantity;
           current.entries.push(entry);
           return acc;

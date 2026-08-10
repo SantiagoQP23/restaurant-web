@@ -136,7 +136,7 @@ export const ProductionOrderDetail = ({
           <div className="flex flex-col gap-4 text-sm">
             <div className="flex flex-col gap-1">
               <div className="text-base font-semibold">
-                {detail.quantity}x {detail.product.name}
+                {detail.quantity - detail.qtyDelivered}x {detail.product.name}
               </div>
               {detail.productOption && (
                 <span className="text-xs text-muted-foreground">
