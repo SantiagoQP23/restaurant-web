@@ -9,6 +9,19 @@
     "TAKE_AWAY": "Para llevar",
     "IN_PLACE": "En sitio"
   },
+  "deleteAccount": {
+    "title": "Elimina tu cuenta de Teikio",
+    "description": "Ingresa el correo electrónico asociado a tu cuenta de Teikio.",
+    "emailLabel": "Correo electrónico",
+    "emailPlaceholder": "tu@email.com",
+    "continue": "Continuar",
+    "helpText": "Te enviaremos un enlace de verificación para confirmar que eres el propietario de esta cuenta.",
+    "genericMessage": "Si existe una cuenta asociada a esta dirección de correo, te enviaremos instrucciones para continuar.",
+    "backToLogin": "Volver al inicio de sesión",
+    "errors": {
+      "invalidEmail": "Ingresa un correo electrónico válido."
+    }
+  },
   "errors": {
     "RESTAURANT_NOT_FOUND": "No se encontró el restaurante solicitado.",
     "RESTAURANT_LOGO_UPLOAD_FAILED": "Asegúrate de que el archivo sea una imagen válida.",

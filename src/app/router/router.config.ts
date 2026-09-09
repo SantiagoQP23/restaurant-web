@@ -11,6 +11,7 @@ import {
   signupRoute,
   forgotPasswordRoute,
   resetPasswordRoute,
+  deleteAccountRoute,
 } from "@/modules/auth/router/auth.router";
 import { productionRoute } from "@/modules/production/router/production.router";
 import {
@@ -74,7 +75,13 @@ export const appRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
-  authRoute.addChildren([loginRoute, signupRoute, forgotPasswordRoute, resetPasswordRoute]),
+  authRoute.addChildren([
+    loginRoute,
+    signupRoute,
+    forgotPasswordRoute,
+    resetPasswordRoute,
+    deleteAccountRoute,
+  ]),
   setupRoute.addChildren([
     welcomeRoute,
     restaurantRoute,

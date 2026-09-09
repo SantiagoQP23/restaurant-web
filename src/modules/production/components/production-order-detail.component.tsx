@@ -223,7 +223,7 @@ export const ProductionOrderDetail = ({
           />
           <div>
             <div className="font-medium">
-              {detail.quantity}x {detail.product.name}{" "}
+              {detail.quantity - detail.qtyDelivered}x {detail.product.name}{" "}
               {detail.productOption &&
                 detail.price !== detail.productOption?.price &&
                 `($${detail.price})`}

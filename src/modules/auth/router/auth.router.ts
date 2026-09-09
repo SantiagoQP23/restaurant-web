@@ -4,6 +4,7 @@ import { LoginPage } from "../pages/login.page";
 import SignupPage from "../pages/signup.page";
 import ForgotPasswordPage from "../pages/forgot-password.page";
 import ResetPasswordPage from "../pages/reset-password.page";
+import DeleteAccountPage from "../pages/delete-account.page";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
 
 export const authRoute = createRoute({
@@ -39,4 +40,10 @@ export const resetPasswordRoute = createRoute({
   getParentRoute: () => authRoute,
   path: "reset-password/$token",
   component: ResetPasswordPage,
+});
+
+export const deleteAccountRoute = createRoute({
+  getParentRoute: () => authRoute,
+  path: "delete-account",
+  component: DeleteAccountPage,
 });
