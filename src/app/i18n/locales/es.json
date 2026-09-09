@@ -20,6 +20,25 @@
     "backToLogin": "Volver al inicio de sesión",
     "errors": {
       "invalidEmail": "Ingresa un correo electrónico válido."
+    },
+    "confirm": {
+      "title": "¿Eliminar tu cuenta de Teikio?",
+      "warningPermanent": "Esta acción es permanente.",
+      "warningPersonalData": "Tu información de cuenta personal y datos de autenticación serán eliminados.",
+      "warningBusinessRecords": "Los registros comerciales del restaurante como pedidos, facturas, transacciones y otra información histórica pueden conservarse cuando sea necesario para fines comerciales, legales, contables, de seguridad u operativos.",
+      "cancel": "Cancelar",
+      "confirmButton": "Eliminar mi cuenta permanentemente",
+      "deleting": "Eliminando cuenta...",
+      "validating": "Validando enlace...",
+      "successTitle": "Cuenta eliminada",
+      "successMessage": "Tu información de cuenta personal y datos de autenticación han sido eliminados.",
+      "requestNewLink": "Solicitar un nuevo enlace",
+      "backToLogin": "Volver al inicio de sesión",
+      "invalidTitle": "Enlace no válido o expirado",
+      "invalidDescription": "Este enlace de eliminación de cuenta no es válido o ha expirado.",
+      "usedDescription": "Este enlace de eliminación de cuenta ya ha sido utilizado.",
+      "expiredDescription": "Este enlace de eliminación de cuenta ha expirado.",
+      "errorGeneric": "Ocurrió un error al eliminar tu cuenta. Por favor, intenta de nuevo."
     }
   },
   "errors": {

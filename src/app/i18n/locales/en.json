@@ -20,6 +20,25 @@
     "backToLogin": "Back to login",
     "errors": {
       "invalidEmail": "Please enter a valid email address."
+    },
+    "confirm": {
+      "title": "Delete your Teikio account?",
+      "warningPermanent": "This action is permanent.",
+      "warningPersonalData": "Your personal account information and authentication data will be deleted.",
+      "warningBusinessRecords": "Restaurant business records such as orders, bills, transactions, and other historical information may be retained when necessary for business, legal, accounting, security, or operational purposes.",
+      "cancel": "Cancel",
+      "confirmButton": "Permanently delete my account",
+      "deleting": "Deleting account...",
+      "validating": "Validating link...",
+      "successTitle": "Account deleted",
+      "successMessage": "Your personal account information and authentication data have been deleted.",
+      "requestNewLink": "Request a new link",
+      "backToLogin": "Back to login",
+      "invalidTitle": "Invalid or expired link",
+      "invalidDescription": "This account deletion link is invalid or has expired.",
+      "usedDescription": "This account deletion link has already been used.",
+      "expiredDescription": "This account deletion link has expired.",
+      "errorGeneric": "An error occurred while deleting your account. Please try again."
     }
   },
   "errors": {

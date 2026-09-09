@@ -5,6 +5,7 @@ import SignupPage from "../pages/signup.page";
 import ForgotPasswordPage from "../pages/forgot-password.page";
 import ResetPasswordPage from "../pages/reset-password.page";
 import DeleteAccountPage from "../pages/delete-account.page";
+import AccountDeletionConfirmPage from "../pages/account-deletion-confirm.page";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
 
 export const authRoute = createRoute({
@@ -46,4 +47,15 @@ export const deleteAccountRoute = createRoute({
   getParentRoute: () => authRoute,
   path: "delete-account",
   component: DeleteAccountPage,
+});
+
+export const accountDeletionConfirmRoute = createRoute({
+  getParentRoute: () => authRoute,
+  path: "account-deletion/confirm",
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      token: typeof search.token === "string" ? search.token : "",
+    };
+  },
+  component: AccountDeletionConfirmPage,
 });
