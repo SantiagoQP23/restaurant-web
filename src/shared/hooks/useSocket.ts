@@ -14,12 +14,14 @@ export const useSocket = (serverPath: string) => {
     const token = localStorage.getItem("token") || "";
 
     const manager = new Manager(serverPath, {
-      extraHeaders: {
-        authentication: token,
-      },
+      transports: ["websocket"],
     });
 
-    const socketTemp = manager.socket("/");
+    const socketTemp = manager.socket("/", {
+      auth: {
+        token,
+      },
+    });
 
     setSocket(socketTemp);
   }, [serverPath]);
@@ -29,11 +31,13 @@ export const useSocket = (serverPath: string) => {
   }, [socket]);
 
   useEffect(() => {
+    console.log("Socket status changed:", socket?.connected);
     setOnline(socket?.connected);
   }, [socket]);
 
   useEffect(() => {
     socket?.on("connect", () => {
+      console.log("Socket connected");
       setOnline(true);
     });
   }, [socket]);

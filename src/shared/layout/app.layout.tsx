@@ -31,6 +31,8 @@ import {
 } from "@/modules/orders/hooks/useOrders";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { NavUser } from "./nav-user";
+import { useContext } from "react";
+import { SocketContext } from "../context/SocketContext";
 
 const navigation = [
   { label: "Inicio", icon: Home, to: "/app/home" },
@@ -49,6 +51,7 @@ export const AppLayout = () => {
   });
   const user = useAuthStore((state) => state.user);
   const status = useAuthStore((state) => state.status);
+  const online = useContext(SocketContext).online;
 
   useActiveOrders();
 
@@ -70,7 +73,6 @@ export const AppLayout = () => {
             </div>
             {/* <div className="flex flex-col text-xs"> */}
             {/*   <span className="font-semibold">Restaurant OS</span> */}
-            {/*   <span className="text-sidebar-foreground/60">Panel</span> */}
             {/* </div> */}
           </div>
         </SidebarHeader>
@@ -101,6 +103,10 @@ export const AppLayout = () => {
       <SidebarInset>
         <header className="flex h-14 items-center gap-2 border-b px-4">
           <SidebarTrigger />
+
+          <span className="">
+            Status {online ? "Connected" : "Disconnected"}
+          </span>
           {/* <span className="text-sm font-medium text-muted-foreground"> */}
           {/*   Panel principal */}
           {/* </span> */}

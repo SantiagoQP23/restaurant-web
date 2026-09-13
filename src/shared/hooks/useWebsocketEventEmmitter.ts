@@ -30,6 +30,10 @@ export function useWebsocketEventEmitter<TData, TVariables>(
     secondaryOptions?: WebSocketOptions<SocketResponseData<TData>>,
   ) => {
     setLoading(true);
+    console.log(
+      `[useWebsocketEventEmitter] Emitting event: ${eventMessage}`,
+      data,
+    );
 
     const timeoutDuration =
       options?.timeout ?? secondaryOptions?.timeout ?? 20000;
