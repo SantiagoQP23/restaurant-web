@@ -41,6 +41,14 @@
       "errorGeneric": "An error occurred while deleting your account. Please try again."
     }
   },
+  "verifyEmailChange": {
+    "verifying": "Verifying your new email address...",
+    "successTitle": "Email updated",
+    "successMessage": "Your email address has been successfully updated.",
+    "invalidTitle": "Invalid or expired link",
+    "invalidDescription": "This email verification link is invalid or has expired.",
+    "backToLogin": "Back to login"
+  },
   "errors": {
     "RESTAURANT_NOT_FOUND": "The requested restaurant was not found.",
     "RESTAURANT_LOGO_UPLOAD_FAILED": "Make sure the file is a valid image.",

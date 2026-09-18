@@ -41,6 +41,14 @@
       "errorGeneric": "Ocurrió un error al eliminar tu cuenta. Por favor, intenta de nuevo."
     }
   },
+  "verifyEmailChange": {
+    "verifying": "Verificando tu nueva dirección de correo...",
+    "successTitle": "Correo actualizado",
+    "successMessage": "Tu dirección de correo electrónico se actualizó correctamente.",
+    "invalidTitle": "Enlace no válido o expirado",
+    "invalidDescription": "Este enlace de verificación de correo no es válido o ha expirado.",
+    "backToLogin": "Volver al inicio de sesión"
+  },
   "errors": {
     "RESTAURANT_NOT_FOUND": "No se encontró el restaurante solicitado.",
     "RESTAURANT_LOGO_UPLOAD_FAILED": "Asegúrate de que el archivo sea una imagen válida.",

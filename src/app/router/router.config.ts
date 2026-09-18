@@ -13,6 +13,7 @@ import {
   resetPasswordRoute,
   deleteAccountRoute,
   accountDeletionConfirmRoute,
+  verifyEmailChangeRoute,
 } from "@/modules/auth/router/auth.router";
 import { productionRoute } from "@/modules/production/router/production.router";
 import {
@@ -83,6 +84,7 @@ const routeTree = rootRoute.addChildren([
     resetPasswordRoute,
     deleteAccountRoute,
     accountDeletionConfirmRoute,
+    verifyEmailChangeRoute,
   ]),
   setupRoute.addChildren([
     welcomeRoute,

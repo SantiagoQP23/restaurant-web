@@ -6,6 +6,7 @@ import ForgotPasswordPage from "../pages/forgot-password.page";
 import ResetPasswordPage from "../pages/reset-password.page";
 import DeleteAccountPage from "../pages/delete-account.page";
 import AccountDeletionConfirmPage from "../pages/account-deletion-confirm.page";
+import VerifyEmailChangePage from "../pages/verify-email-change.page";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
 
 export const authRoute = createRoute({
@@ -58,4 +59,15 @@ export const accountDeletionConfirmRoute = createRoute({
     };
   },
   component: AccountDeletionConfirmPage,
+});
+
+export const verifyEmailChangeRoute = createRoute({
+  getParentRoute: () => authRoute,
+  path: "verify-email-change",
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      token: typeof search.token === "string" ? search.token : "",
+    };
+  },
+  component: VerifyEmailChangePage,
 });
