@@ -1,19 +1,18 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import HttpApi from "i18next-http-backend";
+import en from "./locales/en.json";
+import es from "./locales/es.json";
 
-i18n
-  .use(HttpApi)
-  .use(initReactI18next)
-  .init({
-    lng: "es",
-    fallbackLng: "es",
-    interpolation: {
-      escapeValue: false,
-    },
-    backend: {
-      loadPath: "/src/app/i18n/locales/{{lng}}.json",
-    },
-  });
+i18n.use(initReactI18next).init({
+  lng: "es",
+  fallbackLng: "es",
+  interpolation: {
+    escapeValue: false,
+  },
+  resources: {
+    en: { translation: en },
+    es: { translation: es },
+  },
+});
 
 export default i18n;
