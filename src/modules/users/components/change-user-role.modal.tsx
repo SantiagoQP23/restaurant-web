@@ -87,11 +87,13 @@ export const ChangeUserRoleModal = NiceModal.create(
                   <SelectValue placeholder="Selecciona un rol" />
                 </SelectTrigger>
                 <SelectContent>
-                  {rolesQuery.data?.map((role) => (
-                    <SelectItem key={role.id} value={role.id.toString()}>
-                      {t(`roles.${role.name}`, { defaultValue: role.name })}
-                    </SelectItem>
-                  ))}
+                  {rolesQuery.data
+                    ?.filter((role) => role.name !== "owner")
+                    .map((role) => (
+                      <SelectItem key={role.id} value={role.id.toString()}>
+                        {t(`roles.${role.name}`, { defaultValue: role.name })}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </Field>
