@@ -18,7 +18,8 @@ import type { UpdateRestaurantDto } from "@/modules/restaurant/interface/dto/upd
 import type { LoginRespDto } from "@/modules/auth/interfaces/dto/login-resp.dto";
 import type { Restaurant } from "@/shared/models/restaurant.model";
 import { useNavigate } from "@tanstack/react-router";
-import { useErrorResolver } from "@/shared/lib/errors/use-error-resolver";
+import i18n from "@/app/i18n/i18n.config";
+import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
 
 type RestaurantFormProps = React.ComponentProps<"form"> & {
   showSubmit?: boolean;
@@ -41,7 +42,6 @@ export function RestaurantForm({
   const changeStatus = useAuthStore((state) => state.changeStatus);
   const setRestaurant = useAuthStore((state) => state.setRestaurant);
   const navigate = useNavigate();
-  const { resolveMessage } = useErrorResolver();
 
   const {
     register,
@@ -70,7 +70,11 @@ export function RestaurantForm({
       toast.success("Restaurante creado exitosamente");
     },
     onError: (error) => {
-      toast.error(resolveMessage(error));
+      toast.error(
+        getErrorMessage(error, {
+          fallback: i18n.t("actionErrors.restaurant.create"),
+        }),
+      );
     },
   });
 
@@ -85,7 +89,11 @@ export function RestaurantForm({
       toast.success("Restaurante actualizado exitosamente");
     },
     onError: (error) => {
-      toast.error(resolveMessage(error));
+      toast.error(
+        getErrorMessage(error, {
+          fallback: i18n.t("actionErrors.restaurant.update"),
+        }),
+      );
     },
   });
 

@@ -10,9 +10,14 @@ import {
   FieldGroup,
 } from "@/shared/components/ui/field";
 import {
+  AccountDeletionErrorCodes,
   DeleteAccountService,
   type TokenValidationResult,
 } from "../services/delete-account.service";
+import {
+  getApiError,
+  getErrorMessage,
+} from "@/shared/lib/errors/get-error-message";
 import { useAuthStore } from "../store/auth.store";
 
 interface AccountDeletionConfirmProps {
@@ -81,28 +86,16 @@ export function AccountDeletionConfirm({
       await useAuthStore.getState().logout();
       setIsDeleted(true);
     } catch (error: unknown) {
-      const response =
-        (error as {
-          status?: number;
-          data?: { message?: string | string[] };
-        }) ?? {};
-      const rawMessage = response.data?.message;
-      const lower = (
-        typeof rawMessage === "string"
-          ? rawMessage
-          : Array.isArray(rawMessage)
-            ? rawMessage.join(" ")
-            : ""
-      ).toLowerCase();
+      const { code } = getApiError(error);
 
-      if (lower.includes("used") || lower.includes("usado")) {
+      if (code === AccountDeletionErrorCodes.TOKEN_USED) {
         setValidationResult({ valid: false, reason: "used" });
-      } else if (lower.includes("expire") || lower.includes("expirad")) {
-        setValidationResult({ valid: false, reason: "expired" });
+      } else if (code === AccountDeletionErrorCodes.TOKEN_INVALID) {
+        setValidationResult({ valid: false, reason: "invalid" });
       } else {
-        const fallbackMsg = t("deleteAccount.confirm.errorGeneric");
-        const displayMsg =
-          typeof rawMessage === "string" ? rawMessage : fallbackMsg;
+        const displayMsg = getErrorMessage(error, {
+          fallback: t("deleteAccount.confirm.errorGeneric"),
+        });
         setErrorMessage(displayMsg);
         toast.error(displayMsg);
       }

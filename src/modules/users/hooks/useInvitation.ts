@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { UsersService } from "../services/users.service";
 import type { InviteUserDto } from "../interfaces/dto/invite-user.dto";
 import type { InviteUserRespDto } from "../interfaces/dto/invite-user-resp.dto";
+import i18n from "@/app/i18n/i18n.config";
+import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
 
 export const useInvitation = () => {
   const sendInvitation = useMutation<InviteUserRespDto, unknown, InviteUserDto>(
@@ -15,7 +17,9 @@ export const useInvitation = () => {
       },
       onError: (error: unknown) => {
         console.error(error);
-        toast.error("No se pudo enviar la invitacion", {});
+        toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.users.invite") }),
+      );
       },
     },
   );

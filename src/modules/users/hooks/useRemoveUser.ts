@@ -2,6 +2,8 @@ import { queryClient, queryKeys } from "@/app/api/query-client";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { UsersService } from "../services/users.service";
+import i18n from "@/app/i18n/i18n.config";
+import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
 
 export const useRemoveUser = () => {
   const removeUser = useMutation<void, unknown, string>({
@@ -12,7 +14,9 @@ export const useRemoveUser = () => {
     },
     onError: (error: unknown) => {
       console.error(error);
-      toast.error("No se pudo eliminar el usuario");
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.users.remove") }),
+      );
     },
   });
 

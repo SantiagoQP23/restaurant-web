@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { AccountsService } from "../services/accounts.service";
 import type { UpdateAccountDto } from "../interfaces/dto/update-account.dto";
 import type { Account } from "@/shared/models/account.model";
+import i18n from "@/app/i18n/i18n.config";
+import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
 
 export const useUpdateAccount = () => {
   const updateAccount = useMutation<
@@ -19,7 +21,9 @@ export const useUpdateAccount = () => {
     },
     onError: (error: unknown) => {
       console.error(error);
-      toast.error("No se pudo actualizar la cuenta");
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.accounts.update") }),
+      );
     },
   });
 

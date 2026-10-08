@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { AuthService } from "../services/auth.service";
 import { authRegister } from "../actions/auth.actions";
 import { useAuthStore } from "../store/auth.store";
+import i18n from "@/app/i18n/i18n.config";
+import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
 
 export const useAuth = () => {
   const switchRestaurantMutation = useMutation<LoginRespDto, unknown, string>({
@@ -18,8 +20,10 @@ export const useAuth = () => {
       // setRestaurant(data.currentRestaurant);
       window.location.reload();
     },
-    onError: () => {
-      toast.error("Error al cambiar de restaurante");
+    onError: (error) => {
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.auth.switchRestaurant") }),
+      );
     },
   });
 
@@ -33,7 +37,7 @@ export const useSignup = () => {
 
   return useMutation<
     LoginRespDto,
-    { data: { message: string } },
+    unknown,
     RegisterUserDto
   >({
     mutationFn: async (data: RegisterUserDto) => {
@@ -48,8 +52,10 @@ export const useSignup = () => {
     onSuccess: () => {
       toast.success("Cuenta creada exitosamente");
     },
-    onError: (error: { data: { message: string } }) => {
-      toast.error(error?.data?.message || "Error al registrar el usuario");
+    onError: (error) => {
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.auth.register") }),
+      );
     },
   });
 };

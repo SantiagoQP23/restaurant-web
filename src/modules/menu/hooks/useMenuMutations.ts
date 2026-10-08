@@ -14,6 +14,8 @@ import { CategoriesService } from "../services/categories.service";
 import type { CreateProductDto } from "../interface/dto/create-product.dto";
 import type { UpdateProductDto } from "../interface/dto/update-product.dto";
 import { ProductsService } from "../services/products.service";
+import i18n from "@/app/i18n/i18n.config";
+import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
 
 export const useMenuMutations = () => {
   const { restaurant } = useAuthStore();
@@ -25,8 +27,10 @@ export const useMenuMutations = () => {
         queryKey: [queryKeys.menu.detail(restaurant!.id), "sections"],
       });
     },
-    onError: () => {
-      toast.error("No se pudo crear");
+    onError: (error) => {
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.menu.createSection") }),
+      );
     },
   });
 
@@ -38,8 +42,10 @@ export const useMenuMutations = () => {
         queryKey: [queryKeys.menu.detail(restaurant!.id), "sections"],
       });
     },
-    onError: () => {
-      toast.error("No se pudo actualizar");
+    onError: (error) => {
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.menu.updateSection") }),
+      );
     },
   });
 
@@ -50,8 +56,10 @@ export const useMenuMutations = () => {
         queryKey: [queryKeys.menu.detail(restaurant!.id), "sections"],
       });
     },
-    onError: () => {
-      toast.error("No se pudo crear la categoria");
+    onError: (error) => {
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.menu.createCategory") }),
+      );
     },
   });
 
@@ -63,8 +71,10 @@ export const useMenuMutations = () => {
         queryKey: [queryKeys.menu.detail(restaurant!.id), "sections"],
       });
     },
-    onError: () => {
-      toast.error("No se pudo actualizar la categoria");
+    onError: (error) => {
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.menu.updateCategory") }),
+      );
     },
   });
 
@@ -75,8 +85,10 @@ export const useMenuMutations = () => {
         queryKey: [queryKeys.menu.detail(restaurant!.id), "sections"],
       });
     },
-    onError: () => {
-      toast.error("No se pudo eliminar la categoria");
+    onError: (error) => {
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.menu.deleteCategory") }),
+      );
     },
   });
 
@@ -87,8 +99,10 @@ export const useMenuMutations = () => {
         queryKey: [queryKeys.menu.detail(restaurant!.id), "products"],
       });
     },
-    onError: () => {
-      toast.error("No se pudo crear el producto");
+    onError: (error) => {
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.menu.createProduct") }),
+      );
     },
   });
 
@@ -100,8 +114,10 @@ export const useMenuMutations = () => {
         queryKey: [queryKeys.menu.detail(restaurant!.id), "products"],
       });
     },
-    onError: () => {
-      toast.error("No se pudo actualizar el producto");
+    onError: (error) => {
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.menu.updateProduct") }),
+      );
     },
   });
 

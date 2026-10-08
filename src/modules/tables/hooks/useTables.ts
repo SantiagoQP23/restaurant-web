@@ -5,7 +5,8 @@ import { queryClient, queryKeys } from "@/app/api/query-client";
 import { toast } from "sonner";
 import type { UpdateTableDto } from "../interfaces/dto/update-table.dto";
 import type { CreateTableDto } from "../interfaces/dto/create-table.dto";
-import type { ApiErrorRespDto } from "@/shared/interfaces/dto/api-error-resp.dto";
+import i18n from "@/app/i18n/i18n.config";
+import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
 
 export const useTables = () => {
   const getAllQuery = useQuery({
@@ -13,7 +14,7 @@ export const useTables = () => {
     queryFn: () => TablesService.getAll(),
   });
 
-  const updateTable = useMutation<Table, ApiErrorRespDto, UpdateTableDto>({
+  const updateTable = useMutation<Table, unknown, UpdateTableDto>({
     mutationFn: (data: UpdateTableDto) => TablesService.updateTable(data),
     onSuccess: () => {
       toast.success("Mesa actualizada correctamente");
@@ -22,11 +23,13 @@ export const useTables = () => {
     },
     onError: (error) => {
       console.log("Error updating table", error);
-      toast.error(error.data.message);
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.tables.update") }),
+      );
     },
   });
 
-  const createTable = useMutation<Table, ApiErrorRespDto, CreateTableDto>({
+  const createTable = useMutation<Table, unknown, CreateTableDto>({
     mutationFn: (data: CreateTableDto) => TablesService.createTable(data),
     onSuccess: () => {
       toast.success("Mesa creada correctamente");
@@ -35,7 +38,9 @@ export const useTables = () => {
     },
     onError: (error) => {
       console.log("Error creating table", error);
-      toast.error(error.data.message);
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.tables.create") }),
+      );
     },
   });
 

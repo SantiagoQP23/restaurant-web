@@ -32,18 +32,12 @@ const returnUserToken = (
 };
 
 export const authLogin = async (username: string, password: string) => {
-  try {
-    const { data } = await restaurantApi.post<AuthResponse>("/auth/login", {
-      username,
-      password,
-    });
+  const { data } = await restaurantApi.post<AuthResponse>("/auth/login", {
+    username,
+    password,
+  });
 
-    return returnUserToken(data);
-  } catch (error) {
-    console.log("Auth error", error);
-    // throw new Error('User and/or password not valid');
-    return null;
-  }
+  return returnUserToken(data);
 };
 
 export const authCheckStatus = async () => {
@@ -74,17 +68,12 @@ export const authRegister = async ({
 };
 
 export const authGoogleSignIn = async (idToken: string) => {
-  try {
-    const { data } = await restaurantApi.post<AuthResponse>(
-      "/auth/google-signin",
-      {
-        idToken,
-      },
-    );
+  const { data } = await restaurantApi.post<AuthResponse>(
+    "/auth/google-signin",
+    {
+      idToken,
+    },
+  );
 
-    return returnUserToken(data);
-  } catch (error) {
-    console.log("Google auth error", error);
-    return null;
-  }
+  return returnUserToken(data);
 };
