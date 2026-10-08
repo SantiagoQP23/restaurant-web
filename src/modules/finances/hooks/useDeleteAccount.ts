@@ -2,6 +2,8 @@ import { queryClient, queryKeys } from "@/app/api/query-client";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AccountsService } from "../services/accounts.service";
+import i18n from "@/app/i18n/i18n.config";
+import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
 
 export const useDeleteAccount = () => {
   const deleteAccount = useMutation<void, unknown, number>({
@@ -12,7 +14,9 @@ export const useDeleteAccount = () => {
     },
     onError: (error: unknown) => {
       console.error(error);
-      toast.error("No se pudo eliminar la cuenta");
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.accounts.delete") }),
+      );
     },
   });
 

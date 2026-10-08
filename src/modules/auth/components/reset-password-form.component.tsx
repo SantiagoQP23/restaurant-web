@@ -14,6 +14,8 @@ import {
 } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 import { ResetPasswordService } from "../services/reset-password.service";
+import i18n from "@/app/i18n/i18n.config";
+import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
 
 const resetPasswordSchema = z
   .object({
@@ -61,8 +63,12 @@ export function ResetPasswordForm({
       await ResetPasswordService.resetPassword(token, data.password);
       toast.success("La contraseña ha sido cambiada correctamente");
       navigate({ to: "/auth/login" });
-    } catch {
-      toast.error("Error al cambiar la contraseña");
+    } catch (error) {
+      toast.error(
+        getErrorMessage(error, {
+          fallback: i18n.t("actionErrors.auth.resetPassword"),
+        }),
+      );
     } finally {
       setIsSubmitting(false);
     }

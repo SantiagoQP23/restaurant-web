@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { PaymentMethodsService } from "../services/payment-methods.service";
 import type { UpdatePaymentMethodDto } from "../interfaces/dto/update-payment-method.dto";
 import type { PaymentMethod } from "@/shared/models/payment-method.model";
+import i18n from "@/app/i18n/i18n.config";
+import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
 
 export const useUpdatePaymentMethod = () => {
   const updatePaymentMethod = useMutation<
@@ -19,7 +21,9 @@ export const useUpdatePaymentMethod = () => {
     },
     onError: (error: unknown) => {
       console.error(error);
-      toast.error("No se pudo actualizar el metodo de pago");
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.paymentMethods.update") }),
+      );
     },
   });
 

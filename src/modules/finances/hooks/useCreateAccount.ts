@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { AccountsService } from "../services/accounts.service";
 import type { CreateAccountDto } from "../interfaces/dto/create-account.dto";
 import type { Account } from "@/shared/models/account.model";
+import i18n from "@/app/i18n/i18n.config";
+import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
 
 export const useCreateAccount = () => {
   const createAccount = useMutation<Account, unknown, CreateAccountDto>({
@@ -14,7 +16,9 @@ export const useCreateAccount = () => {
     },
     onError: (error: unknown) => {
       console.error(error);
-      toast.error("No se pudo crear la cuenta");
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.accounts.create") }),
+      );
     },
   });
 

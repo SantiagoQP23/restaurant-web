@@ -5,6 +5,7 @@ import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldGroup } from "@/shared/components/ui/field";
 import { VerifyEmailChangeService } from "../services/verify-email-change.service";
+import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
 
 interface VerifyEmailChangeConfirmProps {
   token: string;
@@ -40,18 +41,9 @@ export function VerifyEmailChangeConfirm({
         await VerifyEmailChangeService.verifyEmailChange(cleanToken);
         setStatus("success");
       } catch (error: unknown) {
-        const response =
-          (error as {
-            status?: number;
-            data?: { message?: string | string[] };
-          }) ?? {};
-        const rawMessage = response.data?.message;
-        const message =
-          typeof rawMessage === "string"
-            ? rawMessage
-            : Array.isArray(rawMessage)
-              ? rawMessage.join(" ")
-              : t("verifyEmailChange.invalidDescription");
+        const message = getErrorMessage(error, {
+          fallback: t("verifyEmailChange.invalidDescription"),
+        });
 
         setStatus("error");
         setErrorMessage(message);

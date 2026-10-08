@@ -65,16 +65,26 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     return true;
   },
 
+  // Si el backend rechaza el login, se marca como no autenticado y se
+  // relanza el error para que la pantalla muestre el motivo.
   login: async (email: string, password: string) => {
-    const resp = await authLogin(email, password);
-
-    return get().changeStatus(resp?.token, resp?.user, resp?.currentRestaurant);
+    try {
+      const resp = await authLogin(email, password);
+      return get().changeStatus(resp.token, resp.user, resp.currentRestaurant);
+    } catch (error) {
+      await get().changeStatus();
+      throw error;
+    }
   },
 
   loginWithGoogle: async (credential: string) => {
-    const resp = await authGoogleSignIn(credential);
-
-    return get().changeStatus(resp?.token, resp?.user, resp?.currentRestaurant);
+    try {
+      const resp = await authGoogleSignIn(credential);
+      return get().changeStatus(resp.token, resp.user, resp.currentRestaurant);
+    } catch (error) {
+      await get().changeStatus();
+      throw error;
+    }
   },
 
   register: async (data) => {

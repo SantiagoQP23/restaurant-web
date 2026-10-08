@@ -5,7 +5,8 @@ import { queryClient } from "@/app/api/query-client";
 import { toast } from "sonner";
 import type { CreateProductionAreaDto } from "../interfaces/dto/create-production-area.dto";
 import type { UpdateProductionAreaDto } from "../interfaces/dto/update-production-area.dto";
-import type { ApiErrorRespDto } from "@/shared/interfaces/dto/api-error-resp.dto";
+import i18n from "@/app/i18n/i18n.config";
+import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
 
 export const useProductionAreas = () => {
   const getAllQuery = useQuery({
@@ -15,7 +16,7 @@ export const useProductionAreas = () => {
 
   const productionAreas = getAllQuery.data ?? [];
 
-  const createProductionArea = useMutation<ProductionArea, ApiErrorRespDto, CreateProductionAreaDto>({
+  const createProductionArea = useMutation<ProductionArea, unknown, CreateProductionAreaDto>({
     mutationFn: (data: CreateProductionAreaDto) => ProductionAreasService.create(data),
     onSuccess: () => {
       toast.success("Área de producción creada correctamente");
@@ -23,11 +24,13 @@ export const useProductionAreas = () => {
     },
     onError: (error) => {
       console.log("Error creating production area", error);
-      toast.error(error.data.message);
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.productionAreas.create") }),
+      );
     },
   });
 
-  const updateProductionArea = useMutation<ProductionArea, ApiErrorRespDto, UpdateProductionAreaDto>({
+  const updateProductionArea = useMutation<ProductionArea, unknown, UpdateProductionAreaDto>({
     mutationFn: (data: UpdateProductionAreaDto) => ProductionAreasService.update(data),
     onSuccess: () => {
       toast.success("Área de producción actualizada correctamente");
@@ -35,11 +38,13 @@ export const useProductionAreas = () => {
     },
     onError: (error) => {
       console.log("Error updating production area", error);
-      toast.error(error.data.message);
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.productionAreas.update") }),
+      );
     },
   });
 
-  const deleteProductionArea = useMutation<void, ApiErrorRespDto, number>({
+  const deleteProductionArea = useMutation<void, unknown, number>({
     mutationFn: (id: number) => ProductionAreasService.delete(id),
     onSuccess: () => {
       toast.success("Área de producción eliminada correctamente");
@@ -47,7 +52,9 @@ export const useProductionAreas = () => {
     },
     onError: (error) => {
       console.log("Error deleting production area", error);
-      toast.error(error.data.message);
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.productionAreas.delete") }),
+      );
     },
   });
 

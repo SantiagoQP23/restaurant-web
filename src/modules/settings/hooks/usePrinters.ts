@@ -5,7 +5,8 @@ import { queryClient } from "@/app/api/query-client";
 import { toast } from "sonner";
 import type { CreatePrinterDto } from "../interfaces/dto/create-printer.dto";
 import type { UpdatePrinterDto } from "../interfaces/dto/update-printer.dto";
-import type { ApiErrorRespDto } from "@/shared/interfaces/dto/api-error-resp.dto";
+import i18n from "@/app/i18n/i18n.config";
+import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
 
 export const usePrinters = () => {
   const getAllQuery = useQuery({
@@ -13,7 +14,7 @@ export const usePrinters = () => {
     queryFn: () => PrintersService.getAll(),
   });
 
-  const createPrinter = useMutation<Printer, ApiErrorRespDto, CreatePrinterDto>(
+  const createPrinter = useMutation<Printer, unknown, CreatePrinterDto>(
     {
       mutationFn: (data: CreatePrinterDto) => PrintersService.create(data),
       onSuccess: () => {
@@ -22,12 +23,14 @@ export const usePrinters = () => {
       },
       onError: (error) => {
         console.log("Error creating printer", error);
-        toast.error(error.data.message);
+        toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.printers.create") }),
+      );
       },
     },
   );
 
-  const updatePrinter = useMutation<Printer, ApiErrorRespDto, UpdatePrinterDto>(
+  const updatePrinter = useMutation<Printer, unknown, UpdatePrinterDto>(
     {
       mutationFn: (data: UpdatePrinterDto) => PrintersService.update(data),
       onSuccess: () => {
@@ -37,12 +40,14 @@ export const usePrinters = () => {
       },
       onError: (error) => {
         console.log("Error updating printer", error);
-        toast.error(error.data.message);
+        toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.printers.update") }),
+      );
       },
     },
   );
 
-  const deletePrinter = useMutation<void, ApiErrorRespDto, string>({
+  const deletePrinter = useMutation<void, unknown, string>({
     mutationFn: (id: string) => PrintersService.delete(id),
     onSuccess: () => {
       toast.success("Impresora eliminada correctamente");
@@ -51,18 +56,22 @@ export const usePrinters = () => {
     },
     onError: (error) => {
       console.log("Error deleting printer", error);
-      toast.error(error.data.message);
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.printers.delete") }),
+      );
     },
   });
 
-  const testPrinter = useMutation<void, ApiErrorRespDto, string>({
+  const testPrinter = useMutation<void, unknown, string>({
     mutationFn: (id: string) => PrintersService.test(id),
     onSuccess: () => {
       toast.success("Impresora responde correctamente");
     },
     onError: (error) => {
       console.log("Error testing printer", error);
-      toast.error("No se pudo conectar con la impresora");
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.printers.test") }),
+      );
     },
   });
 

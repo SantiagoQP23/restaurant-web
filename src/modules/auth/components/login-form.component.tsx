@@ -16,6 +16,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { toast } from "sonner";
 import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
+import i18n from "@/app/i18n/i18n.config";
+import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
 
 const loginSchema = z.object({
   username: z.string().min(1, { message: "" }),
@@ -47,10 +49,14 @@ export function LoginForm({
 
   const onSubmit = async (data: LoginFormData) => {
     console.log(data, errors);
-    const wasSuccessful = await login(
-      data.username.trim(),
-      data.password.trim(),
-    );
+    const fallback = i18n.t("actionErrors.auth.login");
+    let wasSuccessful: boolean;
+    try {
+      wasSuccessful = await login(data.username.trim(), data.password.trim());
+    } catch (error) {
+      toast.error(getErrorMessage(error, { fallback }));
+      return;
+    }
 
     const user = useAuthStore.getState().user;
 
@@ -64,17 +70,27 @@ export function LoginForm({
       return;
     }
 
-    toast.error("Credenciales inválidas. Por favor, inténtalo de nuevo.");
+    toast.error(fallback);
   };
 
   const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
     const credential = credentialResponse.credential;
     if (!credential) {
-      toast.error("Error al iniciar sesión con Google.");
+      toast.error(i18n.t("actionErrors.auth.googleLogin"));
       return;
     }
 
-    const wasSuccessful = await loginWithGoogle(credential);
+    let wasSuccessful: boolean;
+    try {
+      wasSuccessful = await loginWithGoogle(credential);
+    } catch (error) {
+      toast.error(
+        getErrorMessage(error, {
+          fallback: i18n.t("actionErrors.auth.googleLogin"),
+        }),
+      );
+      return;
+    }
     const user = useAuthStore.getState().user;
 
     if (wasSuccessful) {
@@ -86,11 +102,11 @@ export function LoginForm({
       return;
     }
 
-    toast.error("Error al iniciar sesión con Google.");
+    toast.error(i18n.t("actionErrors.auth.googleLogin"));
   };
 
   const handleGoogleError = () => {
-    toast.error("Error al iniciar sesión con Google.");
+    toast.error(i18n.t("actionErrors.auth.googleLogin"));
   };
 
   return (

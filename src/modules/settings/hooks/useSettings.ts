@@ -4,7 +4,8 @@ import { SettingsService } from "../services/settings.service";
 import { queryClient } from "@/app/api/query-client";
 import { toast } from "sonner";
 import type { SettingsResponse, UpdateSettingsDto } from "../interfaces/dto/settings-response.dto";
-import type { ApiErrorRespDto } from "@/shared/interfaces/dto/api-error-resp.dto";
+import i18n from "@/app/i18n/i18n.config";
+import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
 
 const DEFAULT_SETTINGS: SettingsResponse = {
   ORDER_PREP_TIME: 15,
@@ -29,7 +30,7 @@ export const useSettings = () => {
     }
   }, [getAllQuery.data, getAllQuery.isSuccess]);
 
-  const updateSettings = useMutation<SettingsResponse, ApiErrorRespDto, UpdateSettingsDto>({
+  const updateSettings = useMutation<SettingsResponse, unknown, UpdateSettingsDto>({
     mutationFn: (data: UpdateSettingsDto) => SettingsService.updateSettings(data),
     onSuccess: (data) => {
       queryClient.setQueryData(["settings"], data);
@@ -37,7 +38,9 @@ export const useSettings = () => {
     },
     onError: (error) => {
       console.log("Error saving settings", error);
-      toast.error("Error al guardar preferencias");
+      toast.error(
+        getErrorMessage(error, { fallback: i18n.t("actionErrors.settings.update") }),
+      );
     },
   });
 

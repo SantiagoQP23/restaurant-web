@@ -14,6 +14,8 @@ import {
 } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 import { ResetPasswordService } from "../services/reset-password.service";
+import i18n from "@/app/i18n/i18n.config";
+import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email("Ingresa un email válido."),
@@ -42,8 +44,12 @@ export function ForgotPasswordForm({
     try {
       await ResetPasswordService.requestResetPassword(data.email);
       toast.success("El correo fue enviado correctamente");
-    } catch {
-      toast.error("No se encontró un usuario con ese email");
+    } catch (error) {
+      toast.error(
+        getErrorMessage(error, {
+          fallback: i18n.t("actionErrors.auth.forgotPassword"),
+        }),
+      );
     } finally {
       setIsSubmitting(false);
     }

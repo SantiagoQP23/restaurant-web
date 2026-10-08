@@ -1,4 +1,10 @@
 import restaurantApi from "@/app/api/restaurant-api";
+import { getApiError } from "@/app/api/api-response";
+
+export const AccountDeletionErrorCodes = {
+  TOKEN_INVALID: "ACCOUNT_DELETION_TOKEN_INVALID",
+  TOKEN_USED: "ACCOUNT_DELETION_TOKEN_USED",
+} as const;
 
 export type TokenValidationReason = "invalid" | "expired" | "used";
 
@@ -30,46 +36,18 @@ export class DeleteAccountService {
         valid: response.data?.valid ?? true,
       };
     } catch (error: unknown) {
-      const response =
-        (error as {
-          status?: number;
-          data?: { message?: string | string[] };
-        }) ?? {};
-      const status = response.status;
-      const rawMessage = response.data?.message;
-      const message = (
-        typeof rawMessage === "string"
-          ? rawMessage
-          : Array.isArray(rawMessage)
-            ? rawMessage.join(" ")
-            : ""
-      ).toLowerCase();
+      const { code, status, message } = getApiError(error);
 
-      if (message.includes("used") || message.includes("usado")) {
-        return {
-          valid: false,
-          reason: "used",
-          message:
-            typeof rawMessage === "string" ? rawMessage : undefined,
-        };
+      if (code === AccountDeletionErrorCodes.TOKEN_USED) {
+        return { valid: false, reason: "used", message };
       }
 
-      if (message.includes("expire") || message.includes("expirad")) {
-        return {
-          valid: false,
-          reason: "expired",
-          message:
-            typeof rawMessage === "string" ? rawMessage : undefined,
-        };
-      }
-
-      if (status === 401 || status === 400) {
-        return {
-          valid: false,
-          reason: "invalid",
-          message:
-            typeof rawMessage === "string" ? rawMessage : undefined,
-        };
+      if (
+        code === AccountDeletionErrorCodes.TOKEN_INVALID ||
+        status === 401 ||
+        status === 400
+      ) {
+        return { valid: false, reason: "invalid", message };
       }
 
       // If backend has not yet implemented GET /account-deletion/validate (404),
