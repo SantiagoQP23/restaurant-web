@@ -3,7 +3,20 @@ import type { Category } from "@/shared/models/category.model";
 import type { CreateCategoryDto } from "../interface/dto/create-category.dto";
 import type { UpdateCategoryDto } from "../interface/dto/update-category.dto";
 
+export type CategoryWithSection = Omit<Category, "products"> & {
+  sectionId: string;
+};
+
 export class CategoriesService {
+  static getAll = async (
+    restaurantId: string,
+  ): Promise<CategoryWithSection[]> => {
+    const resp = await restaurantApi.get<CategoryWithSection[]>(
+      `/categories/${restaurantId}`,
+    );
+    return resp.data;
+  };
+
   static create = async (data: CreateCategoryDto): Promise<Category> => {
     const resp = await restaurantApi.post<Category>("/categories", data);
     return resp.data;
