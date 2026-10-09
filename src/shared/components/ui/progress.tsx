@@ -1,20 +1,65 @@
 import * as React from "react"
 import { Progress as ProgressPrimitive } from "radix-ui"
+import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/shared/lib/utils"
+
+const progressVariants = cva(
+  "relative flex h-3 w-full items-center",
+  {
+    variants: {
+      variant: {
+        default: "overflow-x-hidden rounded-full bg-muted",
+        segmented: "gap-1",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
+
+type ProgressProps = React.ComponentProps<typeof ProgressPrimitive.Root> &
+  VariantProps<typeof progressVariants> & {
+    segments?: number
+  }
 
 function Progress({
   className,
   value,
+  variant = "default",
+  segments,
   ...props
-}: React.ComponentProps<typeof ProgressPrimitive.Root>) {
+}: ProgressProps) {
+  if (variant === "segmented" && segments && segments > 0) {
+    const filledSegments = Math.round(((value || 0) / 100) * segments)
+
+    return (
+      <ProgressPrimitive.Root
+        data-slot="progress"
+        value={value}
+        className={cn(progressVariants({ variant }), className)}
+        {...props}
+      >
+        {Array.from({ length: segments }, (_, index) => (
+          <span
+            key={index}
+            data-slot="progress-segment"
+            className={cn(
+              "h-full flex-1 rounded-full bg-muted transition-all",
+              index < filledSegments && "bg-primary"
+            )}
+          />
+        ))}
+      </ProgressPrimitive.Root>
+    )
+  }
+
   return (
     <ProgressPrimitive.Root
       data-slot="progress"
-      className={cn(
-        "relative flex h-3 w-full items-center overflow-x-hidden rounded-full bg-muted",
-        className
-      )}
+      value={value}
+      className={cn(progressVariants({ variant }), className)}
       {...props}
     >
       <ProgressPrimitive.Indicator
@@ -26,4 +71,4 @@ function Progress({
   )
 }
 
-export { Progress }
+export { Progress, progressVariants }

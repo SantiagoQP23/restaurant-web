@@ -33,6 +33,7 @@ import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { NavUser } from "./nav-user";
 import { useContext } from "react";
 import { SocketContext } from "../context/SocketContext";
+import { Badge } from "@/shared/components/ui/badge";
 
 const navigation = [
   { label: "Inicio", icon: Home, to: "/app/home" },
@@ -104,9 +105,7 @@ export const AppLayout = () => {
         <header className="flex h-14 items-center gap-2 border-b px-4">
           <SidebarTrigger />
 
-          <span className="">
-            Status {online ? "Connected" : "Disconnected"}
-          </span>
+          {!online && <Badge variant="destructive">Sin conexión</Badge>}
           {/* <span className="text-sm font-medium text-muted-foreground"> */}
           {/*   Panel principal */}
           {/* </span> */}

@@ -2,6 +2,7 @@ import { ArrowRight, Plus, Sliders } from "lucide-react";
 import { OrderDetailStatus, type Order } from "@/shared/models/order.model";
 import type { OrderDetail } from "@/shared/models/order-detail.model";
 import type { Product } from "@/shared/models/product.model";
+import type { ProductOption } from "@/shared/models/product-option.model";
 import { Badge } from "@/shared/components/ui/badge";
 import {
   Card,
@@ -27,7 +28,12 @@ type ProductColumn = {
     product: Product;
     totalQuantity: number;
     totalReady: number;
-    entries: Array<{ order: Order; detail: OrderDetail }>;
+    variants: Array<{
+      productOption?: ProductOption;
+      totalQuantity: number;
+      totalReady: number;
+      entries: Array<{ order: Order; detail: OrderDetail }>;
+    }>;
   }>;
 };
 
@@ -57,117 +63,150 @@ export const ProductionProductsBoardView = ({
             </span>
           </div>
           <div className="flex flex-col gap-3">
-            {column.products.map((productEntry) => (
-              <Card key={`${productEntry.product.id}-${column.key}`} size="sm">
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <CardTitle>{productEntry.product.name}</CardTitle>
-                      <CardDescription>
-                        Total: {productEntry.totalQuantity} · Listo:{" "}
-                        {productEntry.totalReady}
-                      </CardDescription>
-                    </div>
-                    {column.key !== OrderDetailStatus.READY && (
-                      <Badge variant="outline">
-                        {productEntry.entries.length} pedidos
-                      </Badge>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="flex flex-col gap-3">
-                  {productEntry.entries.map(({ order, detail }) => (
-                    <div key={detail.id} className="flex flex-col gap-1">
-                      <div className="group flex items-start justify-between gap-3 text-sm">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`mt-1 size-2.5 shrink-0 rounded-full ${detailStatusDotClass(
-                              detail.status,
-                            )}`}
-                          />
-                          <div>
-                            <div className="font-medium">
-                              {detail.quantity}x · {orderTableLabel(order)}
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              #{order.num} ·{" "}
-                              {formatStringDate(order.createdAt, "HH:mm")} ·{" "}
-                              {order.user.person.firstName}{" "}
-                              {order.user.person.lastName}
-                            </div>
-                          </div>
-                        </div>
-                        {detail.status !== OrderDetailStatus.READY && (
-                          <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon-xs"
-                              aria-label="Sumar listo"
-                              onClick={
-                                () => {}
-                                // onIncrementReady(order.id, detail.id)
-                              }
-                            >
-                              <Plus />
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon-xs"
-                              aria-label="Ajustar listo"
-                              onClick={
-                                () => {}
-                                // NiceModal.show(editReadyQuantityModal, {
-                                //   detail,
-                                //   onIncrement: () =>
-                                //     onIncrementReady(order.id, detail.id),
-                                //   onDecrement: () =>
-                                //     onDecrementReady(order.id, detail.id),
-                                // })
-                              }
-                            >
-                              <Sliders />
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon-xs"
-                              aria-label={
-                                detail.status === OrderDetailStatus.PENDING
-                                  ? "Marcar como preparando"
-                                  : "Marcar como listo"
-                              }
-                            >
-                              <ArrowRight />
-                            </Button>
-                          </div>
-                        )}
+            {column.products.map((productEntry) => {
+              const pedidosCount = productEntry.variants.reduce(
+                (total, variant) => total + variant.entries.length,
+                0,
+              );
+              const showVariantLabels = productEntry.variants.length > 1;
+
+              return (
+                <Card key={`${productEntry.product.id}-${column.key}`} size="sm">
+                  <CardHeader>
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <CardTitle>{productEntry.product.name}</CardTitle>
+                        <CardDescription>
+                          Total: {productEntry.totalQuantity} · Listo:{" "}
+                          {productEntry.totalReady}
+                        </CardDescription>
                       </div>
-                      {detail.quantity > 1 && detail.readyQuantity > 0 && (
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-                            <span>Listo</span>
+                      {column.key !== OrderDetailStatus.READY && (
+                        <Badge variant="outline">{pedidosCount} pedidos</Badge>
+                      )}
+                    </div>
+                  </CardHeader>
+                  <CardContent className="flex flex-col gap-4">
+                    {productEntry.variants.map((variant) => (
+                      <div
+                        key={variant.productOption?.id ?? "base"}
+                        className="flex flex-col gap-3 border-t border-border/60 pt-3 first:border-0 first:pt-0"
+                      >
+                        {showVariantLabels && (
+                          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground">
                             <span>
-                              {detail.readyQuantity}/{detail.quantity}
+                              {variant.productOption?.name ?? "Sin variante"}
+                            </span>
+                            <span>
+                              {variant.totalReady}/{variant.totalQuantity}
                             </span>
                           </div>
-                          <Progress
-                            value={progressValue(detail)}
-                            className="h-1"
-                          />
-                        </div>
-                      )}
-                      {detail.description && (
-                        <span className="text-xs text-muted-foreground">
-                          Nota: {detail.description}
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            ))}
+                        )}
+                        {variant.entries.map(({ order, detail }) => (
+                          <div
+                            key={detail.id}
+                            className="flex flex-col gap-1"
+                          >
+                            <div className="group flex items-start justify-between gap-3 text-sm">
+                              <div className="flex items-center gap-2">
+                                <span
+                                  className={`mt-1 size-2.5 shrink-0 rounded-full ${detailStatusDotClass(
+                                    detail.status,
+                                  )}`}
+                                />
+                                <div>
+                                  <div className="font-medium">
+                                    {detail.quantity}x ·{" "}
+                                    {orderTableLabel(order)}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">
+                                    #{order.num} ·{" "}
+                                    {formatStringDate(
+                                      order.createdAt,
+                                      "HH:mm",
+                                    )}{" "}
+                                    · {order.user.person.firstName}{" "}
+                                    {order.user.person.lastName}
+                                  </div>
+                                </div>
+                              </div>
+                              {detail.status !== OrderDetailStatus.READY && (
+                                <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon-xs"
+                                    aria-label="Sumar listo"
+                                    onClick={
+                                      () => {}
+                                      // onIncrementReady(order.id, detail.id)
+                                    }
+                                  >
+                                    <Plus />
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon-xs"
+                                    aria-label="Ajustar listo"
+                                    onClick={
+                                      () => {}
+                                      // NiceModal.show(editReadyQuantityModal, {
+                                      //   detail,
+                                      //   onIncrement: () =>
+                                      //     onIncrementReady(order.id, detail.id),
+                                      //   onDecrement: () =>
+                                      //     onDecrementReady(order.id, detail.id),
+                                      // })
+                                    }
+                                  >
+                                    <Sliders />
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon-xs"
+                                    aria-label={
+                                      detail.status ===
+                                      OrderDetailStatus.PENDING
+                                        ? "Marcar como preparando"
+                                        : "Marcar como listo"
+                                    }
+                                  >
+                                    <ArrowRight />
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                            {detail.quantity > 1 &&
+                              detail.readyQuantity > 0 && (
+                                <div className="flex flex-col gap-1">
+                                  <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                                    <span>Listo</span>
+                                    <span>
+                                      {detail.readyQuantity}/
+                                      {detail.quantity}
+                                    </span>
+                                  </div>
+                                  <Progress
+                                    value={progressValue(detail)}
+                                    className="h-1"
+                                  />
+                                </div>
+                              )}
+                            {detail.description && (
+                              <span className="text-xs text-muted-foreground">
+                                Nota: {detail.description}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </section>
       ))}

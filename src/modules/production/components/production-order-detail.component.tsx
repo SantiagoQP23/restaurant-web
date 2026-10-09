@@ -244,10 +244,12 @@ export const ProductionOrderDetail = ({
                 <MoreVertical />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent
+              align="end"
+              onClick={(event) => event.stopPropagation()}
+            >
               <DropdownMenuItem
-                onSelect={(event) => {
-                  event.stopPropagation();
+                onSelect={() => {
                   onUpdateReady(detail.readyQuantity + 1);
                 }}
               >
@@ -256,8 +258,7 @@ export const ProductionOrderDetail = ({
               </DropdownMenuItem>
 
               <DropdownMenuItem
-                onSelect={(event) => {
-                  event.stopPropagation();
+                onSelect={() => {
                   NiceModal.show(ProductionEditOrderDetailDialog, {
                     detail,
                     onUpdateQuantity: onUpdateReady,
@@ -270,8 +271,7 @@ export const ProductionOrderDetail = ({
 
               {detail.status === OrderDetailStatus.IN_PROGRESS && (
                 <DropdownMenuItem
-                  onSelect={(event) => {
-                    event.stopPropagation();
+                  onSelect={() => {
                     onStopPreparation();
                   }}
                 >
@@ -281,8 +281,7 @@ export const ProductionOrderDetail = ({
               )}
 
               <DropdownMenuItem
-                onSelect={(event) => {
-                  event.stopPropagation();
+                onSelect={() => {
                   onAdvanceDetail();
                 }}
               >
@@ -314,7 +313,12 @@ export const ProductionOrderDetail = ({
               {detail.readyQuantity}/{detail.quantity}
             </span>
           </div>
-          <Progress value={progressValue(detail)} className="h-1" />
+          <Progress
+            value={progressValue(detail)}
+            variant="segmented"
+            segments={detail.quantity}
+            className="h-1.5 w-24"
+          />
         </div>
       )}
       {recentUpdateLabel && (

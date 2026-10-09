@@ -1,6 +1,7 @@
 import { OrderDetailStatus, type Order } from "@/shared/models/order.model";
 import type { OrderDetail } from "@/shared/models/order-detail.model";
 import type { Product } from "@/shared/models/product.model";
+import type { ProductOption } from "@/shared/models/product-option.model";
 import type { ProductionArea } from "@/shared/models/production-area.model";
 import {
   Select,
@@ -116,26 +117,48 @@ export const ProductionPage = () => {
 
       const groupedByProduct = detailEntries.reduce(
         (acc, entry) => {
-          const key = entry.detail.product.id;
-          if (!acc.has(key)) {
-            acc.set(key, {
+          const productKey = entry.detail.product.id;
+          if (!acc.has(productKey)) {
+            acc.set(productKey, {
               product: entry.detail.product,
               totalQuantity: 0,
               totalReady: 0,
-              entries: [] as Array<{
-                order: Order;
-                detail: OrderDetail;
-              }>,
+              variants: new Map<
+                string,
+                {
+                  productOption: ProductOption | undefined;
+                  totalQuantity: number;
+                  totalReady: number;
+                  entries: Array<{ order: Order; detail: OrderDetail }>;
+                }
+              >(),
             });
           }
-          const current = acc.get(key);
-          if (!current) {
+          const product = acc.get(productKey);
+          if (!product) {
             return acc;
           }
-          current.totalQuantity +=
+          const pendingQuantity =
             entry.detail.quantity - entry.detail.qtyDelivered;
-          current.totalReady += entry.detail.readyQuantity;
-          current.entries.push(entry);
+          product.totalQuantity += pendingQuantity;
+          product.totalReady += entry.detail.readyQuantity;
+
+          const variantKey = entry.detail.productOption?.id ?? "base";
+          if (!product.variants.has(variantKey)) {
+            product.variants.set(variantKey, {
+              productOption: entry.detail.productOption,
+              totalQuantity: 0,
+              totalReady: 0,
+              entries: [],
+            });
+          }
+          const variant = product.variants.get(variantKey);
+          if (!variant) {
+            return acc;
+          }
+          variant.totalQuantity += pendingQuantity;
+          variant.totalReady += entry.detail.readyQuantity;
+          variant.entries.push(entry);
           return acc;
         },
         new Map<
@@ -144,14 +167,25 @@ export const ProductionPage = () => {
             product: Product;
             totalQuantity: number;
             totalReady: number;
-            entries: Array<{ order: Order; detail: OrderDetail }>;
+            variants: Map<
+              string,
+              {
+                productOption: ProductOption | undefined;
+                totalQuantity: number;
+                totalReady: number;
+                entries: Array<{ order: Order; detail: OrderDetail }>;
+              }
+            >;
           }
         >(),
       );
 
       return {
         ...column,
-        products: Array.from(groupedByProduct.values()),
+        products: Array.from(groupedByProduct.values()).map((product) => ({
+          ...product,
+          variants: Array.from(product.variants.values()),
+        })),
       };
     });
   }, [orders, selectedAreaId, normalizedQuery]);
