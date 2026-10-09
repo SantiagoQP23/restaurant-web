@@ -143,7 +143,7 @@ export const ProductionPage = () => {
           product.totalQuantity += pendingQuantity;
           product.totalReady += entry.detail.readyQuantity;
 
-          const variantKey = entry.detail.productOption?.id ?? "base";
+          const variantKey = String(entry.detail.productOption?.id ?? "base");
           if (!product.variants.has(variantKey)) {
             product.variants.set(variantKey, {
               productOption: entry.detail.productOption,
