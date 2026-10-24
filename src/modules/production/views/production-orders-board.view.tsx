@@ -1,6 +1,6 @@
 import { OrderDetailStatus, type Order } from "@/shared/models/order.model";
 import type { OrderDetail } from "@/shared/models/order-detail.model";
-import { Badge } from "@/shared/components/ui/badge";
+import { Badge, type BadgeVariant } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import { statusLabel } from "../pages/production.views.helpers";
 import {
@@ -16,7 +16,7 @@ import type { UpdateMultipleOrderDetailsStatusDto } from "@/modules/orders/inter
 type BoardColumn = {
   key: OrderDetailStatus;
   label: string;
-  accent: string;
+  variant: BadgeVariant;
   entries: Array<{ order: Order; details: OrderDetail[] }>;
 };
 
@@ -33,15 +33,15 @@ const deliveryElapsedMinutes = (deliveryTime: string) => {
   return Math.max(0, Math.round(diffMs / 60000));
 };
 
-const deliveryBadgeClass = (deliveryTime: string) => {
+const deliveryBadgeVariant = (deliveryTime: string): BadgeVariant => {
   const elapsedMinutes = deliveryElapsedMinutes(deliveryTime);
   if (elapsedMinutes > 30) {
-    return "bg-rose-100 text-rose-700";
+    return "error";
   }
   if (elapsedMinutes > 10) {
-    return "bg-amber-100 text-amber-700";
+    return "warning";
   }
-  return "bg-emerald-100 text-emerald-700";
+  return "success";
 };
 
 export const ProductionOrdersBoardView = ({
@@ -71,31 +71,26 @@ export const ProductionOrdersBoardView = ({
         {grouped.map((column) => (
           <section
             key={column.key}
-            className="flex flex-col gap-4 rounded-4xl border border-border/60 bg-muted/30 p-4 min-w-[320px] flex-1"
+            className="flex flex-col gap-4 rounded-md bg-surface-container-low p-4 min-w-[320px] flex-1"
           >
             <div className="flex items-center justify-between">
               <div className="text-sm font-semibold">{column.label}</div>
-              <span
-                className={`rounded-full px-2 py-1 text-xs font-medium ${column.accent}`}
-              >
+              <Badge variant={column.variant}>
                 {column.entries.reduce(
                   (total, entry) => total + entry.details.length,
                   0,
                 )}
-              </span>
+              </Badge>
             </div>
             <div className="flex flex-col gap-3">
               {column.entries.map(({ order, details }) => {
                 return (
                   <div
                     key={`${order.id}-${column.key}`}
-                    className="flex flex-col gap-2 rounded-lg border border-dashed border-border/60 bg-white/60 p-3"
+                    className="flex flex-col gap-2 rounded-md border border-border bg-background p-3"
                   >
                     <div className="flex items-center justify-center">
-                      <Badge
-                        className={deliveryBadgeClass(order.deliveryTime)}
-                        variant="secondary"
-                      >
+                      <Badge variant={deliveryBadgeVariant(order.deliveryTime)}>
                         {formatMinutesFromNow(order.deliveryTime, now)}
                       </Badge>
                     </div>

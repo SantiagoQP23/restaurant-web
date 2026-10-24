@@ -192,7 +192,7 @@ export const MenuProductCard = ({
           product.options.map((option) => (
             <div
               key={option.id}
-              className="flex items-center gap-1 rounded-full border border-border/60 px-2 py-1 text-xs"
+              className="flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs"
             >
               <span>
                 {option.name}

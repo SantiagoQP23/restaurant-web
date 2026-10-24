@@ -37,7 +37,7 @@ export const ProductsPage = () => {
     <div className="flex min-h-svh flex-col p-6 md:p-10">
       <div className="flex flex-col gap-8">
         <div>
-          <h1 className="text-2xl font-bold">Productos</h1>
+          <h1 className="text-2xl font-semibold">Productos</h1>
           <p className="text-sm text-muted-foreground">
             Agrega productos dentro de cada categoria.
           </p>
@@ -51,7 +51,7 @@ export const ProductsPage = () => {
               </span>
             </div>
             {allProducts.length === 0 ? (
-              <div className="rounded-3xl border border-dashed px-4 py-10 text-center text-sm text-muted-foreground">
+              <div className="rounded-md border border-dashed px-4 py-10 text-center text-sm text-muted-foreground">
                 No hay productos registrados.
               </div>
             ) : (
@@ -120,7 +120,7 @@ export const ProductsPage = () => {
                 {menu.sections.length} secciones
               </p>
             </div>
-            <div className="rounded-3xl border border-border/60 bg-card">
+            <div className="rounded-md border border-border/60 bg-card">
               {menu.sections.length === 0 ? (
                 <div className="px-4 py-6 text-center text-sm text-muted-foreground">
                   No hay secciones creadas.
@@ -142,7 +142,7 @@ export const ProductsPage = () => {
                           section.categories.map((category, categoryIndex) => (
                             <div
                               key={`${category.name}-${categoryIndex}`}
-                              className="rounded-2xl border border-border/60 px-3 py-2 text-xs"
+                              className="rounded-md border border-border/60 px-3 py-2 text-xs"
                             >
                               <div className="font-medium">{category.name}</div>
                               <div className="text-muted-foreground">

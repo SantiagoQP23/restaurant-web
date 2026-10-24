@@ -54,7 +54,7 @@ export const SettingsLayout = () => {
       </div>
       <div className="flex flex-1 flex-col gap-6 lg:flex-row">
         <aside className="w-full lg:w-64">
-          <nav className="rounded-3xl border border-border/60 bg-card p-2">
+          <nav className="rounded-md border border-border/60 bg-card p-2">
             <div className="flex flex-col gap-1">
               {settingsOptions.map((option) => {
                 const isActive =
@@ -66,10 +66,10 @@ export const SettingsLayout = () => {
                     key={option.title}
                     to={option.to}
                     className={cn(
-                      "rounded-2xl px-3 py-2 text-sm transition-colors",
+                      "rounded-md px-3 py-2 text-sm transition-colors",
                       isActive
-                        ? "bg-muted text-foreground"
-                        : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                        ? "bg-secondary text-secondary-foreground"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
                     )}
                   >
                     <div className="font-medium text-foreground">

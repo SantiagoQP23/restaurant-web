@@ -50,7 +50,7 @@ export const TablesSetupPage = () => {
       <div className="flex flex-1 flex-col gap-6 w-full max-w-7xl mx-auto">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold">Mesas</h1>
+            <h1 className="text-2xl font-semibold">Mesas</h1>
             <p className="text-sm text-muted-foreground">
               Gestiona las mesas activas y crea pedidos rapidamente.
             </p>
@@ -58,7 +58,6 @@ export const TablesSetupPage = () => {
           <Button
             type="button"
             variant="outline"
-            className="rounded-full"
             onClick={() =>
               NiceModal.show(TableFormDialog, {
                 title: "Crear mesa",
@@ -93,7 +92,7 @@ export const TablesSetupPage = () => {
         </div>
 
         <div className="flex justify-end">
-          <Button asChild className="rounded-full px-6">
+          <Button asChild className="px-6">
             <Link to="/setup/payment-methods">Continuar</Link>
           </Button>
         </div>

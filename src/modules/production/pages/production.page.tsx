@@ -37,17 +37,17 @@ const boardColumns = [
   {
     key: OrderDetailStatus.PENDING,
     label: "Pendiente",
-    accent: "bg-amber-100 text-amber-700",
+    variant: "warning",
   },
   {
     key: OrderDetailStatus.IN_PROGRESS,
     label: "Preparando",
-    accent: "bg-sky-100 text-sky-700",
+    variant: "info",
   },
   {
     key: OrderDetailStatus.READY,
     label: "Listo",
-    accent: "bg-emerald-100 text-emerald-700",
+    variant: "success",
   },
 ] as const;
 
@@ -222,7 +222,7 @@ export const ProductionPage = () => {
     <div className="flex min-h-svh flex-col gap-6 p-6 md:p-10">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Producción</h1>
+          <h1 className="text-2xl font-semibold">Producción</h1>
           <p className="text-sm text-muted-foreground">
             Organiza los pedidos por estado de preparación.
           </p>
@@ -234,7 +234,7 @@ export const ProductionPage = () => {
             onClick={() => setIsCancelledOpen(true)}
           >
             Cancelados
-            <Badge className="ml-2" variant="secondary">
+            <Badge className="ml-2" variant="neutral">
               {cancelledDetails.length}
             </Badge>
           </Button>
@@ -283,14 +283,14 @@ export const ProductionPage = () => {
           </DialogHeader>
           <div className="flex max-h-[60vh] flex-col gap-3 overflow-y-auto">
             {cancelledDetails.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-border/70 p-6 text-center text-sm text-muted-foreground">
+              <div className="rounded-md border border-dashed border-border/70 p-6 text-center text-sm text-muted-foreground">
                 No hay productos cancelados en esta area.
               </div>
             ) : (
               cancelledDetails.map(({ order, detail }) => (
                 <div
                   key={detail.id}
-                  className="flex flex-col gap-2 rounded-lg border border-border/60 bg-muted/20 p-3"
+                  className="flex flex-col gap-2 rounded-md border border-border/60 bg-muted/20 p-3"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="text-sm font-semibold">

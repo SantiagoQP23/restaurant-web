@@ -19,7 +19,7 @@ export const MenuSetupSearch = ({
       placeholder={placeholder}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="pl-9 rounded-full"
+      className="pl-9"
     />
   </div>
 );

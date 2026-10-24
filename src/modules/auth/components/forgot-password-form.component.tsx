@@ -66,7 +66,7 @@ export function ForgotPasswordForm({
           <div className="flex size-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
             <LockKeyhole className="size-5" />
           </div>
-          <h1 className="text-2xl font-bold">Olvidé mi contraseña</h1>
+          <h1 className="text-2xl font-semibold">Olvidé mi contraseña</h1>
           <p className="text-sm text-muted-foreground">
             Ingresa tu correo y te enviaremos instrucciones para restablecer tu
             contraseña.

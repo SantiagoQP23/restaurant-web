@@ -74,7 +74,7 @@ export const CategoryAccordion = ({
     <Collapsible open={isOpen} onOpenChange={onToggle}>
       <div
         className={cn(
-          "rounded-lg border border-border/40 overflow-hidden",
+          "rounded-md border border-border/40 overflow-hidden",
           category.isActive ? "border-border" : "border-border/50 opacity-70",
         )}
       >
@@ -199,7 +199,7 @@ export const CategoryAccordion = ({
         <CollapsibleContent>
           <div className="px-3 pb-3 flex flex-col gap-2">
             {products.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-border/40 px-3 py-4 text-xs text-muted-foreground text-center">
+              <div className="rounded-md border border-dashed border-border/40 px-3 py-4 text-xs text-muted-foreground text-center">
                 {isLoadingProducts
                   ? "Cargando productos..."
                   : searchQuery
@@ -222,7 +222,7 @@ export const CategoryAccordion = ({
           <Button
             type="button"
             variant="ghost"
-            className="w-full justify-start text-sm rounded-lg mt-1"
+            className="w-full justify-start text-sm rounded-md mt-1"
             onClick={() =>
               NiceModal.show(MenuProductSheet, {
                 mode: "create",

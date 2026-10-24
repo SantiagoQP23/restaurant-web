@@ -21,7 +21,7 @@ export function App() {
   if (status === "checking") {
     return (
       <div className="flex h-screen w-screen items-center justify-center">
-        <span className="text-2xl font-bold">Checking authentication...</span>
+        <span className="text-2xl font-semibold">Checking authentication...</span>
       </div>
     );
   }

@@ -68,13 +68,11 @@ export const AppLayout = () => {
     <SidebarProvider>
       <Sidebar collapsible="icon">
         <SidebarHeader>
-          <div className="flex items-center gap-2 rounded-3xl bg-sidebar-accent/50 px-3 py-2">
-            <div className="grid size-9 place-items-center rounded-2xl  text-primary">
-              <UtensilsCrossed className="size-4" />
-            </div>
-            {/* <div className="flex flex-col text-xs"> */}
-            {/*   <span className="font-semibold">Restaurant OS</span> */}
-            {/* </div> */}
+          <div className="flex items-center gap-2 px-1 py-1.5">
+            <img src="/logo.svg" alt="" className="size-8 shrink-0" />
+            <span className="text-base font-bold group-data-[collapsible=icon]:hidden">
+              Teikio
+            </span>
           </div>
         </SidebarHeader>
         <SidebarContent>

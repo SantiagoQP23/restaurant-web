@@ -154,7 +154,7 @@ export function RestaurantForm({
         <div
           className={`flex flex-col  gap-1  ${mode === "settings" ? "" : "items-center"}`}
         >
-          <h1 className="text-2xl font-bold">Datos del restaurante</h1>
+          <h1 className="text-2xl font-semibold">Datos del restaurante</h1>
           <p className="text-sm text-balance text-muted-foreground">
             {modeDescription}
           </p>

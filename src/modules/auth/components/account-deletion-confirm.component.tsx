@@ -127,7 +127,7 @@ export function AccountDeletionConfirm({
             <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
               <CheckCircle2 className="size-6 text-primary" />
             </div>
-            <h1 className="text-2xl font-bold">
+            <h1 className="text-2xl font-semibold">
               {t("deleteAccount.confirm.successTitle")}
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -166,7 +166,7 @@ export function AccountDeletionConfirm({
             <div className="flex size-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
               <XCircle className="size-6" />
             </div>
-            <h1 className="text-2xl font-bold">
+            <h1 className="text-2xl font-semibold">
               {t("deleteAccount.confirm.invalidTitle")}
             </h1>
             <p className="text-sm text-muted-foreground">{description}</p>
@@ -202,12 +202,12 @@ export function AccountDeletionConfirm({
           <div className="flex size-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
             <AlertTriangle className="size-6" />
           </div>
-          <h1 className="text-2xl font-bold">
+          <h1 className="text-2xl font-semibold">
             {t("deleteAccount.confirm.title")}
           </h1>
         </div>
 
-        <div className="space-y-3 rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-muted-foreground">
+        <div className="space-y-3 rounded-md border border-destructive/20 bg-destructive/5 p-4 text-sm text-muted-foreground">
           <p className="font-semibold text-destructive">
             {t("deleteAccount.confirm.warningPermanent")}
           </p>

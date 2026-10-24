@@ -60,7 +60,7 @@ export const SectionAccordion = ({
     <Collapsible open={isOpen} onOpenChange={onToggle}>
       <div
         className={cn(
-          "rounded-xl border border-border/60 bg-card shadow-sm overflow-hidden ",
+          "rounded-md border border-border/60 bg-card overflow-hidden ",
           section.isActive ? "border-border" : "border-border/50 opacity-70",
         )}
       >
@@ -157,7 +157,7 @@ export const SectionAccordion = ({
             <Button
               type="button"
               variant="ghost"
-              className="w-full justify-start text-sm rounded-lg"
+              className="w-full justify-start text-sm rounded-md"
               onClick={() =>
                 NiceModal.show(MenuCategoryDialog, {
                   title: "Nueva categoría",

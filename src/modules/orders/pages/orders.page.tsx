@@ -7,15 +7,17 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { Badge } from "@/shared/components/ui/badge";
+import { Chip } from "@/shared/components/ui/chip";
 import { OrderStatus, OrderStatusSpanish } from "@/shared/models/order.model";
 import { useOrdersStore } from "../store/orders.store";
 import {
   OrderCard,
-  statusBadgeClass,
+  statusBadgeVariant,
   statusLabel,
 } from "../components/order-card.component";
 import { formatCurrency, formatStringDate } from "@/shared/lib/utils";
 import {
+  getPaymentBadgeVariant,
   getPaymentStatusLabel,
   orderTableLabel,
 } from "../helpers/orders.helper";
@@ -118,20 +120,20 @@ export const OrdersPage = () => {
   return (
     <div className="flex min-h-svh flex-col gap-6 p-6 md:p-10">
       <div>
-        <h1 className="text-2xl font-bold">Pedidos</h1>
+        <h1 className="text-2xl font-semibold">Pedidos</h1>
         <p className="text-sm text-muted-foreground">
           Revisa y gestiona los pedidos en tiempo real.
         </p>
       </div>
       <div className="flex flex-wrap gap-2">
         {statusFilters.map((status) => (
-          <Badge
+          <Chip
             key={status}
-            variant={selectedFilter === status ? "default" : "outline"}
+            selected={selectedFilter === status}
             onClick={() => setSelectedFilter(status)}
           >
             {status}
-          </Badge>
+          </Chip>
         ))}
       </div>
       <div className="grid gap-6 lg:grid-cols-12">
@@ -177,13 +179,13 @@ export const OrdersPage = () => {
 
                   <div className="flex flex-wrap items-center justify-end gap-1">
                     <Badge
-                      className={getPaymentStatusLabel(
+                      variant={getPaymentBadgeVariant(
                         selectedOrder.paymentStatus,
                       )}
                     >
                       {getPaymentStatusLabel(selectedOrder.paymentStatus)}
                     </Badge>
-                    <Badge className={statusBadgeClass(selectedOrder.status)}>
+                    <Badge variant={statusBadgeVariant(selectedOrder.status)}>
                       {statusLabel(selectedOrder.status)}
                     </Badge>
 

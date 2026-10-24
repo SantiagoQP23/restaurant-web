@@ -76,7 +76,7 @@ export function VerifyEmailChangeConfirm({
             <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
               <CheckCircle2 className="size-6 text-primary" />
             </div>
-            <h1 className="text-2xl font-bold">
+            <h1 className="text-2xl font-semibold">
               {t("verifyEmailChange.successTitle")}
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -105,7 +105,7 @@ export function VerifyEmailChangeConfirm({
           <div className="flex size-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
             <XCircle className="size-6" />
           </div>
-          <h1 className="text-2xl font-bold">
+          <h1 className="text-2xl font-semibold">
             {t("verifyEmailChange.invalidTitle")}
           </h1>
           <p className="text-sm text-muted-foreground">

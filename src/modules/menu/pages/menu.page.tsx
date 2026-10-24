@@ -146,7 +146,7 @@ export const MenuPage = () => {
   return (
     <div className="flex min-h-svh flex-col gap-6 p-6 md:p-10">
       <div>
-        <h1 className="text-2xl font-bold">Menú</h1>
+        <h1 className="text-2xl font-semibold">Menú</h1>
         <p className="text-sm text-muted-foreground">
           Organiza tus secciones, categorías y productos del menú.
         </p>
@@ -156,7 +156,7 @@ export const MenuPage = () => {
 
       <div className="flex flex-col gap-4">
         {filteredSections.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border/60 px-4 py-8 text-sm text-muted-foreground text-center">
+          <div className="rounded-md border border-dashed border-border/60 px-4 py-8 text-sm text-muted-foreground text-center">
             {searchQuery.trim()
               ? "No se encontraron productos."
               : "No hay secciones creadas aún."}
@@ -183,7 +183,7 @@ export const MenuPage = () => {
         <Button
           type="button"
           variant="ghost"
-          className="w-full justify-start text-sm rounded-xl"
+          className="w-full justify-start text-sm rounded-md"
           onClick={() =>
             NiceModal.show(MenuSectionDialog, {
               title: "Nueva sección",

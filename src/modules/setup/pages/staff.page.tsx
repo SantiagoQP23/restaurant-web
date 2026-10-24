@@ -29,11 +29,10 @@ export const StaffPage = () => {
           handleChangeRowsPerPage={handleChangeRowsPerPage}
           hideActionsForCurrentUser
           inviteButtonVariant="outline"
-          inviteButtonClassName="rounded-full"
         />
 
         <div className="flex justify-end">
-          <Button asChild className="rounded-full px-6">
+          <Button asChild className="px-6">
             <Link to="/setup/complete">Continuar</Link>
           </Button>
         </div>

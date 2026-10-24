@@ -1,3 +1,4 @@
+import { Badge } from "@/shared/components/ui/badge";
 import NiceModal from "@ebay/nice-modal-react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
@@ -58,7 +59,7 @@ export const PaymentMethodsPage = () => {
     <div className="flex min-h-svh flex-col p-6 md:p-10">
       <div className="flex flex-col gap-10">
         <div>
-          <h1 className="text-2xl font-bold">Métodos de pago</h1>
+          <h1 className="text-2xl font-semibold">Métodos de pago</h1>
           <p className="text-sm text-muted-foreground">
             Administra tus cuentas y los metodos disponibles para cobrar.
           </p>
@@ -97,15 +98,9 @@ export const PaymentMethodsPage = () => {
                   )}
                   <CardAction>
                     <div className="flex items-center gap-2">
-                      <span
-                        className={
-                          account.isActive
-                            ? "rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700"
-                            : "rounded-full bg-muted px-2 py-1 text-xs font-medium text-muted-foreground"
-                        }
-                      >
+                      <Badge variant={account.isActive ? "success" : "neutral"}>
                         {account.isActive ? "Activa" : "Inactiva"}
-                      </span>
+                      </Badge>
                       <Button
                         type="button"
                         variant="ghost"
@@ -173,15 +168,9 @@ export const PaymentMethodsPage = () => {
                   </CardDescription>
                   <CardAction>
                     <div className="flex items-center gap-2">
-                      <span
-                        className={
-                          method.isActive
-                            ? "rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700"
-                            : "rounded-full bg-muted px-2 py-1 text-xs font-medium text-muted-foreground"
-                        }
-                      >
+                      <Badge variant={method.isActive ? "success" : "neutral"}>
                         {method.isActive ? "Activo" : "Inactivo"}
-                      </span>
+                      </Badge>
                       <Button
                         type="button"
                         variant="ghost"

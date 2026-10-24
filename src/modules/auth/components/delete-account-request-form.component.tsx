@@ -63,7 +63,7 @@ export function DeleteAccountRequestForm({
             <div className="flex size-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Trash2 className="size-5" />
             </div>
-            <h1 className="text-2xl font-bold">{t("deleteAccount.title")}</h1>
+            <h1 className="text-2xl font-semibold">{t("deleteAccount.title")}</h1>
             <p className="text-sm text-muted-foreground">
               {t("deleteAccount.genericMessage")}
             </p>
@@ -94,7 +94,7 @@ export function DeleteAccountRequestForm({
           <div className="flex size-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
             <Trash2 className="size-5" />
           </div>
-          <h1 className="text-2xl font-bold">{t("deleteAccount.title")}</h1>
+          <h1 className="text-2xl font-semibold">{t("deleteAccount.title")}</h1>
           <p className="text-sm text-muted-foreground">
             {t("deleteAccount.description")}
           </p>

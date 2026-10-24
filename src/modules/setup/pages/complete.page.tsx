@@ -14,7 +14,7 @@ export const CompletePage = () => {
         {/* Header */}
         <div className="flex flex-col items-center gap-2">
           <div className="text-4xl">🎉</div>
-          <h1 className="text-2xl font-bold">Configuración completa</h1>
+          <h1 className="text-2xl font-semibold">Configuración completa</h1>
           <p className="text-sm text-muted-foreground">
             Todo está listo para empezar a operar tu restaurante
           </p>
@@ -29,7 +29,7 @@ export const CompletePage = () => {
             Lleva tu restaurante contigo
           </div>
 
-          <div className="w-40 h-64 rounded-2xl border-2 border-dashed border-border/60 bg-muted/30 flex items-center justify-center">
+          <div className="w-40 h-64 rounded-md border-2 border-dashed border-border/60 bg-muted/30 flex items-center justify-center">
             <span className="text-xs text-muted-foreground">Mockup app</span>
           </div>
 
@@ -43,7 +43,7 @@ export const CompletePage = () => {
             <li>• Revisar ventas</li>
           </ul>
 
-          <Button variant="outline" className="rounded-full px-6" asChild>
+          <Button variant="outline" className="px-6" asChild>
             <a href={apkUrl} target="_blank">
               Descargar app
             </a>

@@ -36,14 +36,12 @@ export const ProductCard = ({
   categoryIndex,
   sections,
 }: ProductCardProps) => (
-  <div className="flex items-start gap-3 rounded-lg border border-border/40 px-3 py-2.5 bg-background/50">
-    {/* Status dot */}
-    <div
-      className={cn(
-        "mt-1.5 h-2 w-2 rounded-full shrink-0",
-        product.isActive ? "bg-emerald-500" : "bg-gray-300",
-      )}
-    />
+  <div
+    className={cn(
+      "flex items-start gap-3 rounded-md border border-border px-3 py-2.5 bg-background",
+      !product.isActive && "opacity-50",
+    )}
+  >
 
     <div className="flex-1 min-w-0">
       <div className="flex items-center gap-2 flex-wrap">
@@ -62,8 +60,7 @@ export const ProductCard = ({
           {product.options.map((option) => (
             <Badge
               key={option.id}
-              variant="secondary"
-              className="text-xs font-normal"
+              variant="neutral"
             >
               {option.name} $ {option.price.toLocaleString()}
             </Badge>

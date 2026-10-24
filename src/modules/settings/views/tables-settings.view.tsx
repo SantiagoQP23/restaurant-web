@@ -46,7 +46,7 @@ export const TablesSettings = () => {
     <div className="flex flex-col gap-6 p-6 md:p-10">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Mesas</h1>
+          <h1 className="text-2xl font-semibold">Mesas</h1>
           <p className="text-sm text-muted-foreground">
             Gestiona las mesas activas y crea pedidos rapidamente.
           </p>

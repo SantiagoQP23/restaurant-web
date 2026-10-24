@@ -22,7 +22,7 @@ export const OtherSettingsPage = () => {
     return (
       <div className="flex flex-col gap-6 px-6">
         <div>
-          <h1 className="text-2xl font-bold">Preferencias</h1>
+          <h1 className="text-2xl font-semibold">Preferencias</h1>
           <p className="text-sm text-muted-foreground">
             Gestiona las preferencias de tu restaurante
           </p>
