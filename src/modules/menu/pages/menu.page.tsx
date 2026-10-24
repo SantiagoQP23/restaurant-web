@@ -7,6 +7,7 @@ import type { Product } from "@/shared/models/product.model";
 import { Button } from "@/shared/components/ui/button";
 import { Plus } from "lucide-react";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
+import { useIsAdmin } from "@/modules/auth/hooks/useIsAdmin";
 import { ProductsService } from "@/modules/menu/services/products.service";
 import { queryKeys } from "@/app/api/query-client";
 import { useMenu } from "../hooks/useMenu";
@@ -21,6 +22,7 @@ type MenuSection = Section & { categories: MenuCategory[] };
 export const MenuPage = () => {
   const { sections: fetchedSections, createSection } = useMenu();
   const { restaurant } = useAuthStore();
+  const canEdit = useIsAdmin();
   const [sections, setSections] = React.useState<MenuSection[]>([]);
   const [expandedSections, setExpandedSections] = React.useState<Set<string>>(
     new Set(),
@@ -65,8 +67,7 @@ export const MenuPage = () => {
         const categoryId = (category as { id?: string }).id;
         const all = categoryId
           ? (productsByCategory.byId.get(categoryId) ?? [])
-          : (productsByCategory.byName.get(category.name.toLowerCase()) ??
-              []);
+          : (productsByCategory.byName.get(category.name.toLowerCase()) ?? []);
 
         countsMap.set(category.id, all.length);
 
@@ -180,21 +181,23 @@ export const MenuPage = () => {
           ))
         )}
 
-        <Button
-          type="button"
-          variant="ghost"
-          className="w-full justify-start text-sm rounded-md"
-          onClick={() =>
-            NiceModal.show(MenuSectionDialog, {
-              title: "Nueva sección",
-              submitLabel: "Guardar",
-              onSubmit: (name) => createSection.mutate({ name }),
-            })
-          }
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Agregar sección
-        </Button>
+        {canEdit && (
+          <Button
+            type="button"
+            variant="ghost"
+            className="w-full justify-start text-sm rounded-md"
+            onClick={() =>
+              NiceModal.show(MenuSectionDialog, {
+                title: "Nueva sección",
+                submitLabel: "Guardar",
+                onSubmit: (name) => createSection.mutate({ name }),
+              })
+            }
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Agregar sección
+          </Button>
+        )}
       </div>
     </div>
   );

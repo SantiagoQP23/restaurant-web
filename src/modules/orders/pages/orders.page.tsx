@@ -51,7 +51,6 @@ import {
   EmptyMedia,
   EmptyTitle,
   EmptyDescription,
-  EmptyContent,
 } from "@/shared/components/ui/empty";
 
 const statusFilters = [
@@ -145,11 +144,10 @@ export const OrdersPage = () => {
                   <ShoppingBag />
                 </EmptyMedia>
                 <EmptyTitle>Sin pedidos</EmptyTitle>
-                <EmptyDescription>No se han creado pedidos</EmptyDescription>
+                <EmptyDescription>
+                  Los pedidos que se tomen desde la app aparecerán aquí.
+                </EmptyDescription>
               </EmptyHeader>
-              <EmptyContent>
-                <Button>Crear pedido</Button>
-              </EmptyContent>
             </Empty>
           </div>
         ) : (

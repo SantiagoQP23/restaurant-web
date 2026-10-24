@@ -18,6 +18,7 @@ import {
 import { MenuSectionDialog } from "@/modules/menu/components/menu-section-dialog.component";
 import { MenuCategoryDialog } from "@/modules/menu/components/menu-category-dialog.component";
 import { useMenuMutations } from "@/modules/menu/hooks/useMenuMutations";
+import { useIsAdmin } from "@/modules/auth/hooks/useIsAdmin";
 import { CategoryAccordion } from "./category-accordion.component";
 import type { MenuSection, MenuProduct } from "./menu-setup.types";
 
@@ -49,6 +50,7 @@ export const SectionAccordion = ({
   sections,
 }: SectionAccordionProps) => {
   const { updateSection, createCategory } = useMenuMutations();
+  const canEdit = useIsAdmin();
 
   const categoryCount = section.categories.length;
   const totalProductCount = section.categories.reduce(
@@ -98,6 +100,7 @@ export const SectionAccordion = ({
               <span className="text-xs text-muted-foreground">Activa</span>
               <Switch
                 size="sm"
+                disabled={!canEdit}
                 checked={section.isActive}
                 onCheckedChange={(checked) =>
                   updateSection.mutate({ id: section.id, isActive: checked })
@@ -105,33 +108,35 @@ export const SectionAccordion = ({
               />
             </div>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                >
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() =>
-                    NiceModal.show(MenuSectionDialog, {
-                      title: "Actualizar sección",
-                      submitLabel: "Guardar cambios",
-                      initialValues: { name: section.name },
-                      onSubmit: (name) =>
-                        updateSection.mutate({ id: section.id, name }),
-                    })
-                  }
-                >
-                  Actualizar
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {canEdit && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={() =>
+                      NiceModal.show(MenuSectionDialog, {
+                        title: "Actualizar sección",
+                        submitLabel: "Guardar cambios",
+                        initialValues: { name: section.name },
+                        onSubmit: (name) =>
+                          updateSection.mutate({ id: section.id, name }),
+                      })
+                    }
+                  >
+                    Actualizar
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
 
@@ -154,23 +159,25 @@ export const SectionAccordion = ({
               />
             ))}
 
-            <Button
-              type="button"
-              variant="ghost"
-              className="w-full justify-start text-sm rounded-md"
-              onClick={() =>
-                NiceModal.show(MenuCategoryDialog, {
-                  title: "Nueva categoría",
-                  submitLabel: "Guardar",
-                  sectionName: section.name,
-                  onSubmit: (name) =>
-                    createCategory.mutate({ name, sectionId: section.id }),
-                })
-              }
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Agregar categoría
-            </Button>
+            {canEdit && (
+              <Button
+                type="button"
+                variant="ghost"
+                className="w-full justify-start text-sm rounded-md"
+                onClick={() =>
+                  NiceModal.show(MenuCategoryDialog, {
+                    title: "Nueva categoría",
+                    submitLabel: "Guardar",
+                    sectionName: section.name,
+                    onSubmit: (name) =>
+                      createCategory.mutate({ name, sectionId: section.id }),
+                  })
+                }
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Agregar categoría
+              </Button>
+            )}
           </div>
         </CollapsibleContent>
       </div>

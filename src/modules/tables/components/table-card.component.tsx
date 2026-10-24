@@ -14,22 +14,16 @@ type TableCardProps = {
   table: Table;
   active: boolean;
   onSelect: (table: Table) => void;
-  onOpenDialog: (table: Table) => void;
 };
 
-export const TableCard = ({
-  table,
-  active,
-  onSelect,
-  onOpenDialog,
-}: TableCardProps) => {
+export const TableCard = ({ table, active, onSelect }: TableCardProps) => {
   const { hasOrders } = useTableOrders(table.id);
 
   return (
     <Card
       size="sm"
-      className={cn("cursor-pointer", active && "border-primary")}
-      onClick={() => (hasOrders ? onSelect(table) : onOpenDialog(table))}
+      className={cn(hasOrders && "cursor-pointer", active && "border-primary")}
+      onClick={() => hasOrders && onSelect(table)}
     >
       <CardHeader>
         <div className="flex items-center justify-between gap-2">

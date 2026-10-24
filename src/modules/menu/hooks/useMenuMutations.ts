@@ -14,6 +14,7 @@ import { CategoriesService } from "../services/categories.service";
 import type { CreateProductDto } from "../interface/dto/create-product.dto";
 import type { UpdateProductDto } from "../interface/dto/update-product.dto";
 import { ProductsService } from "../services/products.service";
+import { ProductOptionsService } from "../services/product-options.service";
 import i18n from "@/app/i18n/i18n.config";
 import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
 
@@ -106,9 +107,20 @@ export const useMenuMutations = () => {
     },
   });
 
-  const updateProduct = useMutation<Product, unknown, UpdateProductDto>({
-    mutationFn: (data: UpdateProductDto) =>
-      ProductsService.update(data.id, data),
+  const updateProduct = useMutation<
+    Product,
+    unknown,
+    UpdateProductDto & { renamedOptions?: { id: number; name: string }[] }
+  >({
+    // PATCH /products matches variants by name, so a renamed variant would be
+    // deactivated and recreated (losing its stock and recipe link). Rename
+    // existing variants by id first, then the names already match.
+    mutationFn: async ({ renamedOptions = [], ...data }) => {
+      for (const option of renamedOptions) {
+        await ProductOptionsService.update(option.id, { name: option.name });
+      }
+      return ProductsService.update(data.id, data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [queryKeys.menu.detail(restaurant!.id), "products"],
