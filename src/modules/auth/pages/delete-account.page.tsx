@@ -6,6 +6,7 @@ export default function DeleteAccountPage() {
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="#" className="flex items-center gap-2 font-medium">
+            <img src="/logo.svg" alt="" className="size-6" />
             Teikio
           </a>
         </div>
@@ -17,9 +18,9 @@ export default function DeleteAccountPage() {
       </div>
       <div className="relative hidden bg-muted lg:block">
         <img
-          src="/placeholder.svg"
-          alt="Image"
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          src="/logo.svg"
+          alt="Teikio"
+          className="absolute inset-0 m-auto size-48"
         />
       </div>
     </div>
