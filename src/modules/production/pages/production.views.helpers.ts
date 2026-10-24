@@ -29,11 +29,11 @@ export const statusLabel = (status: OrderStatus) => {
 export const detailStatusDotClass = (status: OrderDetailStatus) => {
   switch (status) {
     case OrderDetailStatus.PENDING:
-      return "bg-amber-400";
+      return "bg-orange-400";
     case OrderDetailStatus.IN_PROGRESS:
-      return "bg-sky-400";
+      return "bg-blue-500";
     default:
-      return "bg-emerald-400";
+      return "bg-emerald-500";
   }
 };
 

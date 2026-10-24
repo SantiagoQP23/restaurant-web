@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
-import { Badge } from "@/shared/components/ui/badge";
+import { Badge, type BadgeVariant } from "@/shared/components/ui/badge";
 import { cn, formatCurrency, formatStringDate } from "@/shared/lib/utils";
 import {
   OrderPaymentStatus,
@@ -13,7 +13,10 @@ import {
   OrderStatusSpanish,
 } from "@/shared/models/order.model";
 import type { Order } from "@/shared/models/order.model";
-import { orderTableLabel } from "../helpers/orders.helper";
+import {
+  getPaymentBadgeVariant,
+  orderTableLabel,
+} from "../helpers/orders.helper";
 import { Users } from "lucide-react";
 
 type Props = {
@@ -22,16 +25,16 @@ type Props = {
   onClick?: () => void;
 };
 
-export const statusBadgeClass = (status: OrderStatus) => {
+export const statusBadgeVariant = (status: OrderStatus): BadgeVariant => {
   switch (status) {
     case OrderStatus.PENDING:
-      return "rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700";
+      return "warning";
     case OrderStatus.IN_PROGRESS:
-      return "rounded-full bg-sky-100 px-2 py-1 text-xs font-medium text-sky-700";
+      return "info";
     case OrderStatus.READY:
-      return "rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700";
+      return "success";
     default:
-      return "rounded-full bg-muted px-2 py-1 text-xs font-medium text-muted-foreground";
+      return "neutral";
   }
 };
 
@@ -47,17 +50,6 @@ export const statusLabel = (status: OrderStatus) => {
       return OrderStatusSpanish.DELIVERED;
     default:
       return OrderStatusSpanish.CANCELLED;
-  }
-};
-
-const paymentBadgeClass = (paymentStatus: OrderPaymentStatus) => {
-  switch (paymentStatus) {
-    case OrderPaymentStatus.PAID:
-      return "rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700";
-    case OrderPaymentStatus.PARTIALLY_PAID:
-      return "rounded-full bg-sky-100 px-2 py-1 text-xs font-medium text-sky-700";
-    default:
-      return "rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700";
   }
 };
 
@@ -82,8 +74,8 @@ export const OrderCard = ({ order, isSelected, onClick }: Props) => {
     <Card
       size="sm"
       className={cn(
-        "transition-shadow",
-        isSelected && "ring-2 ring-primary/40",
+        "cursor-pointer",
+        isSelected && "border-primary",
       )}
       onClick={onClick}
     >
@@ -93,10 +85,10 @@ export const OrderCard = ({ order, isSelected, onClick }: Props) => {
             {orderTableLabel(order)}
           </CardTitle>
           <div className="flex flex-wrap items-center justify-end gap-1">
-            <Badge className={statusBadgeClass(order.status)}>
+            <Badge variant={statusBadgeVariant(order.status)}>
               {statusLabel(order.status)}
             </Badge>
-            <Badge className={paymentBadgeClass(order.paymentStatus)}>
+            <Badge variant={getPaymentBadgeVariant(order.paymentStatus)}>
               {paymentLabel(order.paymentStatus)}
             </Badge>
           </div>

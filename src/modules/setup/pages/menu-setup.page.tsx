@@ -147,7 +147,7 @@ export const MenuSetupPage = () => {
         {/* Sections */}
         <div className="flex flex-col gap-4">
           {filteredSections.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-border/60 px-4 py-8 text-sm text-muted-foreground text-center">
+            <div className="rounded-md border border-dashed border-border/60 px-4 py-8 text-sm text-muted-foreground text-center">
               {searchQuery.trim()
                 ? "No se encontraron productos."
                 : "No hay secciones creadas aún."}
@@ -175,7 +175,7 @@ export const MenuSetupPage = () => {
           <Button
             type="button"
             variant="ghost"
-            className="w-full justify-start text-sm rounded-xl"
+            className="w-full justify-start text-sm rounded-md"
             onClick={() =>
               NiceModal.show(MenuSectionDialog, {
                 title: "Nueva sección",
@@ -191,7 +191,7 @@ export const MenuSetupPage = () => {
 
         {/* Footer */}
         <div className="flex justify-end">
-          <Button asChild className="rounded-full px-6">
+          <Button asChild className="px-6">
             <Link to="/setup/tables">Continuar</Link>
           </Button>
         </div>

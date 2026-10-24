@@ -5,7 +5,7 @@ export const AccountsPage = () => {
   return (
     <div className="flex min-h-svh flex-col p-6 md:p-10">
       <div>
-        <h1 className="text-2xl font-bold">Cuentas</h1>
+        <h1 className="text-2xl font-semibold">Cuentas</h1>
         <p className="text-sm text-muted-foreground">
           Configura las cuentas base para tus metodos de pago.
         </p>

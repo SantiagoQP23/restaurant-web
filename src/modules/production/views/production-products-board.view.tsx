@@ -3,7 +3,7 @@ import { OrderDetailStatus, type Order } from "@/shared/models/order.model";
 import type { OrderDetail } from "@/shared/models/order-detail.model";
 import type { Product } from "@/shared/models/product.model";
 import type { ProductOption } from "@/shared/models/product-option.model";
-import { Badge } from "@/shared/components/ui/badge";
+import { Badge, type BadgeVariant } from "@/shared/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -23,7 +23,7 @@ import { formatStringDate } from "@/shared/lib/utils";
 type ProductColumn = {
   key: OrderDetailStatus;
   label: string;
-  accent: string;
+  variant: BadgeVariant;
   products: Array<{
     product: Product;
     totalQuantity: number;
@@ -49,18 +49,16 @@ export const ProductionProductsBoardView = ({
       {productGroups.map((column) => (
         <section
           key={column.key}
-          className="flex flex-col gap-4 rounded-4xl border border-border/60 bg-muted/30 p-4 min-w-[320px] flex-1"
+          className="flex flex-col gap-4 rounded-md bg-surface-container-low p-4 min-w-[320px] flex-1"
         >
           <div className="flex items-center justify-between">
             <div className="text-sm font-semibold">{column.label}</div>
-            <span
-              className={`rounded-full px-2 py-1 text-xs font-medium ${column.accent}`}
-            >
+            <Badge variant={column.variant}>
               {column.products.reduce(
                 (total, product) => total + product.totalQuantity,
                 0,
               )}
-            </span>
+            </Badge>
           </div>
           <div className="flex flex-col gap-3">
             {column.products.map((productEntry) => {

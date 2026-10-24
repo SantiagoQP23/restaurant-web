@@ -1,3 +1,4 @@
+import type { BadgeVariant } from "@/shared/components/ui/badge";
 import type { OrderDetail } from "@/shared/models/order-detail.model";
 import { type Order, OrderPaymentStatus } from "@/shared/models/order.model";
 import { OrderDetailStatus } from "@/shared/models/order.model";
@@ -8,11 +9,11 @@ export const orderTableLabel = (order: Order) =>
 export const detailStatusDotClass = (status: OrderDetailStatus) => {
   switch (status) {
     case OrderDetailStatus.PENDING:
-      return "bg-amber-400 border";
+      return "bg-orange-400";
     case OrderDetailStatus.IN_PROGRESS:
-      return "bg-sky-400";
+      return "bg-blue-500";
     default:
-      return "bg-emerald-400";
+      return "bg-emerald-500";
   }
 };
 
@@ -56,13 +57,15 @@ export const getPaymentStatusLabel = (
   }
 };
 
-export const getPaymentBadgeClass = (paymentStatus: OrderPaymentStatus) => {
+export const getPaymentBadgeVariant = (
+  paymentStatus: OrderPaymentStatus,
+): BadgeVariant => {
   switch (paymentStatus) {
     case OrderPaymentStatus.PAID:
-      return "rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700";
+      return "success";
     case OrderPaymentStatus.PARTIALLY_PAID:
-      return "rounded-full bg-sky-100 px-2 py-1 text-xs font-medium text-sky-700";
+      return "info";
     default:
-      return "rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700";
+      return "warning";
   }
 };

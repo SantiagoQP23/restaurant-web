@@ -86,7 +86,7 @@ export const MenuProductOptionsDialog = NiceModal.create(
               {fields.map((field, index) => (
                 <div
                   key={field.id}
-                  className="rounded-3xl border border-border/60 p-4"
+                  className="rounded-md border border-border/60 p-4"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div>

@@ -1,3 +1,4 @@
+import { cn } from "@/shared/lib/utils";
 import {
   Card,
   CardHeader,
@@ -16,11 +17,6 @@ type TableCardProps = {
   onOpenDialog: (table: Table) => void;
 };
 
-const availabilityBadgeClass = (isAvailable: boolean) =>
-  isAvailable
-    ? "rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700"
-    : "rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700";
-
 export const TableCard = ({
   table,
   active,
@@ -32,7 +28,7 @@ export const TableCard = ({
   return (
     <Card
       size="sm"
-      className={active ? "ring-2 ring-primary/40" : undefined}
+      className={cn("cursor-pointer", active && "border-primary")}
       onClick={() => (hasOrders ? onSelect(table) : onOpenDialog(table))}
     >
       <CardHeader>
@@ -42,7 +38,7 @@ export const TableCard = ({
         <CardDescription>{table.chairs} sillas</CardDescription>
       </CardHeader>
       <CardContent className="flex justify-end">
-        <Badge className={availabilityBadgeClass(!hasOrders)}>
+        <Badge variant={hasOrders ? "warning" : "success"}>
           {!hasOrders ? "Disponible" : "Ocupada"}
         </Badge>
       </CardContent>

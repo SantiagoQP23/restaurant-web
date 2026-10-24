@@ -1,3 +1,4 @@
+import { Badge } from "@/shared/components/ui/badge";
 import * as React from "react";
 import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { Button } from "@/shared/components/ui/button";
@@ -132,11 +133,11 @@ export const InviteUserModal = NiceModal.create(
             </FieldGroup>
             <div className="flex flex-col gap-2">
               {usersQuery.isLoading ? (
-                <div className="rounded-3xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
+                <div className="rounded-md border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
                   Buscando usuarios...
                 </div>
               ) : availableUsers.length === 0 ? (
-                <div className="rounded-3xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
+                <div className="rounded-md border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
                   No encontramos usuarios con ese criterio.
                 </div>
               ) : (
@@ -146,8 +147,8 @@ export const InviteUserModal = NiceModal.create(
                     type="button"
                     className={
                       selectedUserId === user.id
-                        ? "flex items-center justify-between gap-2 rounded-3xl border border-primary/40 bg-primary/5 px-4 py-3 text-left"
-                        : "flex items-center justify-between gap-2 rounded-3xl border border-border/60 px-4 py-3 text-left"
+                        ? "flex items-center justify-between gap-2 rounded-md border border-secondary bg-secondary px-4 py-3 text-left"
+                        : "flex items-center justify-between gap-2 rounded-md border border-border/60 px-4 py-3 text-left"
                     }
                     onClick={() => setSelectedUserId(user.id)}
                   >
@@ -160,9 +161,7 @@ export const InviteUserModal = NiceModal.create(
                       </div>
                     </div>
                     {selectedUserId === user.id && (
-                      <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700">
-                        Seleccionado
-                      </span>
+                      <Badge variant="success">Seleccionado</Badge>
                     )}
                   </button>
                 ))

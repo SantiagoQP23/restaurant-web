@@ -158,7 +158,7 @@ export const ProductionOrderDetail = ({
               )}
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <div className="rounded-md border border-border/60 bg-muted/30 p-3">
                 <div className="text-xs uppercase text-muted-foreground">
                   Creado por
                 </div>
@@ -171,7 +171,7 @@ export const ProductionOrderDetail = ({
                   {formattedCreatedAt}
                 </div>
               </div>
-              <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <div className="rounded-md border border-border/60 bg-muted/30 p-3">
                 <div className="text-xs uppercase text-muted-foreground">
                   Actualizado por
                 </div>
@@ -186,7 +186,7 @@ export const ProductionOrderDetail = ({
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <div className="rounded-md border border-border/60 bg-muted/30 p-3">
                 <div className="text-xs uppercase text-muted-foreground">
                   Cantidad servida
                 </div>

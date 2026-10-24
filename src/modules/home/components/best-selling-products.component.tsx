@@ -91,7 +91,7 @@ export const BestSellingProducts = ({
                   <TableCell className="text-center">
                     {product.totalSold}
                   </TableCell>
-                  <TableCell className="text-right text-green-600">
+                  <TableCell className="text-right text-emerald-700">
                     {formatCurrency(product.totalSold * product.productPrice)}
                   </TableCell>
                 </TableRow>

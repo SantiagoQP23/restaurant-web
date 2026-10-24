@@ -49,7 +49,7 @@ export const TablesPage = () => {
   return (
     <div className="flex min-h-svh flex-col gap-6 p-6 md:p-10">
       <div>
-        <h1 className="text-2xl font-bold">Mesas</h1>
+        <h1 className="text-2xl font-semibold">Mesas</h1>
         <p className="text-sm text-muted-foreground">
           Gestiona las mesas activas y crea pedidos rapidamente.
         </p>

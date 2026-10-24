@@ -82,7 +82,7 @@ export const ProductsReportsPage = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">Productos</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Productos</h1>
         <Button variant="outline" size="sm">
           <Printer className="mr-1 h-4 w-4" />
           Imprimir
@@ -104,7 +104,7 @@ export const ProductsReportsPage = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <span className="text-3xl font-bold">{sectionsCount}</span>
+            <span className="text-3xl font-semibold">{sectionsCount}</span>
           </CardContent>
         </Card>
 
@@ -121,7 +121,7 @@ export const ProductsReportsPage = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <span className="text-3xl font-bold">{categoriesCount}</span>
+            <span className="text-3xl font-semibold">{categoriesCount}</span>
           </CardContent>
         </Card>
 
@@ -138,7 +138,7 @@ export const ProductsReportsPage = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <span className="text-3xl font-bold">{productsCount}</span>
+            <span className="text-3xl font-semibold">{productsCount}</span>
           </CardContent>
         </Card>
       </div>
@@ -170,7 +170,7 @@ export const ProductsReportsPage = () => {
             type="date"
             value={startDate.toISOString().split("T")[0]}
             onChange={(e) => handleChangeStartDate(new Date(e.target.value))}
-            className="h-9 rounded-3xl border border-input bg-input/50 px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30"
+            className="h-9 rounded-md border border-input bg-transparent px-3 py-2 text-sm outline-none focus-visible:border-ring"
           />
         </div>
 
@@ -181,7 +181,7 @@ export const ProductsReportsPage = () => {
               type="date"
               value={endDate.toISOString().split("T")[0]}
               onChange={(e) => handleChangeEndDate(new Date(e.target.value))}
-              className="h-9 rounded-3xl border border-input bg-input/50 px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30"
+              className="h-9 rounded-md border border-input bg-transparent px-3 py-2 text-sm outline-none focus-visible:border-ring"
             />
           </div>
         )}
@@ -226,7 +226,7 @@ export const ProductsReportsPage = () => {
                       <TableCell className="text-center">
                         {product.totalSold}
                       </TableCell>
-                      <TableCell className="text-right text-green-600">
+                      <TableCell className="text-right text-emerald-700">
                         {formatCurrency(
                           product.totalSold * product.productPrice,
                         )}

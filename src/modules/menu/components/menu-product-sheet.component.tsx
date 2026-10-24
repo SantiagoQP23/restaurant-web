@@ -410,7 +410,7 @@ export const MenuProductSheet = NiceModal.create(
                 </div>
 
                 {fields.length === 0 ? (
-                  <div className="rounded-lg border border-dashed border-border/60 px-4 py-6 text-sm text-muted-foreground text-center">
+                  <div className="rounded-md border border-dashed border-border/60 px-4 py-6 text-sm text-muted-foreground text-center">
                     No hay variantes. Agrega una para comenzar.
                   </div>
                 ) : (
