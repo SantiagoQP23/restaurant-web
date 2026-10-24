@@ -62,6 +62,8 @@ export type MenuProductSheetProps = {
 };
 
 type OptionFormValues = {
+  /** Id of an existing variant, to rename it in place. */
+  optionId?: number;
   name: string;
   price: string;
   quantity: string;
@@ -154,6 +156,7 @@ export const MenuProductSheet = NiceModal.create(
 
       const opts =
         iv?.options?.map((o) => ({
+          optionId: o.id,
           name: o.name,
           price: o.price?.toString() ?? "",
           quantity: o.quantity?.toString() ?? "",
@@ -226,9 +229,23 @@ export const MenuProductSheet = NiceModal.create(
           modal.hide();
         });
       } else if (mode === "update" && productId) {
-        updateProduct.mutateAsync({ id: productId, ...payload }).then(() => {
-          modal.hide();
-        });
+        const originalNames = new Map(
+          initialValues?.options?.map((o) => [o.id, o.name]) ?? [],
+        );
+        const renamedOptions = values.options
+          .filter(
+            (opt) =>
+              opt.optionId !== undefined &&
+              originalNames.has(opt.optionId) &&
+              originalNames.get(opt.optionId) !== opt.name.trim(),
+          )
+          .map((opt) => ({ id: opt.optionId!, name: opt.name.trim() }));
+
+        updateProduct
+          .mutateAsync({ id: productId, ...payload, renamedOptions })
+          .then(() => {
+            modal.hide();
+          });
       }
     };
 

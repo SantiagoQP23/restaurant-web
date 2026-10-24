@@ -27,13 +27,10 @@ import {
   AlertDialogTrigger,
 } from "@/shared/components/ui/alert-dialog";
 import { MenuCategoryDialog } from "@/modules/menu/components/menu-category-dialog.component";
-import {
-  MenuProductSheet,
-} from "@/modules/menu/components/menu-product-sheet.component";
-import {
-  type MenuCategoryWithIndex,
-} from "@/modules/menu/components/menu-product-dialog.component";
+import { MenuProductSheet } from "@/modules/menu/components/menu-product-sheet.component";
+import { type MenuCategoryWithIndex } from "@/modules/menu/components/menu-product-dialog.component";
 import { useMenuMutations } from "@/modules/menu/hooks/useMenuMutations";
+import { useIsAdmin } from "@/modules/auth/hooks/useIsAdmin";
 import { ProductCard } from "./product-card.component";
 import type {
   MenuCategory,
@@ -69,6 +66,7 @@ export const CategoryAccordion = ({
   searchQuery,
 }: CategoryAccordionProps) => {
   const { updateCategory, deleteCategory } = useMenuMutations();
+  const canEdit = useIsAdmin();
 
   return (
     <Collapsible open={isOpen} onOpenChange={onToggle}>
@@ -107,6 +105,7 @@ export const CategoryAccordion = ({
               <span className="text-xs text-muted-foreground">Activa</span>
               <Switch
                 size="sm"
+                disabled={!canEdit}
                 checked={category.isActive}
                 onCheckedChange={(checked) =>
                   updateCategory.mutate({ id: category.id, isActive: checked })
@@ -119,6 +118,7 @@ export const CategoryAccordion = ({
               variant="ghost"
               size="icon"
               className="h-7 w-7"
+              disabled={!canEdit}
               onClick={() =>
                 updateCategory.mutate({
                   id: category.id,
@@ -133,66 +133,69 @@ export const CategoryAccordion = ({
               )}
             </Button>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7"
-                >
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() =>
-                    NiceModal.show(MenuCategoryDialog, {
-                      title: "Actualizar categoría",
-                      submitLabel: "Guardar cambios",
-                      sectionName: section.name,
-                      initialValues: { name: category.name },
-                      onSubmit: (name) =>
-                        updateCategory.mutate({
-                          id: category.id,
-                          name,
-                          sectionId: section.id,
-                        }),
-                    })
-                  }
-                >
-                  Actualizar
-                </DropdownMenuItem>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <DropdownMenuItem
-                      variant="destructive"
-                      onClick={(event) => event.stopPropagation()}
-                    >
-                      Eliminar
-                    </DropdownMenuItem>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Eliminar categoría</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Estás a punto de eliminar la categoría &quot;
-                        {category.name}&quot;. Esta acción no se puede deshacer.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction
+            {canEdit && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={() =>
+                      NiceModal.show(MenuCategoryDialog, {
+                        title: "Actualizar categoría",
+                        submitLabel: "Guardar cambios",
+                        sectionName: section.name,
+                        initialValues: { name: category.name },
+                        onSubmit: (name) =>
+                          updateCategory.mutate({
+                            id: category.id,
+                            name,
+                            sectionId: section.id,
+                          }),
+                      })
+                    }
+                  >
+                    Actualizar
+                  </DropdownMenuItem>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <DropdownMenuItem
                         variant="destructive"
-                        onClick={() => deleteCategory.mutate(category.id)}
+                        onClick={(event) => event.stopPropagation()}
                       >
                         Eliminar
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                      </DropdownMenuItem>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Eliminar categoría</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Estás a punto de eliminar la categoría &quot;
+                          {category.name}&quot;. Esta acción no se puede
+                          deshacer.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                          variant="destructive"
+                          onClick={() => deleteCategory.mutate(category.id)}
+                        >
+                          Eliminar
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
 
@@ -219,32 +222,34 @@ export const CategoryAccordion = ({
               ))
             )}
 
-          <Button
-            type="button"
-            variant="ghost"
-            className="w-full justify-start text-sm rounded-md mt-1"
-            onClick={() =>
-              NiceModal.show(MenuProductSheet, {
-                mode: "create",
-                category: {
-                  name: category.name,
-                  sectionIndex,
-                  categoryIndex,
-                } as MenuCategoryWithIndex,
-                categories: sections.flatMap((sec, secIdx) =>
-                  sec.categories.map((item, catIdx) => ({
-                    ...item,
-                    sectionIndex: secIdx,
-                    categoryIndex: catIdx,
-                  })),
-                ),
-                sections,
-              })
-            }
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Agregar producto
-          </Button>
+            {canEdit && (
+              <Button
+                type="button"
+                variant="ghost"
+                className="w-full justify-start text-sm rounded-md mt-1"
+                onClick={() =>
+                  NiceModal.show(MenuProductSheet, {
+                    mode: "create",
+                    category: {
+                      name: category.name,
+                      sectionIndex,
+                      categoryIndex,
+                    } as MenuCategoryWithIndex,
+                    categories: sections.flatMap((sec, secIdx) =>
+                      sec.categories.map((item, catIdx) => ({
+                        ...item,
+                        sectionIndex: secIdx,
+                        categoryIndex: catIdx,
+                      })),
+                    ),
+                    sections,
+                  })
+                }
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Agregar producto
+              </Button>
+            )}
           </div>
         </CollapsibleContent>
       </div>

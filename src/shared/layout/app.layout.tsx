@@ -1,6 +1,5 @@
 import { Link, Navigate, Outlet, useRouterState } from "@tanstack/react-router";
 import {
-  CreditCard,
   Home,
   ShoppingBag,
   Soup,
@@ -34,17 +33,26 @@ import { NavUser } from "./nav-user";
 import { useContext } from "react";
 import { SocketContext } from "../context/SocketContext";
 import { Badge } from "@/shared/components/ui/badge";
+import { useIsAdmin } from "@/modules/auth/hooks/useIsAdmin";
 
 const navigation = [
   { label: "Inicio", icon: Home, to: "/app/home" },
   { label: "Pedidos", icon: ShoppingBag, to: "/app/orders" },
   { label: "Producción", icon: Soup, to: "/app/production" },
   { label: "Mesas", icon: Table2, to: "/app/tables" },
-  { label: "Menu", icon: UtensilsCrossed, to: "/app/menu" },
-  { label: "Usuarios", icon: Users, to: "/app/users" },
-  { label: "Pagos", icon: CreditCard, to: "/app/payments" },
-  { label: "Restaurante", icon: UtensilsCrossedIcon, to: "/app/restaurant" },
+  { label: "Menú", icon: UtensilsCrossed, to: "/app/menu" },
+  { label: "Usuarios", icon: Users, to: "/app/users", adminOnly: true },
+  {
+    label: "Restaurante",
+    icon: UtensilsCrossedIcon,
+    to: "/app/restaurant",
+    adminOnly: true,
+  },
 ];
+
+const adminOnlyPaths = navigation
+  .filter((item) => item.adminOnly)
+  .map((item) => item.to);
 
 export const AppLayout = () => {
   const pathname = useRouterState({
@@ -53,6 +61,7 @@ export const AppLayout = () => {
   const user = useAuthStore((state) => state.user);
   const status = useAuthStore((state) => state.status);
   const online = useContext(SocketContext).online;
+  const isAdmin = useIsAdmin();
 
   useActiveOrders();
 
@@ -62,6 +71,16 @@ export const AppLayout = () => {
 
   if (status === "unauthenticated") {
     return <Navigate to="/auth/login" />;
+  }
+
+  // Owner/admin screens: other roles get sent to orders, same as the app's
+  // Manage tab hiding them.
+  if (
+    status === "authenticated" &&
+    !isAdmin &&
+    adminOnlyPaths.some((path) => pathname.startsWith(path))
+  ) {
+    return <Navigate to="/app/orders" />;
   }
 
   return (
@@ -79,20 +98,22 @@ export const AppLayout = () => {
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
-                {navigation.map((item) => (
-                  <SidebarMenuItem key={item.label}>
-                    <SidebarMenuButton
-                      asChild
-                      tooltip={item.label}
-                      isActive={pathname.startsWith(item.to)}
-                    >
-                      <Link to={item.to}>
-                        <item.icon />
-                        <span>{item.label}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                {navigation
+                  .filter((item) => isAdmin || !item.adminOnly)
+                  .map((item) => (
+                    <SidebarMenuItem key={item.label}>
+                      <SidebarMenuButton
+                        asChild
+                        tooltip={item.label}
+                        isActive={pathname.startsWith(item.to)}
+                      >
+                        <Link to={item.to}>
+                          <item.icon />
+                          <span>{item.label}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
