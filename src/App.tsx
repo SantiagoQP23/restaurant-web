@@ -1,4 +1,3 @@
-import "./App.css";
 import { useEffect } from "react";
 import NiceModal from "@ebay/nice-modal-react";
 import { Outlet, useNavigate, useLocation } from "@tanstack/react-router";
